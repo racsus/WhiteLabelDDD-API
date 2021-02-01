@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Customers\**" />
+    <Compile Remove="Pagination\**" />
+    <EmbeddedResource Remove="Customers\**" />
+    <EmbeddedResource Remove="Pagination\**" />
+    <None Remove="Customers\**" />
+    <None Remove="Pagination\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Extensions\ArrayExtensions.cs" />
+    <Compile Remove="Extensions\ExpressionExtensions.cs" />
+    <Compile Remove="Extensions\ParameterRebinder.cs" />
+    <Compile Remove="Extensions\QueryableExtensions.cs" />
+    <Compile Remove="Extensions\QueryableSortExtensions.cs" />
+    <Compile Remove="Extensions\QueryableSpecificationExtensions.cs" />
+    <Compile Remove="Extensions\StringExtensions.cs" />
+    <Compile Remove="Extensions\TypeExtensions.cs" />
+    <Compile Remove="Generic\AndSpecification.cs" />
+    <Compile Remove="Generic\CompositeSpecification.cs" />
+    <Compile Remove="Generic\OrSpecification.cs" />
+    <Compile Remove="Generic\SpecificationExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Pagination\FilterOption.cs" />
+    <Compile Include="Pagination\FilterOperator.cs" />
+    <Compile Include="Pagination\IPageOption.cs" />
+    <Compile Include="Pagination\IPagedQueryResult.cs" />
+    <Compile Include="Pagination\IQueryResult.cs" />
+    <Compile Include="Pagination\SortOption.cs" />
+    <Compile Include="Pagination\SortDirection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+  </ItemGroup>
+
+</Project>
