@@ -81,6 +81,11 @@ _TODO. In this section we'll explain how to execute the Unit Tests defined in th
 
 _TODO. Pending to add information._
 
+## Knowledge links
+
+https://github.com/zkavtaskin/Domain-Driven-Design-Example [Zan Kavtaskin]
+https://github.com/ardalis/ddd-guestbook [Steve Smith]
+
 ## Authors ✒️
 
 Oscar Rodriguez - oscar.chelo@gmail.com<br />
