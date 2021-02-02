@@ -56,10 +56,10 @@ namespace WhiteLabelDDD.Controllers
 
         [HttpPost("Paginated")]
         [ProducesResponseType(typeof(PagedQueryResultDTO<UserDTO>), StatusCodes.Status200OK)]
-        public Response<PagedQueryResultDTO<UserDTO>> GetPaginated([FromBody] PagedListDTO pagedModel)
+        public async Task<Response<PagedQueryResultDTO<UserDTO>>> GetPaginated([FromBody] PagedListDTO pagedModel)
         {
             Response<PagedQueryResultDTO<UserDTO>> response = new Response<PagedQueryResultDTO<UserDTO>>();
-            response.Object = this.userService.GetPaginated(pagedModel);
+            response.Object = await this.userService.GetPaginated(pagedModel);
             return response;
         }
 

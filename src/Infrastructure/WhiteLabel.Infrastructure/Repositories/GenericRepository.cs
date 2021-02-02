@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WhiteLabel.Application.Interfaces.Generic;
 using WhiteLabel.Domain.Generic;
@@ -42,12 +43,12 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return query.SingleOrDefault(e => e.Id.Equals(id));
         }
 
-        public async Task<T> FindByIdAsync<T>(TId id) where T : BaseEntity<TId>
+        public async Task<T> FindByIdAsync<T>(TId id, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
-            return await _dbContext.Set<T>().SingleOrDefaultAsync(e => e.Id.Equals(id));
+            return await _dbContext.Set<T>().SingleOrDefaultAsync(e => e.Id.Equals(id), cancellationToken);
         }
 
-        public async Task<T> FindByIdAsync<T>(TId id, string[] includes) where T : BaseEntity<TId>
+        public async Task<T> FindByIdAsync<T>(TId id, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().AsQueryable();
 
@@ -76,13 +77,13 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return query.ToList();
         }
 
-        public async Task<IEnumerable<T>> FindAsync<T>(ISpecification<T> spec) where T : BaseEntity<TId>
+        public async Task<IEnumerable<T>> FindAsync<T>(ISpecification<T> spec, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().Where(spec.IsSatisfiedBy).AsQueryable();
             return await Task.FromResult(query.ToList());
         }
 
-        public async Task<IEnumerable<T>> FindAsync<T>(ISpecification<T> spec, string[] includes) where T : BaseEntity<TId>
+        public async Task<IEnumerable<T>> FindAsync<T>(ISpecification<T> spec, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().Where(spec.IsSatisfiedBy).AsQueryable();
 
@@ -99,9 +100,9 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return _dbContext.Set<T>().Where(spec.IsSatisfiedBy).FirstOrDefault();
         }
 
-        public async Task<T> FindOneAsync<T>(ISpecification<T> spec) where T : BaseEntity<TId>
+        public async Task<T> FindOneAsync<T>(ISpecification<T> spec, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
-            var query = _dbContext.Set<T>().Where(spec.IsSatisfiedBy);
+            var query = _dbContext.Set<T>().Where(spec.IsSatisfiedBy).AsQueryable();
             return await Task.FromResult(query.FirstOrDefault());
         }
 
@@ -117,7 +118,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return query.FirstOrDefault();
         }
 
-        public async Task<T> FindOneAsync<T>(ISpecification<T> spec, string[] includes) where T : BaseEntity<TId>
+        public async Task<T> FindOneAsync<T>(ISpecification<T> spec, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().Where(spec.IsSatisfiedBy).AsQueryable();
 
@@ -150,7 +151,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return _dbContext.Set<T>().ToList();
         }
 
-        public async Task<IEnumerable<T>> FindAllAsync<T>() where T : BaseEntity<TId>
+        public async Task<IEnumerable<T>> FindAllAsync<T>(CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             return await _dbContext.Set<T>().ToListAsync();
         }
@@ -165,18 +166,18 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return _dbContext.Set<T>().Count();
         }
 
-        public async Task<int> CountAsync<T>() where T : BaseEntity<TId>
+        public async Task<int> CountAsync<T>(CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             return await _dbContext.Set<T>().CountAsync();
         }
 
-        public async Task<IEnumerable<T>> FindAllAsync<T>(string[] includes) where T : BaseEntity<TId>
+        public async Task<IEnumerable<T>> FindAllAsync<T>(string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().AsQueryable();
             return await Task.FromResult(query.ToList());
         }
 
-        public IPagedQueryResult<T> FindAllPaginated<T>(IPageOption pageOptions) where T : BaseEntity<TId>
+        public IPagedQueryResult<T> FindAllPaged<T>(IPageOption pageOptions) where T : BaseEntity<TId>
         {
             if (pageOptions == null)
             {
@@ -190,6 +191,24 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
 
             var entityQueryResult = entityQuery.Run(_dbContext.Set<T>(), this.Evaluator);
             var modelsQueryResult = new PagedQueryResult<T>(entityQueryResult.Result, 
+                entityQueryResult.Take, entityQueryResult.Skip, entityQueryResult.Total);
+            return modelsQueryResult;
+        }
+
+        public async Task<IPagedQueryResult<T>> FindAllPagedAsync<T>(IPageOption pageOptions, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
+        {
+            if (pageOptions == null)
+            {
+                throw new ArgumentNullException(nameof(pageOptions));
+            }
+            var spec = this.SpecificationBuilder.Create<T>(pageOptions.Filters);
+            var entityQuery = new EntityPagedValueQuery<T>(spec, pageOptions.Take, pageOptions.Skip)
+            {
+                Sorts = pageOptions.Sorts
+            };
+
+            var entityQueryResult = await entityQuery.RunAsync(_dbContext.Set<T>(), this.Evaluator, cancellationToken);
+            var modelsQueryResult = new PagedQueryResult<T>(entityQueryResult.Result,
                 entityQueryResult.Take, entityQueryResult.Skip, entityQueryResult.Total);
             return modelsQueryResult;
         }
