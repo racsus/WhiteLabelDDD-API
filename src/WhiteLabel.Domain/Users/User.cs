@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ardalis.GuardClauses;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using WhiteLabel.Domain.Events;
@@ -18,11 +19,9 @@ namespace WhiteLabel.Domain.Users
 
         public static User Create(Guid id, string name, string email)
         {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException("name");
-
-            if (string.IsNullOrEmpty(email))
-                throw new ArgumentNullException("email");
+            Guard.Against.Null(id, nameof(id));
+            Guard.Against.Null(name, nameof(name));
+            Guard.Against.Null(email, nameof(email));
 
             User user = new User()
             {
@@ -38,11 +37,8 @@ namespace WhiteLabel.Domain.Users
 
         public void Update(string name, string email)
         {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException("name");
-
-            if (string.IsNullOrEmpty(email))
-                throw new ArgumentNullException("email");
+            Guard.Against.Null(name, nameof(name));
+            Guard.Against.Null(email, nameof(email));
 
             this.Name = name;
             this.Email = email;

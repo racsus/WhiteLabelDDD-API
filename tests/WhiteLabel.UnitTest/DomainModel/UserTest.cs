@@ -22,6 +22,13 @@ namespace WhiteLabel.UnitTest.DomainModel
         }
 
         [Test]
+        public void Add_WithoutId_ThrowsException()
+        {
+            Assert.That(() => User.Create(Guid.Empty, It.IsAny<String>(), It.IsAny<String>()),
+                Throws.TypeOf<ArgumentNullException>());
+        }
+
+        [Test]
         public void Update_WithoutEmail_ThrowsException()
         {
             var user = new User();
