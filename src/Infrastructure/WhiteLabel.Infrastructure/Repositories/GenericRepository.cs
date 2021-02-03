@@ -171,6 +171,17 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return await _dbContext.Set<T>().CountAsync();
         }
 
+        public int Count<T>(ISpecification<T> spec) where T : BaseEntity<TId>
+        {
+            return _dbContext.Set<T>().Where(spec.IsSatisfiedBy).Count();
+        }
+
+        public async Task<int> CountAsync<T>(ISpecification<T> spec, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
+        {
+            var query = _dbContext.Set<T>().Where(spec.IsSatisfiedBy).AsQueryable();
+            return await Task.FromResult(query.Count());
+        }
+
         public async Task<IEnumerable<T>> FindAllAsync<T>(string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().AsQueryable();

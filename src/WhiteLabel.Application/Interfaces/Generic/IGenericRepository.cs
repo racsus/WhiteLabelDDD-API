@@ -30,6 +30,8 @@ namespace WhiteLabel.Application.Interfaces.Generic
         IEnumerable<T> FindAll<T>(string[] includes) where T : BaseEntity<TId>;
         int Count<T>() where T : BaseEntity<TId>;
         Task<int> CountAsync<T>(CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
+        int Count<T>(ISpecification<T> spec) where T : BaseEntity<TId>;
+        Task<int> CountAsync<T>(ISpecification<T> spec, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         Task<IEnumerable<T>> FindAllAsync<T>(CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         Task<IEnumerable<T>> FindAllAsync<T>(string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         IPagedQueryResult<T> FindAllPaged<T>(IPageOption pageDescriptor) where T : BaseEntity<TId>;
