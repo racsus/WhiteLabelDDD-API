@@ -188,7 +188,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return await Task.FromResult(query.ToList());
         }
 
-        public IPagedQueryResult<T> FindAllPaged<T>(IPageOption pageOptions) where T : BaseEntity<TId>
+        public IPagedQueryResult<T> FindPaged<T>(IPageOption pageOptions) where T : BaseEntity<TId>
         {
             if (pageOptions == null)
             {
@@ -206,7 +206,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return modelsQueryResult;
         }
 
-        public async Task<IPagedQueryResult<T>> FindAllPagedAsync<T>(IPageOption pageOptions, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
+        public async Task<IPagedQueryResult<T>> FindPagedAsync<T>(IPageOption pageOptions, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             if (pageOptions == null)
             {

@@ -34,7 +34,7 @@ namespace WhiteLabel.Application.Interfaces.Generic
         Task<int> CountAsync<T>(ISpecification<T> spec, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         Task<IEnumerable<T>> FindAllAsync<T>(CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         Task<IEnumerable<T>> FindAllAsync<T>(string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
-        IPagedQueryResult<T> FindAllPaged<T>(IPageOption pageDescriptor) where T : BaseEntity<TId>;
-        Task<IPagedQueryResult<T>> FindAllPagedAsync<T>(IPageOption pageDescriptor, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
+        IPagedQueryResult<T> FindPaged<T>(IPageOption pageDescriptor) where T : BaseEntity<TId>;
+        Task<IPagedQueryResult<T>> FindPagedAsync<T>(IPageOption pageDescriptor, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
     }
 }

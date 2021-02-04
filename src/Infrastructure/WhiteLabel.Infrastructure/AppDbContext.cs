@@ -15,8 +15,8 @@ namespace WhiteLabel.Infrastructure.Data
     {
         private readonly IDomainEventDispatcher dispatcher;
 
-        public static readonly ILoggerFactory MyLoggerFactory
-            = LoggerFactory.Create(x => { x.AddConsole(); });
+        //public static readonly ILoggerFactory MyLoggerFactory
+        //    = LoggerFactory.Create(x => { x.AddConsole(); });
 
         public AppDbContext(DbContextOptions options, IDomainEventDispatcher dispatcher)
             : base(options)
@@ -39,7 +39,7 @@ namespace WhiteLabel.Infrastructure.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseLoggerFactory(MyLoggerFactory);
+            //optionsBuilder.UseLoggerFactory(MyLoggerFactory);
         }
 
         public override int SaveChanges()
