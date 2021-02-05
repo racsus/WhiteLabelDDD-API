@@ -17,7 +17,7 @@ namespace WhiteLabel.UnitTest.Factory
                 var newUser = new UserBuilder()
                         .WithTestValues()
                         .Name($"TestName{i:0000}")
-                        .Email($"TestName{i:0000}@testdomain.com")
+                        .Email($"testname{i:0000}@testdomain.com")
                         .Build();
 
                 res.Add(newUser);

@@ -38,7 +38,7 @@ namespace WhiteLabel.Application.Services.Users
 
             if (existingUser != null)
             {
-                throw new Exception("User with this email already exists");
+                throw new ArgumentException("User with this email already exists");
             }                
 
             User user =
@@ -54,7 +54,7 @@ namespace WhiteLabel.Application.Services.Users
         public async Task Update(UserDTO userDto)
         {
             if (userDto.Id == Guid.Empty)
-                throw new Exception("Id can't be empty");
+                throw new ArgumentException("Id can't be empty");
 
             ISpecification<User> registeredSpec =
                 new UserRegisteredSpec(userDto.Id);
@@ -62,7 +62,7 @@ namespace WhiteLabel.Application.Services.Users
             User user = await this.genericRepository.FindOneAsync(registeredSpec);
 
             if (user == null)
-                throw new Exception("No such user exists");
+                throw new ArgumentException("No such user exists");
 
             user.Update(userDto.Name, userDto.Email);
             this.unitOfWork.Commit();
@@ -76,7 +76,7 @@ namespace WhiteLabel.Application.Services.Users
             User user = await this.genericRepository.FindOneAsync(registeredSpec);
 
             if (user == null)
-                throw new Exception("No such customer exists");
+                throw new ArgumentException("No such customer exists");
 
             this.genericRepository.Delete(user);
             this.unitOfWork.Commit();
