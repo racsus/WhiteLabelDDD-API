@@ -18,6 +18,7 @@
     <ProjectReference Include="..\..\src\Infrastructure\WhiteLabel.Infrastructure\WhiteLabel.Infrastructure.Data.csproj" />
     <ProjectReference Include="..\..\src\WhiteLabel.Application\WhiteLabel.Application.csproj" />
     <ProjectReference Include="..\..\src\WhiteLabel.Domain\WhiteLabel.Domain.csproj" />
+    <ProjectReference Include="..\..\src\WhiteLabelDDD\WhiteLabel.WebAPI.csproj" />
   </ItemGroup>
 
 </Project>
