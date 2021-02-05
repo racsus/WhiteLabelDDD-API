@@ -299,6 +299,64 @@ namespace WhiteLabel.UnitTest.Repository
             await ClearMemoryAsync();
         }
 
+        [TestCase(2, 12, "Name", SortDirection.Ascending, "TestName0000")]
+        [TestCase(4, 5, "Name", SortDirection.Descending, "TestName0004")]
+        public void FindPaged_Sort_CheckFirstElement(int pageSize, int numberOfElements,
+            string sortMember, SortDirection sortDirection, string firstName)
+        {
+            PopulateUsers(numberOfElements);
+            var pageOptions = PagedOptionFactory.Build(pageSize, 0,
+                null, SortOptionFactory.Build(sortMember, sortDirection));
+
+            var result = this.Repository.FindPaged<User>(pageOptions);
+            var firstValue = result.Result.FirstOrDefault()?.Name;
+            Assert.True(firstValue == firstName);
+            ClearMemory();
+        }
+
+        [TestCase(2, 12, "Name", SortDirection.Ascending, "TestName0000")]
+        [TestCase(4, 5, "Name", SortDirection.Descending, "TestName0004")]
+        public async Task FindPagedAsync_Sort_CheckFirstElement(int pageSize, int numberOfElements,
+    string sortMember, SortDirection sortDirection, string firstName)
+        {
+            await PopulateUsersAsync(numberOfElements);
+            var pageOptions = PagedOptionFactory.Build(pageSize, 0,
+                null, SortOptionFactory.Build(sortMember, sortDirection));
+
+            var result = await this.Repository.FindPagedAsync<User>(pageOptions);
+            var firstValue = result.Result.FirstOrDefault()?.Name;
+            Assert.True(firstValue == firstName);
+            await ClearMemoryAsync();
+        }
+
+        [TestCase(2, 12, 2, "TestName0002")]
+        [TestCase(2, 12, 4, "TestName0004")]
+        public void FindPaged_Skip_CheckFirstElement(int pageSize, int numberOfElements, int skip, string firstName)
+        {
+            PopulateUsers(numberOfElements);
+            var pageOptions = PagedOptionFactory.Build(pageSize, skip,
+                null, SortOptionFactory.Build("Name", SortDirection.Ascending));
+
+            var result = this.Repository.FindPaged<User>(pageOptions);
+            var firstValue = result.Result.FirstOrDefault()?.Name;
+            Assert.True(firstValue == firstName);
+            ClearMemory();
+        }
+
+        [TestCase(2, 12, 2, "TestName0002")]
+        [TestCase(2, 12, 4, "TestName0004")]
+        public async Task FindPagedAsync_Skip_CheckFirstElement(int pageSize, int numberOfElements, int skip, string firstName)
+        {
+            await PopulateUsersAsync(numberOfElements);
+            var pageOptions = PagedOptionFactory.Build(pageSize, skip,
+                null, SortOptionFactory.Build("Name", SortDirection.Ascending));
+
+            var result = await this.Repository.FindPagedAsync<User>(pageOptions);
+            var firstValue = result.Result.FirstOrDefault()?.Name;
+            Assert.True(firstValue == firstName);
+            await ClearMemoryAsync();
+        }
+
         private void PopulateUsers(int numberOfElements)
         {
             var users = UsersFactory.Build(numberOfElements);
