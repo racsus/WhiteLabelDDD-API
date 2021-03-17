@@ -34,8 +34,8 @@ namespace WhiteLabel.ConvertToYeoman.Helpers
         {
             var process = new Process();
             var psi = new ProcessStartInfo();
-            psi.FileName = "cmd.exe";
-            //psi.Arguments = $"sln {solutionFile.Name} remove {projectPath}";
+            psi.FileName = "dotnet";
+            psi.Arguments = $"sln {solutionFile.Name} remove {projectPath}";
             psi.RedirectStandardInput = true;
             psi.RedirectStandardOutput = true;
             psi.RedirectStandardError = true;
@@ -48,11 +48,6 @@ namespace WhiteLabel.ConvertToYeoman.Helpers
             process.ErrorDataReceived += (sender, e) => { Console.WriteLine(e.Data); };
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
-            using (StreamWriter sw = process.StandardInput)
-            {
-                sw.WriteLine($"cd {Path.GetDirectoryName(solutionFile.FullName)}");
-                sw.WriteLine($" dotnet sln {solutionFile.Name} remove {projectPath}");
-            }
             process.WaitForExit();
         }
     }

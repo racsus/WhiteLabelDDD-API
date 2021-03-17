@@ -25,21 +25,20 @@ namespace WhiteLabel.ConvertToYeoman.Services
             }
 
             ConsoleLogHelper.ShowInfoMessage("Yeoman migration started", ConsoleColor.White);
-            ConsoleLogHelper.ShowInfoMessage("==========================", ConsoleColor.White);
             ConsoleLogHelper.ShowInfoMessage($"Source: {solutionDirectory}", ConsoleColor.Cyan);
             ConsoleLogHelper.ShowInfoMessage($"Destination: {destinationDirectory}", ConsoleColor.Green);
 
-            ConsoleLogHelper.ShowInfoMessage($"COPY SOLUTION", ConsoleColor.Blue);
-            ConsoleLogHelper.ShowInfoMessage($"=============", ConsoleColor.Blue);
+            ConsoleLogHelper.ShowInfoMessage($"Copy solution", ConsoleColor.Blue);
             var numFilesCopied = FileHelper.CopyDirectory(solutionDirectory, destinationDirectory, 
                 new [] { ".vs", "bin", "obj", ".git", "WhiteLabel.ConvertToYeoman" },
                 new [] { ".gitignore" });
 
             // Remove ConvertToYeoman project from solution
+            ConsoleLogHelper.ShowInfoMessage($"Remove Yeoman project from solution", ConsoleColor.Blue);
             var solutionFile = VisualStudioHelper.TryGetSolutionFileInfo(destinationDirectory);
             VisualStudioHelper.RemoveProjectFromSolution(solutionFile, "support/WhiteLabel.ConvertToYeoman/WhiteLabel.ConvertToYeoman.csproj");
 
-            ConsoleLogHelper.ShowInfoMessage($"MODIFY PROJECT FILES FOR YEOMAN", ConsoleColor.Blue);
+            ConsoleLogHelper.ShowInfoMessage($"Modify project files for Yeoman", ConsoleColor.Blue);
             ConsoleLogHelper.ShowInfoMessage($"================================", ConsoleColor.Blue);
             FileHelper.ReplaceContent(new[] { ".sln", ".csproj" }, destinationDirectory, "WhiteLabel", "<%= title %>");
 
