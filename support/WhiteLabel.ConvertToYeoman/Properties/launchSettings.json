@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WhiteLabel.ConvertToYeoman": {
+      "commandName": "Project",
+      "commandLineArgs": "B:\\Repositorios\\OSCAR\\generator-oscarchelo\\generators\\netcore-webapi-ddd\\templates"
+    }
+  }
+}
