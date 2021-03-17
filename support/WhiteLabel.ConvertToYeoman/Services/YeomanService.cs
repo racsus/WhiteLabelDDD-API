@@ -39,7 +39,6 @@ namespace WhiteLabel.ConvertToYeoman.Services
             VisualStudioHelper.RemoveProjectFromSolution(solutionFile, "support/WhiteLabel.ConvertToYeoman/WhiteLabel.ConvertToYeoman.csproj");
 
             ConsoleLogHelper.ShowInfoMessage($"Modify project files for Yeoman", ConsoleColor.Blue);
-            ConsoleLogHelper.ShowInfoMessage($"================================", ConsoleColor.Blue);
             FileHelper.ReplaceContent(new[] { ".sln", ".csproj" }, destinationDirectory, "WhiteLabel", "<%= title %>");
 
             ConsoleLogHelper.ShowInfoMessage($"{numFilesCopied} files have been copied", ConsoleColor.Blue);

@@ -17,7 +17,6 @@ namespace WhiteLabel.ConvertToYeoman.Helpers
                 if (!PathContainsDirectory(dirPath, directoriesToExclude))
                 {
                     Directory.CreateDirectory(dirPath.Replace(sourcePath, destinationDirectory));
-                    ConsoleLogHelper.ShowInfoMessage($"Create directory {dirPath}", ConsoleColor.Green);
                 }                
             }
 
@@ -29,7 +28,7 @@ namespace WhiteLabel.ConvertToYeoman.Helpers
                         (!filesToExclude.Contains(Path.GetFileName(newPath))))
                 {
                     File.Copy(newPath, newPath.Replace(sourcePath, destinationDirectory), true);
-                    ConsoleLogHelper.ShowInfoMessage($"Copy file {newPath}", ConsoleColor.Green);
+                    ConsoleLogHelper.ShowInfoMessage($"Copy", ConsoleColor.Green, newPath, ConsoleColor.White);
 
                     res += 1;
                 }                    
@@ -55,7 +54,7 @@ namespace WhiteLabel.ConvertToYeoman.Helpers
             {
                 if (Path.GetFileName(file) == fileName)
                 {
-                    ConsoleLogHelper.ShowInfoMessage($"Modify file {file}", ConsoleColor.Green);
+                    ConsoleLogHelper.ShowInfoMessage($"Modify", ConsoleColor.Green, file, ConsoleColor.White);
 
                     // Create a temporary file path where we can write modify lines
                     string tempFile = Path.Combine(Path.GetDirectoryName(file), $"{Path.GetFileNameWithoutExtension(file)}-temp{Path.GetExtension(file)}");
