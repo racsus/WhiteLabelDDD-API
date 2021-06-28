@@ -50,6 +50,7 @@ namespace WhiteLabelDDD.Swagger
                 }
                 if (authConfiguration?.IsEnabled == true)
                 {
+                    // Azure
                     c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                     {
                         Type = SecuritySchemeType.OAuth2,
@@ -66,6 +67,24 @@ namespace WhiteLabelDDD.Swagger
                             }
                         }
                     });
+                    // Auth0
+                    //c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                    //{
+                    //    Name = "Authorization",
+                    //    In = ParameterLocation.Header,
+                    //    Type = SecuritySchemeType.OAuth2,
+                    //    Flows = new OpenApiOAuthFlows
+                    //    {
+                    //        Implicit = new OpenApiOAuthFlow
+                    //        {
+                    //            Scopes = new Dictionary<string, string>
+                    //            {
+                    //                { "openid", "Open Id" }
+                    //            },
+                    //            AuthorizationUrl = new Uri("https://ecritportfolio.eu.auth0.com/authorize?https://budgeting-tool-api")
+                    //        }
+                    //    }
+                    //});
                     c.OperationFilter<SecurityRequirementsOperationFilter>();
                 }
 
