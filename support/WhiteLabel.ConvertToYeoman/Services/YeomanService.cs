@@ -40,6 +40,7 @@ namespace WhiteLabel.ConvertToYeoman.Services
 
             ConsoleLogHelper.ShowInfoMessage($"Modify project files for Yeoman", ConsoleColor.Blue);
             FileHelper.ReplaceContent(new[] { ".sln", ".csproj" }, destinationDirectory, "WhiteLabel", "<%= title %>");
+            FileHelper.ReplaceContent(new[] { ".csproj" }, destinationDirectory, "<UserSecretsId>9897f4ce-1dfd-4146-9ae5-8ac9f8a492ab</UserSecretsId>", $"<UserSecretsId>{Guid.NewGuid().ToString()}</UserSecretsId>");
 
             ConsoleLogHelper.ShowInfoMessage($"{numFilesCopied} files have been copied", ConsoleColor.Blue);
         }
