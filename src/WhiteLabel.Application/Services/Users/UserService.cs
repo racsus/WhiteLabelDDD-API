@@ -111,7 +111,7 @@ namespace WhiteLabel.Application.Services.Users
 
         public async Task<PagedQueryResultDTO<UserDTO>> GetPaginated(IPageOption pageOption)
         {
-            var result = await this.genericRepository.FindPagedAsync<User>(pageOption);
+            var result = await this.genericRepository.FindPagedAsync<User>(pageOption, null);
 
             return new PagedQueryResultDTO<UserDTO>(result.Take, result.Skip, result.Total, 
                 this.mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(result.Result));

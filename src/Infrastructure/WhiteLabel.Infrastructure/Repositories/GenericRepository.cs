@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
         protected IQueryableEvaluator Evaluator { get; }
         protected ISpecificationBuilder SpecificationBuilder { get; }
 
-        public GenericRepository(AppDbContext dbContext, 
+        public GenericRepository(AppDbContext dbContext,
             IQueryableEvaluator evaluator,
             ISpecificationBuilder specificationBuilder)
         {
@@ -85,14 +86,14 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
 
         public async Task<IEnumerable<T>> FindAsync<T>(ISpecification<T> spec, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
-            var query = _dbContext.Set<T>().Where(spec.IsSatisfiedBy).AsQueryable();
+            var query = _dbContext.Set<T>().AsQueryable();
 
             foreach (string include in includes)
             {
                 query = query.Include(include);
             }
 
-            return await Task.FromResult(query.ToList());
+            return await Task.FromResult(query.Where(spec.IsSatisfiedBy).ToList());
         }
 
         public T FindOne<T>(ISpecification<T> spec) where T : BaseEntity<TId>
@@ -108,26 +109,26 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
 
         public T FindOne<T>(ISpecification<T> spec, string[] includes) where T : BaseEntity<TId>
         {
-            var query = _dbContext.Set<T>().Where(spec.IsSatisfiedBy).AsQueryable();
+            var query = _dbContext.Set<T>().AsQueryable();
 
             foreach (string include in includes)
             {
                 query = query.Include(include);
             }
 
-            return query.FirstOrDefault();
+            return query.Where(spec.IsSatisfiedBy).FirstOrDefault();
         }
 
         public async Task<T> FindOneAsync<T>(ISpecification<T> spec, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
-            var query = _dbContext.Set<T>().Where(spec.IsSatisfiedBy).AsQueryable();
-
+            var query = _dbContext.Set<T>().AsQueryable();
             foreach (string include in includes)
             {
                 query = query.Include(include);
             }
 
-            return await Task.FromResult(query.FirstOrDefault());
+            var res = await Task.FromResult(query.Where(spec.IsSatisfiedBy).FirstOrDefault());
+            return res;
         }
 
         public T Add<T>(T entity) where T : BaseEntity<TId>
@@ -185,10 +186,14 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
         public async Task<IEnumerable<T>> FindAllAsync<T>(string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().AsQueryable();
+            foreach (string include in includes)
+            {
+                query = query.Include(include);
+            }
             return await Task.FromResult(query.ToList());
         }
 
-        public IPagedQueryResult<T> FindPaged<T>(IPageOption pageOptions) where T : BaseEntity<TId>
+        public IPagedQueryResult<T> FindPaged<T>(IPageOption pageOptions, string[] includes) where T : BaseEntity<TId>
         {
             if (pageOptions == null)
             {
@@ -201,12 +206,12 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             };
 
             var entityQueryResult = entityQuery.Run(_dbContext.Set<T>(), this.Evaluator);
-            var modelsQueryResult = new PagedQueryResult<T>(entityQueryResult.Result, 
+            var modelsQueryResult = new PagedQueryResult<T>(entityQueryResult.Result,
                 entityQueryResult.Take, entityQueryResult.Skip, entityQueryResult.Total);
             return modelsQueryResult;
         }
 
-        public async Task<IPagedQueryResult<T>> FindPagedAsync<T>(IPageOption pageOptions, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
+        public async Task<IPagedQueryResult<T>> FindPagedAsync<T>(IPageOption pageOptions, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             if (pageOptions == null)
             {
