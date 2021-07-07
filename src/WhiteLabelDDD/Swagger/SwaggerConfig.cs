@@ -92,6 +92,8 @@ namespace WhiteLabelDDD.Swagger
                 c.OperationFilter<RemoveVersionFromParameter>();
                 c.DocumentFilter<ReplaceVersionWithExactValueInPath>();
             });
+
+            services.AddSwaggerGenNewtonsoftSupport();
         }
 
         /// <summary>
