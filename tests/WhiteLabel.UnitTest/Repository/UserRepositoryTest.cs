@@ -245,7 +245,7 @@ namespace WhiteLabel.UnitTest.Repository
             PopulateUsers(numberOfElements);
             var pageOptions = PagedOptionFactory.Build(pageSize, 0, null, null);
 
-            var result = this.Repository.FindPaged<User>(pageOptions);
+            var result = this.Repository.FindPaged<User>(pageOptions, null);
 
             Assert.True(result.Result.Count() == pageSize);
             ClearMemory();
@@ -257,7 +257,7 @@ namespace WhiteLabel.UnitTest.Repository
             await PopulateUsersAsync(numberOfElements);
             var pageOptions = PagedOptionFactory.Build(pageSize, 0, null, null);
 
-            var result = await this.Repository.FindPagedAsync<User>(pageOptions);
+            var result = await this.Repository.FindPagedAsync<User>(pageOptions, null);
 
             Assert.True(result.Result.Count() == pageSize);
             await ClearMemoryAsync();
@@ -275,7 +275,7 @@ namespace WhiteLabel.UnitTest.Repository
             var pageOptions = PagedOptionFactory.Build(pageSize, 0, 
                 FilterOptionFactory.Build(filterMember, filterValue, filterOperator), null);
 
-            var result = this.Repository.FindPaged<User>(pageOptions);
+            var result = this.Repository.FindPaged<User>(pageOptions, null);
 
             Assert.True(result.Result.Count() == numElementsResult);
             ClearMemory();
@@ -293,7 +293,7 @@ namespace WhiteLabel.UnitTest.Repository
             var pageOptions = PagedOptionFactory.Build(pageSize, 0,
                 FilterOptionFactory.Build(filterMember, filterValue, filterOperator), null);
 
-            var result = await this.Repository.FindPagedAsync<User>(pageOptions);
+            var result = await this.Repository.FindPagedAsync<User>(pageOptions, null);
 
             Assert.True(result.Result.Count() == numElementsResult);
             await ClearMemoryAsync();
@@ -308,7 +308,7 @@ namespace WhiteLabel.UnitTest.Repository
             var pageOptions = PagedOptionFactory.Build(pageSize, 0,
                 null, SortOptionFactory.Build(sortMember, sortDirection));
 
-            var result = this.Repository.FindPaged<User>(pageOptions);
+            var result = this.Repository.FindPaged<User>(pageOptions, null);
             var firstValue = result.Result.FirstOrDefault()?.Name;
             Assert.True(firstValue == firstName);
             ClearMemory();
@@ -323,7 +323,7 @@ namespace WhiteLabel.UnitTest.Repository
             var pageOptions = PagedOptionFactory.Build(pageSize, 0,
                 null, SortOptionFactory.Build(sortMember, sortDirection));
 
-            var result = await this.Repository.FindPagedAsync<User>(pageOptions);
+            var result = await this.Repository.FindPagedAsync<User>(pageOptions, null);
             var firstValue = result.Result.FirstOrDefault()?.Name;
             Assert.True(firstValue == firstName);
             await ClearMemoryAsync();
@@ -337,7 +337,7 @@ namespace WhiteLabel.UnitTest.Repository
             var pageOptions = PagedOptionFactory.Build(pageSize, skip,
                 null, SortOptionFactory.Build("Name", SortDirection.Ascending));
 
-            var result = this.Repository.FindPaged<User>(pageOptions);
+            var result = this.Repository.FindPaged<User>(pageOptions, null);
             var firstValue = result.Result.FirstOrDefault()?.Name;
             Assert.True(firstValue == firstName);
             ClearMemory();
@@ -351,7 +351,7 @@ namespace WhiteLabel.UnitTest.Repository
             var pageOptions = PagedOptionFactory.Build(pageSize, skip,
                 null, SortOptionFactory.Build("Name", SortDirection.Ascending));
 
-            var result = await this.Repository.FindPagedAsync<User>(pageOptions);
+            var result = await this.Repository.FindPagedAsync<User>(pageOptions, null);
             var firstValue = result.Result.FirstOrDefault()?.Name;
             Assert.True(firstValue == firstName);
             await ClearMemoryAsync();

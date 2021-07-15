@@ -29,7 +29,7 @@ namespace WhiteLabel.Application.Services.Users
             this.mapper = mapper;
         }
 
-        public async Task<UserDTO> Add(UserDTO userDto)
+        public async Task<Response<UserDTO>> Add(UserDTO userDto)
         {
             ISpecification<User> alreadyRegisteredSpec =
                 new UserAlreadyRegisteredSpec(userDto.Email);
@@ -38,7 +38,7 @@ namespace WhiteLabel.Application.Services.Users
 
             if (existingUser != null)
             {
-                throw new ArgumentException("User with this email already exists");
+                return new Response<UserDTO>("User with this email already exists");
             }                
 
             User user =
@@ -48,7 +48,7 @@ namespace WhiteLabel.Application.Services.Users
             this.genericRepository.Add(user);
             this.unitOfWork.Commit();
 
-            return this.mapper.Map<User, UserDTO>(user);
+            return new Response<UserDTO>(this.mapper.Map<User, UserDTO>(user));
         }
 
         public async Task Update(UserDTO userDto)
@@ -82,21 +82,21 @@ namespace WhiteLabel.Application.Services.Users
             this.unitOfWork.Commit();
         }
 
-        public async Task<UserDTO> Get(Guid userId)
+        public async Task<Response<UserDTO>> Get(Guid userId)
         {
             ISpecification<User> registeredSpec =
                 new UserRegisteredSpec(userId);
 
             User user = await this.genericRepository.FindOneAsync(registeredSpec);
 
-            return this.mapper.Map<User, UserDTO>(user);
+            return new Response<UserDTO>(this.mapper.Map<User, UserDTO>(user));
         }
 
-        public async Task<IEnumerable<UserDTO>> GetAll()
+        public async Task<Response<IEnumerable<UserDTO>>> GetAll()
         {
             var result = await this.genericRepository.FindAllAsync<User>();
 
-            return this.mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(result);
+            return new Response<IEnumerable<UserDTO>>(this.mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(result));
         }
 
         public async Task<bool> IsEmailAvailable(string email)
@@ -109,12 +109,12 @@ namespace WhiteLabel.Application.Services.Users
             return (existingUser != null);
         }
 
-        public async Task<PagedQueryResultDTO<UserDTO>> GetPaginated(IPageOption pageOption)
+        public async Task<Response<PagedQueryResultDTO<UserDTO>>> GetPaginated(IPageOption pageOption)
         {
             var result = await this.genericRepository.FindPagedAsync<User>(pageOption, null);
 
-            return new PagedQueryResultDTO<UserDTO>(result.Take, result.Skip, result.Total, 
-                this.mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(result.Result));
+            return new Response<PagedQueryResultDTO<UserDTO>>(new PagedQueryResultDTO<UserDTO>(result.Take, result.Skip, result.Total, 
+                this.mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(result.Result)));
         }
     }
 

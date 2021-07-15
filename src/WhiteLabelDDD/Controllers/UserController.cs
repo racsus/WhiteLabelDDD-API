@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using WhiteLabel.Application.DTOs.Generic;
 using WhiteLabel.Application.DTOs.Users;
 using WhiteLabel.Application.Interfaces.Users;
-using WhiteLabel.WebAPI.Models;
 
 namespace WhiteLabelDDD.Controllers
 {
@@ -24,9 +23,7 @@ namespace WhiteLabelDDD.Controllers
         [HttpPost]
         public async Task<Response<UserDTO>> Add([FromBody] UserDTO user)
         {
-            Response<UserDTO> response = new Response<UserDTO>();
-            response.Object = await this.userService.Add(user);
-            return response;
+            return await this.userService.Add(user);
         }
 
         [HttpGet]
@@ -41,26 +38,20 @@ namespace WhiteLabelDDD.Controllers
         [HttpGet("{id}")]
         public async Task<Response<UserDTO>> GetById(Guid id)
         {
-            Response<UserDTO> response = new Response<UserDTO>();
-            response.Object = await this.userService.Get(id);
-            return response;
+            return await this.userService.Get(id);
         }
 
         [HttpGet("All")]
         public async Task<Response<IEnumerable<UserDTO>>> GetAll()
         {
-            Response<IEnumerable<UserDTO>> response = new Response<IEnumerable<UserDTO>>();
-            response.Object = await this.userService.GetAll();
-            return response;
+            return await this.userService.GetAll();
         }
 
         [HttpPost("Paginated")]
         [ProducesResponseType(typeof(PagedQueryResultDTO<UserDTO>), StatusCodes.Status200OK)]
         public async Task<Response<PagedQueryResultDTO<UserDTO>>> GetPaginated([FromBody] PagedListDTO pagedModel)
         {
-            Response<PagedQueryResultDTO<UserDTO>> response = new Response<PagedQueryResultDTO<UserDTO>>();
-            response.Object = await this.userService.GetPaginated(pagedModel);
-            return response;
+            return await this.userService.GetPaginated(pagedModel);
         }
 
         [HttpDelete("{id}")]

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using WhiteLabel.Domain.Generic;
 
-namespace WhiteLabel.WebAPI.Models
+namespace WhiteLabel.Application.DTOs.Generic
 {
     public sealed class Response<TReturn> 
     {
@@ -14,6 +14,7 @@ namespace WhiteLabel.WebAPI.Models
 
 
         public Response() => this.Errors = new GenericError[0] { };
+        public Response(TReturn obj) => this.Object = obj;
         public Response(string error) => this.Errors = new GenericError[1] { new GenericError(error) };
         public Response(ApplicationErrorEnum singleError) => this.Errors = new GenericError[1] { new GenericError(singleError) };
         public Response(ApplicationErrorEnum singleError, Exception exception) => this.Errors = new GenericError[1] { new GenericError(singleError, exception) };

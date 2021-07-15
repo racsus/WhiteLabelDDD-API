@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WhiteLabel.Application.DTOs.Generic;
 using WhiteLabel.Domain.Generic;
-using WhiteLabel.WebAPI.Models;
 
 namespace WhiteLabel.WebAPI.Filters
 {

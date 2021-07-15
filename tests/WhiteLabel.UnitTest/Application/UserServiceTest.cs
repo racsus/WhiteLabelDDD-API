@@ -11,18 +11,19 @@ using WhiteLabel.Application.DTOs.Users;
 using System.Threading.Tasks;
 using System.Threading;
 using WhiteLabel.UnitTest.Builders;
+using System.Linq;
 
 namespace WhiteLabel.UnitTest.Application
 {
     public class UserServiceTest
     {
         [Test]
-        public void Add_WithEmailAlreadyInDatabase_ThrowsException()
+        public async Task Add_WithEmailAlreadyInDatabase_ThrowsException()
         {
-            var service = GetService(new UserBuilder().WithTestValues().Build());            
+            var service = GetService(new UserBuilder().WithTestValues().Build());
 
-            Assert.That(() => service.Add(new UserDTO()),
-                Throws.TypeOf<ArgumentException>());
+            var response = await service.Add(new UserDTO());
+            Assert.AreEqual("User with this email already exists", response.Errors.FirstOrDefault().Description);
         }
 
         [Test]

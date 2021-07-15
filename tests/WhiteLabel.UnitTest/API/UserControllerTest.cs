@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using WhiteLabel.Application.DTOs.Generic;
 using WhiteLabel.Application.DTOs.Users;
 using WhiteLabel.Application.Interfaces.Users;
 using WhiteLabelDDD.Controllers;
@@ -21,11 +22,11 @@ namespace WhiteLabel.UnitTest.API
             var userDto = new UserDTO();
             userDto.Id = Guid.NewGuid();
             Mock<IUserService> userService = new Mock<IUserService>();
-            userService.Setup(x => x.Add(userDto)).Returns(Task.FromResult(userDto));
+            userService.Setup(x => x.Add(userDto)).Returns(Task.FromResult(new Response<UserDTO>(userDto)));
 
             // Arrange
             UserController controller = new UserController(userService.Object);
-            var res = await controller.Add(new UserDTO());
+            var res = await controller.Add(userDto);
 
             // Assert
             Assert.AreEqual(res.Succeeded, true);

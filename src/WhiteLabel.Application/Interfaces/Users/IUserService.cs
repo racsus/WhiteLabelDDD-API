@@ -11,12 +11,12 @@ namespace WhiteLabel.Application.Interfaces.Users
 {
     public interface IUserService: IBusinessService
     {
-        Task<UserDTO> Add(UserDTO userDto);
+        Task<Response<UserDTO>> Add(UserDTO userDto);
         Task Update(UserDTO userDto);
         Task Remove(Guid userId);
-        Task<UserDTO> Get(Guid userId);
-        Task<IEnumerable<UserDTO>> GetAll();
+        Task<Response<UserDTO>> Get(Guid userId);
+        Task<Response<IEnumerable<UserDTO>>> GetAll();
         Task<bool> IsEmailAvailable(string email);
-        Task<PagedQueryResultDTO<UserDTO>> GetPaginated(IPageOption pageDescriptor);
+        Task<Response<PagedQueryResultDTO<UserDTO>>> GetPaginated(IPageOption pageDescriptor);
     }
 }

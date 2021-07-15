@@ -3,8 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using WhiteLabel.Domain.Generic;
-using WhiteLabel.WebAPI.Models;
+using WhiteLabel.Application.DTOs.Generic;
 
 namespace WhiteLabelDDD.Exceptions
 {
