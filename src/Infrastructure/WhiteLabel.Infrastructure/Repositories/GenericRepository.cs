@@ -137,6 +137,12 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return entity;
         }
 
+        public async Task<T> AddAsync<T>(T entity) where T : BaseEntity<TId>
+        {
+            await _dbContext.Set<T>().AddAsync(entity);
+            return entity;
+        }
+
         public void Delete<T>(T entity) where T : BaseEntity<TId>
         {
             _dbContext.Set<T>().Remove(entity);
