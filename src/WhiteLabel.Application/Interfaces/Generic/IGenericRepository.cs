@@ -24,7 +24,7 @@ namespace WhiteLabel.Application.Interfaces.Generic
         Task<T> FindOneAsync<T>(ISpecification<T> spec, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         Task<T> FindOneAsync<T>(ISpecification<T> spec, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         T Add<T>(T entity) where T : BaseEntity<TId>;
-        Task<T> AddAsync<T>(T entity) where T : BaseEntity<TId>;
+        Task<T> AddAsync<T>(T entity, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         void Update<T>(T entity) where T : BaseEntity<TId>;
         void Delete<T>(T entity) where T : BaseEntity<TId>;
         IEnumerable<T> FindAll<T>() where T : BaseEntity<TId>;

@@ -137,7 +137,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return entity;
         }
 
-        public async Task<T> AddAsync<T>(T entity) where T : BaseEntity<TId>
+        public async Task<T> AddAsync<T>(T entity, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             await _dbContext.Set<T>().AddAsync(entity);
             return entity;
