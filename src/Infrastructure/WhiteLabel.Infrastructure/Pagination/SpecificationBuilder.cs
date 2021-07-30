@@ -182,7 +182,7 @@ namespace WhiteLabel.Domain.Pagination
         {
             var effectiveType = propertyType.GetEffectiveType();
 
-            if (effectiveType == typeof(string))
+            if ((effectiveType == typeof(string)) || (effectiveType == typeof(Guid)))
             {
                 return ExpressionExtensions.GetAssignExpressionString(filterOperator, left, right, propertyType);
             }

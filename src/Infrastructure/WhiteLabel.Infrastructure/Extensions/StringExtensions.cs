@@ -32,6 +32,10 @@ namespace WhiteLabel.Domain.Extensions
             {
                 return s;
             }
+            if (targetType == typeof(Guid))
+            {
+                return Guid.Parse(s);
+            }
             if (s.IsNullOrEmpty())
             {
                 return null;
