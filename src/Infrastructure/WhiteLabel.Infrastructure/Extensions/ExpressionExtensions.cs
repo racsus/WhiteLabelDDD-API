@@ -304,6 +304,7 @@ namespace System.Linq.Expressions
                     return Expression.Not(isContainedIn);
                 //Comparisons can't be applied to numeric
                 case FilterOperator.Contains:
+                    return Expression.Equal(left, right);  // Exception
                 case FilterOperator.DoesNotContain:
                 case FilterOperator.StartsWith:
                 case FilterOperator.EndsWith:
