@@ -50,41 +50,49 @@ namespace WhiteLabelDDD.Swagger
                 }
                 if (authConfiguration?.IsEnabled == true)
                 {
-                    // Azure
-                    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                    if (authConfiguration.AuthType.ToUpper() == "AZURE")
                     {
-                        Type = SecuritySchemeType.OAuth2,
-                        Flows = new OpenApiOAuthFlows
+                        // Azure
+                        c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                         {
-                            Implicit = new OpenApiOAuthFlow
+                            Type = SecuritySchemeType.OAuth2,
+                            Flows = new OpenApiOAuthFlows
                             {
-                                AuthorizationUrl = new Uri($"{authConfiguration.Authority}/oauth2/v2.0/authorize"),
-                                TokenUrl = new Uri($"{authConfiguration.Authority}/oauth2/v2.0/token"),
-                                Scopes = new Dictionary<string, string>
+                                Implicit = new OpenApiOAuthFlow
+                                {
+                                    AuthorizationUrl = new Uri($"{authConfiguration.Authority}/oauth2/v2.0/authorize"),
+                                    TokenUrl = new Uri($"{authConfiguration.Authority}/oauth2/v2.0/token"),
+                                    Scopes = new Dictionary<string, string>
                                         {
                                             { $"{authConfiguration.Scope}", authConfiguration.Scope }
                                         }
+                                }
                             }
-                        }
-                    });
-                    // Auth0
-                    //c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                    //{
-                    //    Name = "Authorization",
-                    //    In = ParameterLocation.Header,
-                    //    Type = SecuritySchemeType.OAuth2,
-                    //    Flows = new OpenApiOAuthFlows
-                    //    {
-                    //        Implicit = new OpenApiOAuthFlow
-                    //        {
-                    //            Scopes = new Dictionary<string, string>
-                    //            {
-                    //                { "openid", "Open Id" }
-                    //            },
-                    //            AuthorizationUrl = new Uri("https://ecritportfolio.eu.auth0.com/authorize?https://budgeting-tool-api")
-                    //        }
-                    //    }
-                    //});
+                        });
+                    }
+                    else if (authConfiguration.AuthType.ToUpper() == "AUTH0")
+                    {
+                        // Auth0
+                        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                        {
+                            Name = "Authorization",
+                            In = ParameterLocation.Header,
+                            Type = SecuritySchemeType.OAuth2,
+                            Flows = new OpenApiOAuthFlows
+                            {
+                                Implicit = new OpenApiOAuthFlow
+                                {
+                                    Scopes = new Dictionary<string, string>
+                                    {
+                                        { "openid", "openid" },
+                                        { "email", "email" },
+                                        { "profile", "profile" },
+                                    },
+                                    AuthorizationUrl = new Uri($"{authConfiguration.Authority}/authorize?audience={authConfiguration.Audience}")
+                                }
+                            }
+                        });
+                    }
                     c.OperationFilter<SecurityRequirementsOperationFilter>();
                 }
 
