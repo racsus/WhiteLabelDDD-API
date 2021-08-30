@@ -90,9 +90,20 @@ namespace WhiteLabelDDD
             // Configure Swagger
             SwaggerConfig.Configure(app, this.SwaggerConfiguration, this.AuthConfiguration, this.ApiMetadata);
 
+            // CORS
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
             app.UseRouting();
 
-            app.UseAuthorization();
+            if (this.AuthConfiguration.IsEnabled)
+            {
+                app.UseAuthentication();
+                app.UseAuthorization();
+            }
+
             if (this.AuthConfiguration?.IsEnabled == true)
             {
                 app.UseEndpoints(endpoints =>
