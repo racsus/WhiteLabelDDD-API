@@ -40,6 +40,13 @@ namespace WhiteLabelDDD
         {
             JwtConfig.ConfigureServices(services, this.AuthConfiguration);
 
+            #region Allow-Orgin
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+            });
+            #endregion
+
             services.AddControllers();
             // Fluent Validation
             services.AddMvc(options =>
@@ -98,14 +105,11 @@ namespace WhiteLabelDDD
 
             app.UseRouting();
 
-            if (this.AuthConfiguration.IsEnabled)
+            if (this.AuthConfiguration?.IsEnabled == true)
             {
                 app.UseAuthentication();
                 app.UseAuthorization();
-            }
 
-            if (this.AuthConfiguration?.IsEnabled == true)
-            {
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers()
