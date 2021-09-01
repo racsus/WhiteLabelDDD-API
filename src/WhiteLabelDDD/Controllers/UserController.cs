@@ -27,6 +27,8 @@ namespace WhiteLabelDDD.Controllers
         }
 
         [HttpGet]
+        //[Authorize(Roles = "Administrator")]
+        //[AuthorizeWithPermissions("read:dashboard")]
         [Route("IsEmailAvailable/{email}")]
         public async Task<Response<bool>> IsEmailAvailable(string email)
         {

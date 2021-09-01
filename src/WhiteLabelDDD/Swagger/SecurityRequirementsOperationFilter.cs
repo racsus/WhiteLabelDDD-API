@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WhiteLabel.Application.Configuration;
+using WhiteLabel.WebAPI.OAuth;
 using WhiteLabelDDD.OAuth;
 
 namespace WhiteLabelDDD.Swagger
@@ -27,11 +28,11 @@ namespace WhiteLabelDDD.Swagger
             var securitySchemeId = string.Empty;
             switch (authConfiguration.AuthType.ToUpper())
             {
-                case "AZURE":
+                case Constants.Azure:
                     securitySchemeId = "oauth2";
                     break;
-                case "AUTH0":
-                case "BEARER":
+                case Constants.Auth0:
+                case Constants.Bearer:
                     securitySchemeId = "Bearer";
                     break;
             }
