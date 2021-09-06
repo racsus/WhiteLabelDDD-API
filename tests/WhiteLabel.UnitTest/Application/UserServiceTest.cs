@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using WhiteLabel.UnitTest.Builders;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace WhiteLabel.UnitTest.Application
 {
@@ -65,7 +67,17 @@ namespace WhiteLabel.UnitTest.Application
             genericRepository.Setup(x => x.FindOneAsync(It.IsAny<ISpecification<User>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(user));
 
-            var res = new UserService(genericRepository.Object, unitOfWork.Object, mapper.Object);
+            //Arrange
+            var inMemorySettings = new Dictionary<string, string> {
+                {"Authentication", ""},
+                //...populate as needed for the test
+            };
+
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(inMemorySettings)
+                .Build();
+
+            var res = new UserService(genericRepository.Object, unitOfWork.Object, mapper.Object, configuration);
 
             return res;
         }

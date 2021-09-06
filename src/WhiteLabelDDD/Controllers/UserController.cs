@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using WhiteLabel.Application.DTOs.Generic;
 using WhiteLabel.Application.DTOs.Users;
 using WhiteLabel.Application.Interfaces.Users;
@@ -20,6 +21,22 @@ namespace WhiteLabelDDD.Controllers
             this.userService = userService;
         }
 
+        /// <summary>
+        /// Returns user information for logged in user using token information
+        /// </summary>
+        /// <returns>Json result with the user model</returns>
+        [HttpGet("Me")]
+        //[Authorize(Roles = "Administrator")]
+        //[AuthorizeWithPermissions("read:dashboard")]
+        [ProducesResponseType(typeof(UserInfoDTO), StatusCodes.Status200OK)]
+        public async Task<Response<UserInfoDTO>> GetMe()
+        {
+            var accessToken = Request.Headers[HeaderNames.Authorization];
+            Response<UserInfoDTO> response = new Response<UserInfoDTO>();
+            response.Object = await this.userService.GetUserInfo(accessToken, this.User);
+            return response;
+        }
+
         [HttpPost]
         public async Task<Response<UserDTO>> Add([FromBody] UserDTO user)
         {
@@ -27,8 +44,6 @@ namespace WhiteLabelDDD.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "Administrator")]
-        //[AuthorizeWithPermissions("read:dashboard")]
         [Route("IsEmailAvailable/{email}")]
         public async Task<Response<bool>> IsEmailAvailable(string email)
         {

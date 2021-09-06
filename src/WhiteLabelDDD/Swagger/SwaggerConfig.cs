@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.OpenApi.Models;
 using WhiteLabel.Application.Configuration;
 using WhiteLabel.Application.Constants;
-using WhiteLabel.WebAPI.OAuth;
 using WhiteLabel.WebAPI.Swagger;
-using WhiteLabelDDD.OAuth;
 
 namespace WhiteLabelDDD.Swagger
 {

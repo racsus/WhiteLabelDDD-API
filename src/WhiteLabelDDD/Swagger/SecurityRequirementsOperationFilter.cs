@@ -7,8 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WhiteLabel.Application.Configuration;
-using WhiteLabel.WebAPI.OAuth;
-using WhiteLabelDDD.OAuth;
+using WhiteLabel.Application.Constants;
 
 namespace WhiteLabelDDD.Swagger
 {
