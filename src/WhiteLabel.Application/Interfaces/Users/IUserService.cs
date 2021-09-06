@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using WhiteLabel.Application.DTOs.Generic;
@@ -11,6 +12,7 @@ namespace WhiteLabel.Application.Interfaces.Users
 {
     public interface IUserService: IBusinessService
     {
+        Task<UserInfoDTO> GetUserInfo(string token, ClaimsPrincipal principal);
         Task<Response<UserDTO>> Add(UserDTO userDto);
         Task Update(UserDTO userDto);
         Task Remove(Guid userId);

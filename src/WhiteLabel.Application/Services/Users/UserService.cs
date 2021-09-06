@@ -1,8 +1,14 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using WhiteLabel.Application.Configuration;
+using WhiteLabel.Application.Constants;
 using WhiteLabel.Application.DTOs.Generic;
 using WhiteLabel.Application.DTOs.Users;
 using WhiteLabel.Application.Interfaces.Generic;
@@ -21,12 +27,39 @@ namespace WhiteLabel.Application.Services.Users
         private readonly IGenericRepository<Guid> genericRepository;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
+        private IConfiguration Configuration { get; }
+        private AuthConfiguration AuthConfiguration { get; }
 
-        public UserService(IGenericRepository<Guid> genericRepository, IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IGenericRepository<Guid> genericRepository, IUnitOfWork unitOfWork, 
+            IMapper mapper, IConfiguration configuration)
         {
             this.genericRepository = genericRepository;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.AuthConfiguration = configuration.GetSection(AuthConfiguration.Section).Get<AuthConfiguration>();
+        }
+
+        public async Task<UserInfoDTO> GetUserInfo(string token, ClaimsPrincipal principal)
+        {
+            UserInfoDTO userInfo = null;
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Replace("Bearer ", ""));
+            HttpResponseMessage response = await client.GetAsync($"{this.AuthConfiguration.Authority}/userinfo");
+            if (response.IsSuccessStatusCode)
+            {
+                userInfo = await response.Content.ReadAsAsync<UserInfoDTO>();
+            }
+
+            // Add permissions and roles (Auth0)
+            if ((userInfo != null) && (this.AuthConfiguration.AuthType == AuthConstants.Auth0))
+            {
+                // Configure a new rule in Auth0 in Auth Pipeline / Rules
+                // https://oscarchelo.blogspot.com/2021/09/get-permissions-and-roles-with-auth0.html
+                userInfo.Roles = principal.Claims.Where(x => x.Type == $"{this.AuthConfiguration.Namespace}/roles")?.Select(x => x.Value).ToList();
+                userInfo.Permissions = principal.Claims.Where(x => x.Type == $"{this.AuthConfiguration.Namespace}/permissions")?.Select(x => x.Value).ToList();
+            }
+
+            return userInfo;
         }
 
         public async Task<Response<UserDTO>> Add(UserDTO userDto)

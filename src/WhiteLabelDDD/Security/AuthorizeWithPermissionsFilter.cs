@@ -27,7 +27,7 @@ namespace eifhub.WebAPI.Security
 
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            if (_authConfiguration.AuthType.ToUpper() == Constants.Auth0)
+            if (_authConfiguration.AuthType.ToUpper() == AuthConstants.Auth0)
             {
                 var permissions = context.HttpContext.User.Claims.Where(x => x.Type == "permissions")?.Select(x => x.Value).ToList();
                 var authorized = permissions.Contains(_policy);
@@ -36,7 +36,7 @@ namespace eifhub.WebAPI.Security
                     context.Result = new ForbidResult();
                     return;
                 }
-            } else if (_authConfiguration.AuthType.ToUpper() == Constants.Azure)
+            } else if (_authConfiguration.AuthType.ToUpper() == AuthConstants.Azure)
             {
                 var authorized = await _authorization.AuthorizeAsync(context.HttpContext.User, _policy);
                 if (!authorized.Succeeded)

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WhiteLabel.WebAPI.OAuth
+namespace WhiteLabel.Application.Constants
 {
-    public class Constants
+    public class AuthConstants
     {
         public const string Azure = "AZURE";
         public const string Auth0 = "AUTH0";

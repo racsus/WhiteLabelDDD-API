@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.OpenApi.Models;
 using WhiteLabel.Application.Configuration;
+using WhiteLabel.Application.Constants;
 using WhiteLabel.WebAPI.OAuth;
 using WhiteLabel.WebAPI.Swagger;
 using WhiteLabelDDD.OAuth;
@@ -51,7 +52,7 @@ namespace WhiteLabelDDD.Swagger
                 }
                 if (authConfiguration?.IsEnabled == true)
                 {
-                    if (authConfiguration.AuthType.ToUpper() == Constants.Azure)
+                    if (authConfiguration.AuthType.ToUpper() == AuthConstants.Azure)
                     {
                         // Azure
                         c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -71,7 +72,7 @@ namespace WhiteLabelDDD.Swagger
                             }
                         });
                     }
-                    else if ((authConfiguration.AuthType.ToUpper() == Constants.Auth0) || (authConfiguration.AuthType.ToUpper() == Constants.Bearer))
+                    else if ((authConfiguration.AuthType.ToUpper() == AuthConstants.Auth0) || (authConfiguration.AuthType.ToUpper() == AuthConstants.Bearer))
                     {
                         // Auth0
                         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

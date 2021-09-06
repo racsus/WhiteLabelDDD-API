@@ -28,11 +28,11 @@ namespace WhiteLabelDDD.Swagger
             var securitySchemeId = string.Empty;
             switch (authConfiguration.AuthType.ToUpper())
             {
-                case Constants.Azure:
+                case AuthConstants.Azure:
                     securitySchemeId = "oauth2";
                     break;
-                case Constants.Auth0:
-                case Constants.Bearer:
+                case AuthConstants.Auth0:
+                case AuthConstants.Bearer:
                     securitySchemeId = "Bearer";
                     break;
             }
