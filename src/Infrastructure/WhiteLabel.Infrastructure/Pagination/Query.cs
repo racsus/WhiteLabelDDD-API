@@ -48,7 +48,7 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="evaluator">IQueryableEvaluator</param>
         /// <param name="cancellationToken">CancelationsToken</param>
         /// <returns>Data resulting from the query</returns>
-        public virtual async Task<TResult> RunAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator,CancellationToken cancellationToken = default)
+        public virtual async Task<TResult> RunAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator, string[] includes, CancellationToken cancellationToken = default)
         {
             var processedQuery = this.RunQuery(queryable);
             var result = await this.GenerateResultAsync(processedQuery, evaluator, cancellationToken);
@@ -80,7 +80,7 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="evaluator">IQueryableEvaluator</param>
         /// <param name="cancellationToken">CancelationToken</param>
         /// <returns>Data resulting from the query</returns>
-        protected abstract Task<TResult> GenerateResultAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator,CancellationToken cancellationToken = default);
+        protected abstract Task<TResult> GenerateResultAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator, CancellationToken cancellationToken = default);
 
     }
 }

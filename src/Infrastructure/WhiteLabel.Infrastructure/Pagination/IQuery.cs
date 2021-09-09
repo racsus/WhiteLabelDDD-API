@@ -28,6 +28,6 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="evaluator">IQueryableEvaluator</param>
         /// <param name="cancellationToken">CancelationToken</param>
         /// <returns>Data resulting from the query</returns>
-        Task<TResult> RunAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator,CancellationToken cancellationToken = default);
+        Task<TResult> RunAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluatorRunAsync, string[] includes, CancellationToken cancellationToken = default);
     }
 }

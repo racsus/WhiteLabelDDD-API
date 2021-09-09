@@ -229,7 +229,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
                 Sorts = pageOptions.Sorts
             };
 
-            var entityQueryResult = await entityQuery.RunAsync(_dbContext.Set<T>(), this.Evaluator, cancellationToken);
+            var entityQueryResult = await entityQuery.RunAsync(_dbContext.Set<T>(), this.Evaluator, includes, cancellationToken);
             var modelsQueryResult = new PagedQueryResult<T>(entityQueryResult.Result,
                 entityQueryResult.Take, entityQueryResult.Skip, entityQueryResult.Total);
             return modelsQueryResult;

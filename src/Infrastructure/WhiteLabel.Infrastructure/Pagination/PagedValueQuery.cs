@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -72,12 +73,19 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="evaluator">IQueryableEvaluator</param>
         /// <param name="cancellationToken">CancelationToken</param>
         /// <returns>Data resulting from the query</returns>
-        public override async Task<IPagedQueryResult<TResult>> RunAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator, CancellationToken cancellationToken = default)
+        public override async Task<IPagedQueryResult<TResult>> RunAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator, string[] includes, CancellationToken cancellationToken = default)
         {
             queryable = this.RunQuery(queryable);
             this.count = await evaluator.CountAsync(queryable, cancellationToken);
             queryable = this.Sort(queryable);
             queryable = this.Paginate(queryable);
+            if (includes != null)
+            {
+                foreach (string include in includes)
+                {
+                    queryable = queryable.Include(include);
+                }
+            }
             var result = await this.GenerateResultAsync(queryable, evaluator, cancellationToken);
             return result;
         }
