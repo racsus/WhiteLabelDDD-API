@@ -1,9 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using WhiteLabel.Infrastructure.Data.Helpers;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WhiteLabel.Application.Interfaces.Generic;
@@ -233,6 +232,17 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             var modelsQueryResult = new PagedQueryResult<T>(entityQueryResult.Result,
                 entityQueryResult.Take, entityQueryResult.Skip, entityQueryResult.Total);
             return modelsQueryResult;
+        }
+
+        public async Task<IEnumerable<string>> FindGroup<T>(string fieldToGroup, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
+        {
+            var query = _dbContext.Set<T>().AsQueryable();
+            foreach (string include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.GroupBy(LinQHelper<T>.GetExpressionByName(fieldToGroup)).Select(x => x.Key).ToListAsync();
         }
 
     }
