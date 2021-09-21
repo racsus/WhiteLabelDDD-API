@@ -20,6 +20,6 @@ namespace WhiteLabel.Application.Interfaces.Users
         Task<Response<IEnumerable<UserDTO>>> GetAll();
         Task<bool> IsEmailAvailable(string email);
         Task<Response<PagedQueryResultDTO<UserDTO>>> GetPaginated(IPageOption pageDescriptor);
-        Task<Response<IEnumerable<GroupDTO>>> GeGrouped(string fieldToGroup);
+        Task<Response<IEnumerable<GroupDTO>>> GetGrouped(string fieldToGroup);
     }
 }

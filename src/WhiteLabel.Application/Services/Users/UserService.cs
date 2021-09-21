@@ -150,9 +150,9 @@ namespace WhiteLabel.Application.Services.Users
                 this.mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(result.Result)));
         }
 
-        public async Task<Response<IEnumerable<GroupDTO>>> GeGrouped(string fieldToGroup)
+        public async Task<Response<IEnumerable<GroupDTO>>> GetGrouped(string fieldToGroup)
         {
-            var result = await this.genericRepository.FindGroup<User>(fieldToGroup, null);
+            var result = await this.genericRepository.FindGroupAsync<User>(fieldToGroup, null);
 
             return new Response<IEnumerable<GroupDTO>>(this.mapper.Map<IEnumerable<string>, IEnumerable<GroupDTO>>(result));
         }

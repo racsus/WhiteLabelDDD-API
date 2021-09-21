@@ -234,7 +234,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return modelsQueryResult;
         }
 
-        public async Task<IEnumerable<string>> FindGroup<T>(string fieldToGroup, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
+        public async Task<IEnumerable<string>> FindGroupAsync<T>(string fieldToGroup, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().AsQueryable();
             foreach (string include in includes)
