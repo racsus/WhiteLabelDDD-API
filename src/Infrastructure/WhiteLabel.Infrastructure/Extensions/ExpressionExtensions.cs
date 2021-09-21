@@ -112,7 +112,7 @@ namespace System.Linq.Expressions
         }
 
         //TODO: Change to multiple return type expression
-        public static Tuple<Expression, Type> MakeMemberSelectorExpression<T>(string propertyName)
+        public static MemberAccessModel GetMemberAccessData<T>(string propertyName)
         {
             Type memberType = null;
 
@@ -141,10 +141,26 @@ namespace System.Linq.Expressions
             if (memberAccess == null)
                 throw new ArgumentException($"Property '{propertyName}' doesn't exist on type '{typeof(T)}'");
 
+            return new MemberAccessModel(memberAccess, memberAccessParam, memberType);
+        }
+
+        //TODO: Change to multiple return type expression
+        public static Tuple<Expression, Type> MakeMemberSelectorExpression<T>(string propertyName)
+        {
+            var member = GetMemberAccessData<T>(propertyName);
 
             // build lambda expression: item => item.fieldName
-            var keySelectorExp = Expression.Lambda(memberAccess, memberAccessParam);
-            return new Tuple<Expression, Type>(keySelectorExp, memberType);
+            var keySelectorExp = Expression.Lambda(member.MemberAccess, member.MemberAccessParam);
+            return new Tuple<Expression, Type>(keySelectorExp, member.MemberType);
+        }
+
+        //TODO: Change to multiple return type expression
+        public static Expression<Func<T, string>> MakeLambdaSelectorExpression<T>(string propertyName)
+        {
+            var member = GetMemberAccessData<T>(propertyName);
+
+            // build lambda expression: item => item.fieldName
+            return Expression.Lambda<Func<T, string>>(member.MemberAccess, member.MemberAccessParam);
         }
 
         //TODO: Change to multiple return type expression
@@ -246,7 +262,7 @@ namespace System.Linq.Expressions
             return exp;
         }
 
-        public static Expression GetAssignExpressionString(FilterOperator filterOperator, 
+        public static Expression GetAssignExpressionString(FilterOperator filterOperator,
             Expression left, Expression right, Type propertyType)
         {
             switch (filterOperator)
@@ -280,7 +296,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        public static Expression GetAssignExpressionNumeric(FilterOperator filterOperator, 
+        public static Expression GetAssignExpressionNumeric(FilterOperator filterOperator,
             Expression left, Expression right, Type propertyType)
         {
             switch (filterOperator)
@@ -314,7 +330,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        public static Expression GetAssignExpressionBoolean(FilterOperator filterOperator, 
+        public static Expression GetAssignExpressionBoolean(FilterOperator filterOperator,
             Expression left, Expression right, Type propertyType)
         {
             switch (filterOperator)
@@ -343,7 +359,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        public static Expression GetAssignExpressionDateTime(FilterOperator filterOperator, 
+        public static Expression GetAssignExpressionDateTime(FilterOperator filterOperator,
             Expression left, Expression right, Type propertyType)
         {
             switch (filterOperator)
@@ -376,7 +392,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        public static Expression GetAssignExpressionEnum(FilterOperator filterOperator, 
+        public static Expression GetAssignExpressionEnum(FilterOperator filterOperator,
             Expression left, ConstantExpression right, Type propertyType)
         {
             Type enumType;
@@ -425,5 +441,19 @@ namespace System.Linq.Expressions
             }
         }
 
+    }
+
+    public class MemberAccessModel
+    {
+        public MemberExpression MemberAccess { get; set; }
+        public ParameterExpression MemberAccessParam { get; set; }
+        public Type MemberType { get; set; }
+
+        public MemberAccessModel(MemberExpression memberAccess, ParameterExpression memberAccessParam, Type memberType)
+        {
+            MemberAccess = memberAccess;
+            MemberAccessParam = memberAccessParam;
+            MemberType = memberType;
+        }
     }
 }

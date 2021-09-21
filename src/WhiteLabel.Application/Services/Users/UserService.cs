@@ -149,6 +149,13 @@ namespace WhiteLabel.Application.Services.Users
             return new Response<PagedQueryResultDTO<UserDTO>>(new PagedQueryResultDTO<UserDTO>(result.Take, result.Skip, result.Total, 
                 this.mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(result.Result)));
         }
+
+        public async Task<Response<IEnumerable<GroupDTO>>> GeGrouped(string fieldToGroup)
+        {
+            var result = await this.genericRepository.FindGroup<User>(fieldToGroup, null);
+
+            return new Response<IEnumerable<GroupDTO>>(this.mapper.Map<IEnumerable<string>, IEnumerable<GroupDTO>>(result));
+        }
     }
 
 }

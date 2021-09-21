@@ -1,5 +1,4 @@
-﻿using WhiteLabel.Infrastructure.Data.Helpers;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +7,7 @@ using System.Threading.Tasks;
 using WhiteLabel.Application.Interfaces.Generic;
 using WhiteLabel.Domain.Generic;
 using WhiteLabel.Domain.Pagination;
+using System.Linq.Expressions;
 
 namespace WhiteLabel.Infrastructure.Data.Repositories
 {
@@ -242,7 +242,10 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
                 query = query.Include(include);
             }
 
-            return await query.GroupBy(LinQHelper<T>.GetExpressionByName(fieldToGroup)).Select(x => x.Key).ToListAsync();
+            var lambda = ExpressionExtensions.MakeLambdaSelectorExpression<T>(fieldToGroup);
+            var res = await query.GroupBy(lambda).Select(x => x.Key).ToListAsync();
+
+            return res;
         }
 
     }
