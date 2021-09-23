@@ -78,7 +78,7 @@ namespace WhiteLabel.Application.Services.Users
 
             this.unitOfWork.BeginTransaction();
             this.genericRepository.Add(user);
-            this.unitOfWork.Commit();
+            await this.unitOfWork.CommitAsync();
 
             return new Response<UserDTO>(this.mapper.Map<User, UserDTO>(user));
         }
@@ -97,7 +97,7 @@ namespace WhiteLabel.Application.Services.Users
                 throw new ArgumentException("No such user exists");
 
             user.Update(userDto.Name, userDto.Email);
-            this.unitOfWork.Commit();
+            await this.unitOfWork.CommitAsync();
         }
 
         public async Task Remove(Guid userId)
@@ -111,7 +111,7 @@ namespace WhiteLabel.Application.Services.Users
                 throw new ArgumentException("No such customer exists");
 
             this.genericRepository.Delete(user);
-            this.unitOfWork.Commit();
+            await this.unitOfWork.CommitAsync();
         }
 
         public async Task<Response<UserDTO>> Get(Guid userId)

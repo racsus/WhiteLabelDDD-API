@@ -36,6 +36,16 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task SaveChangesAsync()
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public void SaveChanges()
+        {
+            _dbContext.SaveChanges();
+        }
+
         public void Rollback()
         {
             _dbContext.Database.RollbackTransaction();
