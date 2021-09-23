@@ -27,7 +27,6 @@ namespace WhiteLabel.Application.Services.Users
         private readonly IGenericRepository<Guid> genericRepository;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
-        private IConfiguration Configuration { get; }
         private AuthConfiguration AuthConfiguration { get; }
 
         public UserService(IGenericRepository<Guid> genericRepository, IUnitOfWork unitOfWork, 

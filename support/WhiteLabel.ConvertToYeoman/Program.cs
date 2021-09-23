@@ -11,7 +11,7 @@ namespace WhiteLabel.ConvertToYeoman
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             var services = ConfigureServices();
             var serviceProvider = services.BuildServiceProvider();

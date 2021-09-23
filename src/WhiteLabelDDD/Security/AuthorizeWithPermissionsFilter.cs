@@ -12,11 +12,11 @@ namespace eifhub.WebAPI.Security
     {
         private readonly IAuthorizationService _authorization;
         private readonly AuthConfiguration _authConfiguration;
-        public string _policy { get; private set; }
+        public string Policy { get; private set; }
 
         public AuthorizeWithPermissionsFilter(string policy, IAuthorizationService authorization, AuthConfiguration authConfiguration)
         {
-            _policy = policy;
+            this.Policy = policy;
             _authorization = authorization;
             _authConfiguration = authConfiguration;
         }
@@ -26,7 +26,7 @@ namespace eifhub.WebAPI.Security
             if (_authConfiguration.AuthType.ToUpper() == AuthConstants.Auth0)
             {
                 var permissions = context.HttpContext.User.Claims.Where(x => x.Type == "permissions")?.Select(x => x.Value).ToList();
-                var authorized = permissions.Contains(_policy);
+                var authorized = permissions.Contains(this.Policy);
                 if (!authorized)
                 {
                     context.Result = new ForbidResult();
@@ -34,7 +34,7 @@ namespace eifhub.WebAPI.Security
                 }
             } else if (_authConfiguration.AuthType.ToUpper() == AuthConstants.Azure)
             {
-                var authorized = await _authorization.AuthorizeAsync(context.HttpContext.User, _policy);
+                var authorized = await _authorization.AuthorizeAsync(context.HttpContext.User, this.Policy);
                 if (!authorized.Succeeded)
                 {
                     context.Result = new ForbidResult();

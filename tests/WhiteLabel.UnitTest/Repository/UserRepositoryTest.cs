@@ -39,7 +39,7 @@ namespace WhiteLabel.UnitTest.Repository
                 .Name(originalName)
                 .Build();
 
-            var item = this.Repository.Add(user);
+            this.Repository.Add(user);
             SaveChanges();
             user.Name = modifiedName;
             this.Repository.Update(user);
@@ -58,7 +58,7 @@ namespace WhiteLabel.UnitTest.Repository
                 .WithTestValues()
                 .Build();
 
-            var item = this.Repository.Add(user);
+            this.Repository.Add(user);
             SaveChanges();
             this.Repository.Delete(user);
             SaveChanges();
@@ -76,7 +76,7 @@ namespace WhiteLabel.UnitTest.Repository
                 .WithTestValues()
                 .Build();
 
-            var item = this.Repository.Add(user);
+            this.Repository.Add(user);
             SaveChanges();
             var newItem = this.Repository.FindById<User>(user.Id);
 
@@ -91,7 +91,7 @@ namespace WhiteLabel.UnitTest.Repository
                 .WithTestValues()
                 .Build();
 
-            var item = this.Repository.Add(user);
+            this.Repository.Add(user);
             await SaveChangesAsync();
             var newItem = await this.Repository.FindByIdAsync<User>(user.Id);
 
@@ -107,7 +107,7 @@ namespace WhiteLabel.UnitTest.Repository
                 .Name(name)
                 .Build();
 
-            var item = this.Repository.Add(user);
+            this.Repository.Add(user);
             SaveChanges();
 
             ISpecification<User> userNameSpec = new UserNameSpecification(name);
@@ -126,7 +126,7 @@ namespace WhiteLabel.UnitTest.Repository
                 .Name(name)
                 .Build();
 
-            var item = this.Repository.Add(user);
+            this.Repository.Add(user);
             await SaveChangesAsync();
 
             ISpecification<User> userNameSpec = new UserNameSpecification(name);
@@ -145,7 +145,7 @@ namespace WhiteLabel.UnitTest.Repository
                 .Name(name)
                 .Build();
 
-            var item = this.Repository.Add(user);
+            this.Repository.Add(user);
             SaveChanges();
 
             ISpecification<User> userNameSpec = new UserNameSpecification(name);
@@ -164,7 +164,7 @@ namespace WhiteLabel.UnitTest.Repository
                 .Name(name)
                 .Build();
 
-            var item = this.Repository.Add(user);
+            this.Repository.Add(user);
             await SaveChangesAsync();
 
             ISpecification<User> userNameSpec = new UserNameSpecification(name);
@@ -182,12 +182,12 @@ namespace WhiteLabel.UnitTest.Repository
                 .WithTestValues()
                 .Build();
 
-            var item = this.Repository.Add(user);
+            this.Repository.Add(user);
             SaveChanges();
 
             var items = this.Repository.FindAll<User>();
 
-            Assert.True(items.Count() > 0);
+            Assert.True(items.Any());
             ClearMemory();
         }
 
@@ -198,12 +198,12 @@ namespace WhiteLabel.UnitTest.Repository
                 .WithTestValues()
                 .Build();
 
-            var item = this.Repository.Add(user);
+            this.Repository.Add(user);
             await SaveChangesAsync();
 
             var items = await this.Repository.FindAllAsync<User>();
 
-            Assert.True(items.Count() > 0);
+            Assert.True(items.Any());
             await ClearMemoryAsync();
         }
 
@@ -214,7 +214,7 @@ namespace WhiteLabel.UnitTest.Repository
                 .WithTestValues()
                 .Build();
 
-            var item = this.Repository.Add(user);
+            this.Repository.Add(user);
             SaveChanges();
 
             var numberOfElements = this.Repository.Count<User>();
@@ -230,7 +230,7 @@ namespace WhiteLabel.UnitTest.Repository
                 .WithTestValues()
                 .Build();
 
-            var item = this.Repository.Add(user);
+            this.Repository.Add(user);
             await SaveChangesAsync();
 
             var numberOfElements = await this.Repository.CountAsync<User>();

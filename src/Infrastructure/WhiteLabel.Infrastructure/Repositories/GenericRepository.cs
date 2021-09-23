@@ -138,7 +138,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
 
         public async Task<T> AddAsync<T>(T entity, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
-            await _dbContext.Set<T>().AddAsync(entity);
+            await _dbContext.Set<T>().AddAsync(entity, cancellationToken);
             return entity;
         }
 
@@ -159,7 +159,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
 
         public async Task<IEnumerable<T>> FindAllAsync<T>(CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
-            return await _dbContext.Set<T>().ToListAsync();
+            return await _dbContext.Set<T>().ToListAsync(cancellationToken);
         }
 
         public IEnumerable<T> FindAll<T>(string[] includes) where T : BaseEntity<TId>
@@ -174,7 +174,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
 
         public async Task<int> CountAsync<T>(CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
-            return await _dbContext.Set<T>().CountAsync();
+            return await _dbContext.Set<T>().CountAsync(cancellationToken);
         }
 
         public int Count<T>(ISpecification<T> spec) where T : BaseEntity<TId>
@@ -243,7 +243,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             }
 
             var lambda = ExpressionExtensions.MakeLambdaSelectorExpression<T>(fieldToGroup);
-            var res = await query.GroupBy(lambda).Select(x => x.Key).ToListAsync();
+            var res = await query.GroupBy(lambda).Select(x => x.Key).ToListAsync(cancellationToken);
 
             return res;
         }

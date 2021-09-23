@@ -32,8 +32,10 @@ namespace WhiteLabelDDD.Controllers
         public async Task<Response<UserInfoDTO>> GetMe()
         {
             var accessToken = Request.Headers[HeaderNames.Authorization];
-            Response<UserInfoDTO> response = new Response<UserInfoDTO>();
-            response.Object = await this.userService.GetUserInfo(accessToken, this.User);
+            Response<UserInfoDTO> response = new Response<UserInfoDTO>()
+            {
+                Object = await this.userService.GetUserInfo(accessToken, this.User)
+            };
             return response;
         }
 
@@ -47,8 +49,10 @@ namespace WhiteLabelDDD.Controllers
         [Route("IsEmailAvailable/{email}")]
         public async Task<Response<bool>> IsEmailAvailable(string email)
         {
-            Response<bool> response = new Response<bool>();
-            response.Object = await this.userService.IsEmailAvailable(email);
+            Response<bool> response = new Response<bool>()
+            {
+                Object = await this.userService.IsEmailAvailable(email)
+            };
             return response;
         }
 

@@ -42,8 +42,10 @@ namespace WhiteLabel.UnitTest.Application
         {
             var service = GetService(null);
 
-            var userDto = new UserDTO();
-            userDto.Id = Guid.NewGuid();
+            var userDto = new UserDTO()
+            {
+                Id = Guid.NewGuid()
+            };
             Assert.That(() => service.Update(userDto),
                 Throws.TypeOf<ArgumentException>());
         }
@@ -57,7 +59,7 @@ namespace WhiteLabel.UnitTest.Application
                 Throws.TypeOf<ArgumentException>());
         }
 
-        private UserService GetService(User user)
+        private static UserService GetService(User user)
         {
             Mock<IGenericRepository<Guid>> genericRepository = new Mock<IGenericRepository<Guid>>();
             Mock<IUnitOfWork> unitOfWork = new Mock<IUnitOfWork>();
