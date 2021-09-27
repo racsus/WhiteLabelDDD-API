@@ -34,10 +34,12 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
         public T FindById<T>(TId id, string[] includes) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().AsQueryable();
-
-            foreach (string include in includes)
+            if (includes != null)
             {
-                query = query.Include(include);
+                foreach (string include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
 
             return query.SingleOrDefault(e => e.Id.Equals(id));
@@ -51,10 +53,12 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
         public async Task<T> FindByIdAsync<T>(TId id, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().AsQueryable();
-
-            foreach (string include in includes)
+            if (includes != null)
             {
-                query = query.Include(include);
+                foreach (string include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
 
             return await Task.FromResult(query.SingleOrDefault(e => e.Id.Equals(id)));
@@ -68,10 +72,12 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
         public IEnumerable<T> Find<T>(ISpecification<T> spec, string[] includes) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().Where(spec.IsSatisfiedBy).AsQueryable();
-
-            foreach (string include in includes)
+            if (includes != null)
             {
-                query = query.Include(include);
+                foreach (string include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
 
             return query.ToList();
@@ -86,10 +92,12 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
         public async Task<IEnumerable<T>> FindAsync<T>(ISpecification<T> spec, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().AsQueryable();
-
-            foreach (string include in includes)
+            if (includes != null)
             {
-                query = query.Include(include);
+                foreach (string include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
 
             return await Task.FromResult(query.Where(spec.IsSatisfiedBy).ToList());
@@ -109,10 +117,12 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
         public T FindOne<T>(ISpecification<T> spec, string[] includes) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().AsQueryable();
-
-            foreach (string include in includes)
+            if (includes != null)
             {
-                query = query.Include(include);
+                foreach (string include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
 
             return query.Where(spec.IsSatisfiedBy).FirstOrDefault();
@@ -121,9 +131,12 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
         public async Task<T> FindOneAsync<T>(ISpecification<T> spec, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().AsQueryable();
-            foreach (string include in includes)
+            if (includes != null)
             {
-                query = query.Include(include);
+                foreach (string include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
 
             var res = await Task.FromResult(query.Where(spec.IsSatisfiedBy).FirstOrDefault());
@@ -191,9 +204,12 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
         public async Task<IEnumerable<T>> FindAllAsync<T>(string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().AsQueryable();
-            foreach (string include in includes)
+            if (includes != null)
             {
-                query = query.Include(include);
+                foreach (string include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
             return await Task.FromResult(query.ToList());
         }
@@ -237,9 +253,12 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
         public async Task<IEnumerable<string>> FindGroupAsync<T>(string fieldToGroup, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
         {
             var query = _dbContext.Set<T>().AsQueryable();
-            foreach (string include in includes)
+            if (includes != null)
             {
-                query = query.Include(include);
+                foreach (string include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
 
             var lambda = ExpressionExtensions.MakeLambdaSelectorExpression<T>(fieldToGroup);
