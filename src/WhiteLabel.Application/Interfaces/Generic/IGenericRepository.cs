@@ -38,5 +38,6 @@ namespace WhiteLabel.Application.Interfaces.Generic
         IPagedQueryResult<T> FindPaged<T>(IPageOption pageDescriptor, string[] includes) where T : BaseEntity<TId>;
         Task<IPagedQueryResult<T>> FindPagedAsync<T>(IPageOption pageDescriptor, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         Task<IEnumerable<string>> FindGroupAsync<T>(string fieldToGroup, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
+        Task<IEnumerable<string>> FindGroupAsync<T>(string fieldToGroup, string[] includes, ISpecification<T> spec, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
     }
 }

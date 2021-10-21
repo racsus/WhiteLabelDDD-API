@@ -267,5 +267,22 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return res;
         }
 
+        public async Task<IEnumerable<string>> FindGroupAsync<T>(string fieldToGroup, string[] includes, ISpecification<T> spec, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
+        {
+            var query = _dbContext.Set<T>().AsQueryable();
+            if (includes != null)
+            {
+                foreach (string include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            var lambda = ExpressionExtensions.MakeLambdaSelectorExpression<T>(fieldToGroup);
+            var res = await Task.FromResult(query.Where(spec.IsSatisfiedBy).AsQueryable().GroupBy(lambda).Select(x => x.Key).ToList());
+
+            return res;
+        }
+
     }
 }
