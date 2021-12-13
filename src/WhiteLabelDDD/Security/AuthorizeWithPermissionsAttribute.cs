@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace eifhub.WebAPI.Security
+namespace WhiteLabel.WebAPI.Security
 {
     public class AuthorizeWithPermissionsAttribute : TypeFilterAttribute, IAllowAnonymous
     {

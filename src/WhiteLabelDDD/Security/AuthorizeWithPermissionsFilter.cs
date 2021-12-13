@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using WhiteLabel.Application.Configuration;
 using WhiteLabel.Application.Constants;
 
-namespace eifhub.WebAPI.Security
+namespace WhiteLabel.WebAPI.Security
 {
     public class AuthorizeWithPermissionsFilter : IAsyncAuthorizationFilter
     {

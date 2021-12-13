@@ -48,6 +48,13 @@ namespace WhiteLabel.Application.Services.Users
             {
                 userInfo = await response.Content.ReadAsAsync<UserInfoDTO>();
             }
+            else if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+            {
+                // Retry if TooManyRequests
+                // https://auth0.com/docs/support/policies/rate-limit-policy
+                await Task.Delay(2000);
+                userInfo = await response.Content.ReadAsAsync<UserInfoDTO>();
+            }
 
             // Add permissions and roles (Auth0)
             if ((userInfo != null) && (this.AuthConfiguration.AuthType == AuthConstants.Auth0))
