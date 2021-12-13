@@ -7,6 +7,7 @@ using WhiteLabel.Application.DTOs.Generic;
 using WhiteLabel.Application.DTOs.Users;
 using WhiteLabel.Application.Interfaces.Users;
 using WhiteLabelDDD.Controllers;
+using WhiteLabelDDD.Controllers.Users;
 
 /// <summary>
 /// https://docs.microsoft.com/en-us/aspnet/web-api/overview/testing-and-debugging/unit-testing-controllers-in-web-api
@@ -25,7 +26,7 @@ namespace WhiteLabel.UnitTest.API
             userService.Setup(x => x.Add(userDto)).Returns(Task.FromResult(new Response<UserDTO>(userDto)));
 
             // Arrange
-            UserController controller = new UserController(userService.Object);
+            UserController controller = new UserController(userService.Object, userService.Object);
             var res = await controller.Add(userDto);
 
             // Assert

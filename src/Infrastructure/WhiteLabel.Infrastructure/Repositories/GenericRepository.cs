@@ -284,5 +284,12 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return res;
         }
 
+        public async Task<IEnumerable<T>> FindBySQLAsync<T>(string sql, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
+        {
+            var query = _dbContext.Set<T>().FromSqlRaw(sql).AsQueryable();
+
+            return await Task.FromResult(query.ToList());
+        }
+
     }
 }

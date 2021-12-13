@@ -7,18 +7,17 @@ using Microsoft.Net.Http.Headers;
 using WhiteLabel.Application.DTOs.Generic;
 using WhiteLabel.Application.DTOs.Users;
 using WhiteLabel.Application.Interfaces.Users;
+using WhiteLabel.WebAPI.Controllers.Generic;
 
-namespace WhiteLabelDDD.Controllers
+namespace WhiteLabelDDD.Controllers.Users
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class UserController : Controller
+    public class UserController : WhiteLabelController<IUserService>
     {
-        private readonly IUserService userService;
-
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IUserService businessService)
+        : base(userService, businessService)
         {
-            this.userService = userService;
         }
 
         /// <summary>
@@ -31,10 +30,11 @@ namespace WhiteLabelDDD.Controllers
         [ProducesResponseType(typeof(UserInfoDTO), StatusCodes.Status200OK)]
         public async Task<Response<UserInfoDTO>> GetMe()
         {
-            var accessToken = Request.Headers[HeaderNames.Authorization];
+            //var accessToken = Request.Headers[HeaderNames.Authorization];
             Response<UserInfoDTO> response = new Response<UserInfoDTO>()
             {
-                Object = await this.userService.GetUserInfo(accessToken, this.User)
+                //Object = await this.businessService.GetUserInfo(accessToken, this.User)
+                Object = this.user
             };
             return response;
         }
@@ -42,7 +42,7 @@ namespace WhiteLabelDDD.Controllers
         [HttpPost]
         public async Task<Response<UserDTO>> Add([FromBody] UserDTO user)
         {
-            return await this.userService.Add(user);
+            return await this.businessService.Add(user);
         }
 
         [HttpGet]
@@ -51,7 +51,7 @@ namespace WhiteLabelDDD.Controllers
         {
             Response<bool> response = new Response<bool>()
             {
-                Object = await this.userService.IsEmailAvailable(email)
+                Object = await this.businessService.IsEmailAvailable(email)
             };
             return response;
         }
@@ -59,27 +59,27 @@ namespace WhiteLabelDDD.Controllers
         [HttpGet("{id}")]
         public async Task<Response<UserDTO>> GetById(Guid id)
         {
-            return await this.userService.Get(id);
+            return await this.businessService.Get(id);
         }
 
         [HttpGet("All")]
         public async Task<Response<IEnumerable<UserDTO>>> GetAll()
         {
-            return await this.userService.GetAll();
+            return await this.businessService.GetAll();
         }
 
         [HttpPost("Paginated")]
         [ProducesResponseType(typeof(PagedQueryResultDTO<UserDTO>), StatusCodes.Status200OK)]
         public async Task<Response<PagedQueryResultDTO<UserDTO>>> GetPaginated([FromBody] PagedListDTO pagedModel)
         {
-            return await this.userService.GetPaginated(pagedModel);
+            return await this.businessService.GetPaginated(pagedModel);
         }
 
         [HttpDelete("{id}")]
         public async Task<Response<UserDTO>> RemoveById(Guid id)
         {
             Response<UserDTO> response = new Response<UserDTO>();
-            await this.userService.Remove(id);
+            await this.businessService.Remove(id);
             return response;
         }
 
@@ -87,7 +87,7 @@ namespace WhiteLabelDDD.Controllers
         public async Task<Response<UserDTO>> Update([FromBody] UserDTO user)
         {
             Response<UserDTO> response = new Response<UserDTO>();
-            await this.userService.Update(user);
+            await this.businessService.Update(user);
             return response;
         }
 
