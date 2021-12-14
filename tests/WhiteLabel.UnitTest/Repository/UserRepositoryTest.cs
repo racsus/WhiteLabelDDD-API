@@ -245,7 +245,7 @@ namespace WhiteLabel.UnitTest.Repository
             PopulateUsers(numberOfElements);
             var pageOptions = PagedOptionFactory.Build(pageSize, 0, null, null);
 
-            var result = this.Repository.FindPaged<User>(pageOptions, null);
+            var result = this.Repository.FindPaged<User>(pageOptions, null, null);
 
             Assert.True(result.Result.Count() == pageSize);
             ClearMemory();

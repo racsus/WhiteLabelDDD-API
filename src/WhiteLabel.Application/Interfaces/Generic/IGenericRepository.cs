@@ -35,8 +35,8 @@ namespace WhiteLabel.Application.Interfaces.Generic
         Task<int> CountAsync<T>(ISpecification<T> spec, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         Task<IEnumerable<T>> FindAllAsync<T>(CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         Task<IEnumerable<T>> FindAllAsync<T>(string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
-        IPagedQueryResult<T> FindPaged<T>(IPageOption pageDescriptor, string[] includes) where T : BaseEntity<TId>;
-        Task<IPagedQueryResult<T>> FindPagedAsync<T>(IPageOption pageDescriptor, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
+        IPagedQueryResult<T> FindPaged<T>(IPageOption pageDescriptor, string[] includes, ISpecification<T> additionalSpec = null) where T : BaseEntity<TId>;
+        Task<IPagedQueryResult<T>> FindPagedAsync<T>(IPageOption pageDescriptor, string[] includes, ISpecification<T> additionalSpec = null, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         Task<IEnumerable<string>> FindGroupAsync<T>(string fieldToGroup, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         Task<IEnumerable<string>> FindGroupAsync<T>(string fieldToGroup, string[] includes, ISpecification<T> spec, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         Task<IEnumerable<T>> FindBySQLAsync<T>(string sql, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
