@@ -262,6 +262,30 @@ namespace System.Linq.Expressions
             return exp;
         }
 
+        public static Expression IsContainedInDateExpression(Expression left, Expression right, Type propertyType)
+        {
+            Expression res = null;
+            var value = right.ToString().Replace("\"", "");
+            if (int.TryParse(value, out int n))
+            {
+                if (value.Length <= 3)
+                {
+                    left = Expression.Property(left, "Month");
+                }
+                else
+                {
+                    left = Expression.Property(left, "Year");
+                }
+
+                res = Expression.Equal(left, Expression.Constant(Convert.ToInt32(value)));
+            }
+            else if (DateTime.TryParse(value, out DateTime d))
+            {
+                res = Expression.Equal(left, Expression.Constant(Convert.ToDateTime(value)));
+            }
+            return res;
+        }
+
         public static Expression GetAssignExpressionString(FilterOperator filterOperator,
             Expression left, Expression right, Type propertyType)
         {
@@ -383,6 +407,8 @@ namespace System.Linq.Expressions
                     return Expression.Not(isContainedIn);
                 //Comparisons can't be applied to DateTime
                 case FilterOperator.Contains:
+                    // Filter by month and year
+                    return ExpressionExtensions.IsContainedInDateExpression(left, right, propertyType);
                 case FilterOperator.DoesNotContain:
                 case FilterOperator.StartsWith:
                 case FilterOperator.EndsWith:

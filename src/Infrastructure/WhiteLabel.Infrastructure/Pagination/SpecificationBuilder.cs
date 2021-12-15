@@ -151,6 +151,12 @@ namespace WhiteLabel.Domain.Pagination
 
         private ConstantExpression GetExpressionValue(FilterOption filter, Type properType)
         {
+            // Filter by month and year
+            if (properType == typeof(DateTime) && int.TryParse(filter.Value, out int n))
+            {
+                return Expression.Constant(filter.Value.ConvertTo(typeof(int)), typeof(int));
+            }
+
             switch (filter.Operator)
             {
                 case FilterOperator.IsLessThan:
