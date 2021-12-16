@@ -10,6 +10,10 @@ namespace System.Linq
 
         public static readonly MethodInfo AllMethod = ExpressionExtensions.GetMethodInfo(typeof(Enumerable), "All", 2);
         public static readonly MethodInfo AnyMethod = ExpressionExtensions.GetMethodInfo(typeof(Enumerable), "Any", 2);
+        public static readonly MethodInfo ToDateStringMethod = ExpressionExtensions.GetMethodInfo(typeof(DateTime), "ToString", 0);
+        public static readonly MethodInfo ToShortDateStringMethod = ExpressionExtensions.GetMethodInfo(typeof(DateTime), "ToShortDateString", 0);
+        public static readonly MethodInfo RemoveMethod = ExpressionExtensions.GetMethodInfo(typeof(string), "Remove", 2);
+        public static readonly MethodInfo StringContainsMethod = ExpressionExtensions.GetMethodInfo(typeof(string), "Contains", 1);
 
     }
 }

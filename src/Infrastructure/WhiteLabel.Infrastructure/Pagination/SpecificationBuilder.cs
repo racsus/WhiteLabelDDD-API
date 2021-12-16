@@ -6,6 +6,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using WhiteLabel.Domain.Extensions;
 using WhiteLabel.Domain.Generic;
+using System.Text.RegularExpressions;
+using WhiteLabel.Infrastructure.Data.Constants;
 
 namespace WhiteLabel.Domain.Pagination
 {
@@ -152,9 +154,12 @@ namespace WhiteLabel.Domain.Pagination
         private ConstantExpression GetExpressionValue(FilterOption filter, Type properType)
         {
             // Filter by month and year
-            if (properType == typeof(DateTime) && int.TryParse(filter.Value, out int n))
+            if (properType == typeof(DateTime) &&
+                (int.TryParse(filter.Value, out int c)
+                || Regex.Match(filter.Value.ToString(), GenericConstants._GENERIC_MONTH_YEAR_EXPRESSION, RegexOptions.IgnoreCase).Success)
+                || Regex.Match(filter.Value.ToString(), GenericConstants._GENERIC_YEAR_MONTH_EXPRESSION, RegexOptions.IgnoreCase).Success)
             {
-                return Expression.Constant(filter.Value.ConvertTo(typeof(int)), typeof(int));
+                return Expression.Constant(filter.Value.ConvertTo(typeof(string)), typeof(string));
             }
 
             switch (filter.Operator)

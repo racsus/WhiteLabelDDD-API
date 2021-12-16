@@ -1,8 +1,10 @@
-﻿using System;
+﻿using WhiteLabel.Infrastructure.Data.Constants;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using WhiteLabel.Domain.Extensions;
 using WhiteLabel.Domain.Pagination;
 
@@ -268,18 +270,27 @@ namespace System.Linq.Expressions
             var value = right.ToString().Replace("\"", "");
             if (int.TryParse(value, out int n))
             {
-                if (value.Length <= 3)
-                {
-                    left = Expression.Property(left, "Month");
-                }
-                else
-                {
-                    left = Expression.Property(left, "Year");
-                }
-
+                // filter by year or month
+                left = value.Length <= 3 ? Expression.Property(left, "Month") : Expression.Property(left, "Year");
                 res = Expression.Equal(left, Expression.Constant(Convert.ToInt32(value)));
             }
-            else if (DateTime.TryParse(value, out DateTime d))
+            else if (!string.IsNullOrEmpty(value) && (DateTime.TryParse(value, out DateTime d1) &&
+              (Regex.Match(value, GenericConstants._GENERIC_MONTH_YEAR_EXPRESSION, RegexOptions.IgnoreCase).Success ||
+              Regex.Match(value, GenericConstants._GENERIC_YEAR_MONTH_EXPRESSION, RegexOptions.IgnoreCase).Success)))
+            {
+                // Filter by year and month
+                // Convert filter string to yyyy-MM
+                var filterDate = Convert.ToDateTime(value);
+                var filterYearMonth = filterDate.ToString("yyyy-MM");
+                // Convert Date to string (ToString method)
+                var methodToString = EnumerableExtensions.ToDateStringMethod;
+                var toDateString = Expression.Call(left, methodToString, null);
+                // Add Contains Method to compare with month/year string
+                var methodContains = EnumerableExtensions.StringContainsMethod;
+                IEnumerable<Expression> parameters = new[] { Expression.Constant(filterYearMonth) };
+                res = Expression.Call(toDateString, methodContains, parameters);
+            }
+            else if (DateTime.TryParse(value, out DateTime d2))
             {
                 res = Expression.Equal(left, Expression.Constant(Convert.ToDateTime(value)));
             }
