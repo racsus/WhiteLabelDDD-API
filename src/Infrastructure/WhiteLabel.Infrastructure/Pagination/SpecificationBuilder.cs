@@ -42,19 +42,33 @@ namespace WhiteLabel.Domain.Pagination
         public ISpecification<T> Create<T>(IEnumerable<FilterOption> filters)
         {
             var spec = SpecificationBase<T>.True;
+            var repeatedMembers = new List<string>();
             if (filters == null)
             {
                 return spec;
             }
 
+            // And
             foreach (var filter in filters)
             {
                 try
                 {
-                    var fSpec = this.Create<T>(filter);
-                    if (fSpec != null)
+                    // Check if we have more than 1 filter for the same member (Or)
+                    var isRepeated = filters.Where(x => x.Member == filter.Member).Count() > 1;
+                    if (!isRepeated)
                     {
-                        spec = spec.And(fSpec);
+                        var fSpec = this.Create<T>(filter);
+                        if (fSpec != null)
+                        {
+                            spec = spec.And(fSpec);
+                        }
+                    }
+                    else
+                    {
+                        if (repeatedMembers.Where(x => x == filter.Member).Count() == 0)
+                        {
+                            repeatedMembers.Add(filter.Member);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -62,6 +76,33 @@ namespace WhiteLabel.Domain.Pagination
                     this.logger.LogInformation(
                         ex,
                         $"There was an error generating the filter for {typeof(T)} - {filter.Member} - {filter.Operator} - {filter.Value}");
+                }
+            }
+
+            // Or
+            if (repeatedMembers.Count > 0)
+            {
+                var specOr = SpecificationBase<T>.False;
+                foreach (var member in repeatedMembers)
+                {
+                    foreach (var filter in filters.Where(x => x.Member == member))
+                    {
+                        try
+                        {
+                            var fSpec = this.Create<T>(filter);
+                            if (fSpec != null)
+                            {
+                                specOr = specOr.Or(fSpec);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            this.logger.LogInformation(
+                                ex,
+                                $"There was an error generating the filter for {typeof(T)} - {filter.Member} - {filter.Operator} - {filter.Value}");
+                        }
+                    }
+                    spec = spec.And(specOr);
                 }
             }
 
