@@ -20,8 +20,10 @@ namespace WhiteLabel.Infrastructure.DependencyInjection
         public static void Initialize(ContainerBuilder builder, IConfiguration configuration, AuthConfiguration authConfiguration)
 		{
             // Services and Generic Repository
-            var coreAssembly = Assembly.GetAssembly(typeof(IBusinessService));
-            builder.RegisterAssemblyTypes(coreAssembly).Where(t => t.Name.EndsWith("Service")).AsImplementedInterfaces();
+            var coreAssemblyApplication = Assembly.GetAssembly(typeof(IBusinessService));
+            //var coreAssemblyDomain = Assembly.GetAssembly(typeof(IHandle<BaseDomainEvent>));
+            builder.RegisterAssemblyTypes(coreAssemblyApplication).Where(t => t.Name.EndsWith("Service")).AsImplementedInterfaces();
+            builder.RegisterAssemblyTypes(coreAssemblyApplication).Where(t => t.Name.EndsWith("Handle")).AsImplementedInterfaces();
             builder.RegisterGeneric(typeof(GenericRepository<>)).As(typeof(IGenericRepository<>));
 
             // Other Services
