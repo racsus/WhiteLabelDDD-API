@@ -265,6 +265,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
 
             var lambda = ExpressionExtensions.MakeLambdaSelectorExpression<T>(fieldToGroup);
             var res = await query.GroupBy(lambda).Select(x => x.Key).ToListAsync();
+            res = res.Where(x => !string.IsNullOrEmpty(x)).ToList();
 
             return res;
         }
@@ -282,6 +283,7 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
 
             var lambda = ExpressionExtensions.MakeLambdaSelectorExpression<T>(fieldToGroup);
             var res = await Task.FromResult(query.Where(spec.IsSatisfiedBy).AsQueryable().GroupBy(lambda).Select(x => x.Key).ToList());
+            res = res.Where(x => !string.IsNullOrEmpty(x)).ToList();
 
             return res;
         }
