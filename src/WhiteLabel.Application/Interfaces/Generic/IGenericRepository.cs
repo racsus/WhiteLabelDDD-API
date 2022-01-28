@@ -19,6 +19,7 @@ namespace WhiteLabel.Application.Interfaces.Generic
         IEnumerable<T> Find<T>(ISpecification<T> spec, string[] includes) where T : BaseEntity<TId>;
         Task<IEnumerable<T>> FindAsync<T>(ISpecification<T> spec, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         Task<IEnumerable<T>> FindAsync<T>(ISpecification<T> spec, string[] includes, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
+        Task<IEnumerable<T>> FindAsync<T>(ICollection<FilterOption> filters, ISpecification<T> spec = null, string[] includes = null, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;
         T FindOne<T>(ISpecification<T> spec) where T : BaseEntity<TId>;
         T FindOne<T>(ISpecification<T> spec, string[] includes) where T : BaseEntity<TId>;
         Task<T> FindOneAsync<T>(ISpecification<T> spec, CancellationToken cancellationToken = default) where T : BaseEntity<TId>;

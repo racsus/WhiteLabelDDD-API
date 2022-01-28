@@ -99,6 +99,31 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             return await Task.FromResult(query.Where(spec.IsSatisfiedBy).ToList());
         }
 
+        public async Task<IEnumerable<T>> FindAsync<T>(ICollection<FilterOption> filters, ISpecification<T> spec = null, string[] includes = null, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
+        {
+            var query = _dbContext.Set<T>().AsQueryable();
+
+            if (includes != null)
+            {
+                foreach (string include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            var additionalSpec = this.SpecificationBuilder.Create<T>(filters);
+            if (spec == null)
+            {
+                spec = additionalSpec;
+            }
+            else
+            {
+                spec = spec.And(additionalSpec);
+            }
+
+            return await Task.FromResult(query.Where(spec).ToList());
+        }
+
         public T FindOne<T>(ISpecification<T> spec) where T : BaseEntity<TId>
         {
             return _dbContext.Set<T>().Where(spec.IsSatisfiedBy).FirstOrDefault();
@@ -266,7 +291,6 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             var lambda = ExpressionExtensions.MakeLambdaSelectorExpression<T>(fieldToGroup);
             var res = await query.GroupBy(lambda).Select(x => x.Key).ToListAsync();
             res = res.Where(x => !string.IsNullOrEmpty(x)).ToList();
-
             return res;
         }
 
@@ -282,10 +306,18 @@ namespace WhiteLabel.Infrastructure.Data.Repositories
             }
 
             var lambda = ExpressionExtensions.MakeLambdaSelectorExpression<T>(fieldToGroup);
-            var res = await Task.FromResult(query.Where(spec.IsSatisfiedBy).AsQueryable().GroupBy(lambda).Select(x => x.Key).ToList());
-            res = res.Where(x => !string.IsNullOrEmpty(x)).ToList();
-
-            return res;
+            if (spec != null)
+            {
+                var res = await Task.FromResult(query.Where(spec.IsSatisfiedBy).AsQueryable().GroupBy(lambda).Select(x => x.Key).ToList());
+                res = res.Where(x => !string.IsNullOrEmpty(x)).ToList();
+                return res;
+            }
+            else
+            {
+                var res = await Task.FromResult(query.GroupBy(lambda).Select(x => x.Key).ToList());
+                res = res.Where(x => !string.IsNullOrEmpty(x)).ToList();
+                return res;
+            }
         }
 
         public async Task<IEnumerable<T>> FindBySQLAsync<T>(string sql, CancellationToken cancellationToken = default) where T : BaseEntity<TId>
