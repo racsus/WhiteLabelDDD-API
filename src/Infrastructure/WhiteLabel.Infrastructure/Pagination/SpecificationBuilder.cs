@@ -195,10 +195,11 @@ namespace WhiteLabel.Domain.Pagination
         private ConstantExpression GetExpressionValue(FilterOption filter, Type properType)
         {
             // Filter by month and year
-            if (properType == typeof(DateTime) &&
-                (int.TryParse(filter.Value, out int c)
-                || Regex.Match(filter.Value.ToString(), GenericConstants._GENERIC_MONTH_YEAR_EXPRESSION, RegexOptions.IgnoreCase).Success)
-                || Regex.Match(filter.Value.ToString(), GenericConstants._GENERIC_YEAR_MONTH_EXPRESSION, RegexOptions.IgnoreCase).Success)
+            if ((properType == typeof(DateTime) || properType == typeof(DateTime?)) &&
+                (int.TryParse(filter.Value, out int c) &&
+                (Regex.Match(filter.Value.ToString(), GenericConstants._GENERIC_MONTH_YEAR_EXPRESSION, RegexOptions.IgnoreCase).Success
+                || Regex.Match(filter.Value.ToString(), GenericConstants._GENERIC_YEAR_EXPRESSION, RegexOptions.IgnoreCase).Success
+                || Regex.Match(filter.Value.ToString(), GenericConstants._GENERIC_YEAR_MONTH_EXPRESSION, RegexOptions.IgnoreCase).Success)))
             {
                 return Expression.Constant(filter.Value.ConvertTo(typeof(string)), typeof(string));
             }

@@ -271,8 +271,16 @@ namespace System.Linq.Expressions
             if (int.TryParse(value, out int n))
             {
                 // filter by year or month
-                left = value.Length <= 3 ? Expression.Property(left, "Month") : Expression.Property(left, "Year");
-                res = Expression.Equal(left, Expression.Constant(Convert.ToInt32(value)));
+                if (propertyType == typeof(DateTime?))
+                {
+                    left = value.Length <= 3 ? Expression.Property(Expression.Property(left, "Value"), "Month") : Expression.Property(Expression.Property(left, "Value"), "Year");
+                    res = Expression.Equal(left, Expression.Constant(Convert.ToInt32(value)));
+                }
+                else
+                {
+                    left = value.Length <= 3 ? Expression.Property(left, "Month") : Expression.Property(left, "Year");
+                    res = Expression.Equal(left, Expression.Constant(Convert.ToInt32(value)));
+                }
             }
             else if (!string.IsNullOrEmpty(value) && (DateTime.TryParse(value, out DateTime d1) &&
               (Regex.Match(value, GenericConstants._GENERIC_MONTH_YEAR_EXPRESSION, RegexOptions.IgnoreCase).Success ||
