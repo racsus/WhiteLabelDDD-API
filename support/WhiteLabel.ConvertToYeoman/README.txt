@@ -1,0 +1,1 @@
+﻿Copy the files generated to the template folder in your yeoman project and execute npm link to update the package.

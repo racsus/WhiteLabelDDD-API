@@ -3,11 +3,14 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using WhiteLabel.Application.Configuration;
+using WhiteLabel.Application.Constants;
+using WhiteLabel.WebAPI.Security;
 
 namespace WhiteLabelDDD.OAuth
 {
@@ -17,42 +20,36 @@ namespace WhiteLabelDDD.OAuth
         {
             if (authConfiguration?.IsEnabled == true)
             {
-                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
-                    {
-                        options.Authority = authConfiguration.Authority;
-                        options.Audience = authConfiguration.Audience;
-                        // If the access token does not have a `sub` claim, `User.Identity.Name` will be `null`. Map it to a different claim by setting the NameClaimType below.
-                        options.TokenValidationParameters = new TokenValidationParameters
+                if (authConfiguration.AuthType.ToUpper() == AuthConstants.Database)
+                {
+                    services.AddAuthentication("BasicAuthentication")
+                        .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+                }
+                else
+                {
+                    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                        .AddJwtBearer(options =>
                         {
-                            NameClaimType = ClaimTypes.NameIdentifier
-                        };
-                        //options.TokenValidationParameters = new TokenValidationParameters
-                        //{
-                        //    ValidIssuers = new[]
-                        //    {
-                        //        authConfiguration.Authority + "/v2.0"
-                        //    },
-                        //    ValidAudiences = new[]
-                        //    {
-                        //        authConfiguration.Authority + "/resources",
-                        //        authConfiguration.Application
-                        //    },
-                        //};
+                            options.Authority = authConfiguration.Authority;
+                            options.Audience = authConfiguration.Audience;
+                            // If the access token does not have a `sub` claim, `User.Identity.Name` will be `null`. Map it to a different claim by setting the NameClaimType below.
+                            options.TokenValidationParameters = new TokenValidationParameters
+                            {
+                                NameClaimType = ClaimTypes.NameIdentifier
+                            };
 
 #if DEBUG
 
-                        options.RequireHttpsMetadata = false;
-                        options.IncludeErrorDetails = true;
+                            options.RequireHttpsMetadata = false;
+                            options.IncludeErrorDetails = true;
 
-                        options.Events = new JwtBearerEvents
-                        {
-                            OnAuthenticationFailed = AuthenticationFailed
-                        };
-
-                    #endif
-
-                    });
+                            options.Events = new JwtBearerEvents
+                            {
+                                OnAuthenticationFailed = AuthenticationFailed
+                            };
+#endif
+                        });
+                }
             }
         }
 
