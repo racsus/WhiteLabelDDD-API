@@ -41,6 +41,15 @@ namespace WhiteLabel.WebAPI.Security
                     return;
                 }
             }
+            else if (_authConfiguration.AuthType.ToUpper() == AuthConstants.Database)
+            {
+                var authorized = await _authorization.AuthorizeAsync(context.HttpContext.User, this.Policy);
+                if (!authorized.Succeeded)
+                {
+                    context.Result = new ForbidResult();
+                    return;
+                }
+            }
         }
     }
 }

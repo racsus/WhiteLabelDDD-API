@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -68,7 +69,7 @@ namespace WhiteLabelDDD.Swagger
                             }
                         });
                     }
-                    else if ((authConfiguration.AuthType.ToUpper() == AuthConstants.Auth0) || (authConfiguration.AuthType.ToUpper() == AuthConstants.Bearer))
+                    else if (authConfiguration.AuthType.ToUpper() == AuthConstants.Auth0)
                     {
                         // Auth0
                         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -88,6 +89,33 @@ namespace WhiteLabelDDD.Swagger
                                     },
                                     AuthorizationUrl = new Uri($"{authConfiguration.Authority}/authorize?audience={authConfiguration.Audience}")
                                 }
+                            }
+                        });
+                    }
+                    else if (authConfiguration.AuthType.ToUpper() == AuthConstants.Bearer)
+                    {
+                        // Bearer
+                        c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                        {
+                            Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
+                            Name = "Authorization",
+                            In = ParameterLocation.Header,
+                            Type = SecuritySchemeType.ApiKey,
+                            Scheme = JwtBearerDefaults.AuthenticationScheme
+                        });
+
+                        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                        {
+                            {
+                                new OpenApiSecurityScheme
+                                {
+                                    Reference = new OpenApiReference
+                                    {
+                                        Type = ReferenceType.SecurityScheme,
+                                        Id = JwtBearerDefaults.AuthenticationScheme
+                                    }
+                                },
+                                Array.Empty<string>()
                             }
                         });
                     }

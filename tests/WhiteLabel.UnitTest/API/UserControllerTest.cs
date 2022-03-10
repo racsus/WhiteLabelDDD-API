@@ -26,7 +26,7 @@ namespace WhiteLabel.UnitTest.API
             userService.Setup(x => x.Add(userDto)).Returns(Task.FromResult(new Response<UserDTO>(userDto)));
 
             // Arrange
-            UserController controller = new UserController(userService.Object, userService.Object);
+            UserController controller = new UserController(userService.Object, userService.Object, null);
             var res = await controller.Add(userDto);
 
             // Assert
