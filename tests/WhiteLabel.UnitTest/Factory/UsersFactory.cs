@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using WhiteLabel.Domain.Users;
 using WhiteLabel.UnitTest.Builders;
 
@@ -12,13 +10,13 @@ namespace WhiteLabel.UnitTest.Factory
         {
             var res = new List<User>();
 
-            for (int i = 0; i < numElements; i++)
+            for (var i = 0; i < numElements; i++)
             {
                 var newUser = new UserBuilder()
-                        .WithTestValues()
-                        .Name($"TestName{i:0000}")
-                        .Email($"testname{i:0000}@testdomain.com")
-                        .Build();
+                    .WithTestValues()
+                    .Name($"TestName{i:0000}")
+                    .Email($"testname{i:0000}@testdomain.com")
+                    .Build();
 
                 res.Add(newUser);
             }

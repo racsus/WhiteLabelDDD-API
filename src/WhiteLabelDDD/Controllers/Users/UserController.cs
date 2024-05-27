@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using almacen.WebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Net.Http.Headers;
 using WhiteLabel.Application.Configuration;
 using WhiteLabel.Application.Constants;
 using WhiteLabel.Application.DTOs.Generic;
 using WhiteLabel.Application.DTOs.Users;
 using WhiteLabel.Application.Interfaces.Users;
 using WhiteLabel.WebAPI.Controllers.Generic;
-using WhiteLabelDDD.OAuth;
+using WhiteLabel.WebAPI.Models;
+using WhiteLabel.WebAPI.OAuth;
 
-namespace WhiteLabelDDD.Controllers.Users
+namespace WhiteLabel.WebAPI.Controllers.Users
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
@@ -24,10 +23,16 @@ namespace WhiteLabelDDD.Controllers.Users
     {
         private AuthConfiguration AuthConfiguration { get; }
 
-        public UserController(IUserService userService, IUserService businessService, IConfiguration configuration)
-        : base(userService, businessService)
+        public UserController(
+            IUserService userService,
+            IUserService businessService,
+            IConfiguration configuration
+        )
+            : base(userService, businessService)
         {
-            this.AuthConfiguration = configuration.GetSection(AuthConfiguration.Section).Get<AuthConfiguration>();
+            AuthConfiguration = configuration
+                .GetSection(AuthConfiguration.Section)
+                .Get<AuthConfiguration>();
         }
 
         /// <summary>
@@ -37,16 +42,16 @@ namespace WhiteLabelDDD.Controllers.Users
         [HttpGet("Me")]
         //[Authorize(Roles = "Administrator")]
         //[AuthorizeWithPermissions("read:dashboard")]
-        [ProducesResponseType(typeof(UserInfoDTO), StatusCodes.Status200OK)]
-        public async Task<Response<UserInfoDTO>> GetMe()
+        [ProducesResponseType(typeof(UserInfoDto), StatusCodes.Status200OK)]
+        public Task<Response<UserInfoDto>> GetMe()
         {
             //var accessToken = Request.Headers[HeaderNames.Authorization];
-            Response<UserInfoDTO> response = new Response<UserInfoDTO>()
+            var response = new Response<UserInfoDto>()
             {
                 //Object = await this.businessService.GetUserInfo(accessToken, this.User)
-                Object = this.user
+                Object = user
             };
-            return response;
+            return Task.FromResult(response);
         }
 
         /// <summary>
@@ -56,83 +61,88 @@ namespace WhiteLabelDDD.Controllers.Users
         /// <returns></returns>
         [HttpPost("Token")]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(UserInfoDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserInfoDto), StatusCodes.Status200OK)]
         public Response<string> GetToken([FromBody] LoginUserRequest loginUserRequest)
         {
-            if (this.AuthConfiguration.AuthType.ToUpper() == AuthConstants.Bearer)
+            if (AuthConfiguration.AuthType.ToUpper() == AuthConstants.Bearer)
             {
-                List<Claim> claims = new()
-                {
-                    new Claim("id", "1"),
-                    new Claim(ClaimTypes.Email, "test@test.com"),
-                    new Claim(ClaimTypes.Name, loginUserRequest.UserName),
-                };
+                List<Claim> claims =
+                    new()
+                    {
+                        new Claim("id", "1"),
+                        new Claim(ClaimTypes.Email, "test@test.com"),
+                        new Claim(ClaimTypes.Name, loginUserRequest.UserName)
+                    };
 
-                var token = JwtConfig.Generate(this.AuthConfiguration.AccessTokenSecret, this.AuthConfiguration.AccessTokenSecret,
-                    this.AuthConfiguration.Audience, 30, claims);
+                var token = JwtConfig.Generate(
+                    AuthConfiguration.AccessTokenSecret,
+                    AuthConfiguration.AccessTokenSecret,
+                    AuthConfiguration.Audience,
+                    30,
+                    claims
+                );
 
-                Response<string> response = new Response<string>()
-                {
-                    Object = token
-                };
+                var response = new Response<string>() { Object = token };
                 return response;
-            } else
+            }
+            else
             {
                 return new Response<string>("Token endpoint can only be used with Bearear Auth");
             }
         }
 
         [HttpPost]
-        public async Task<Response<UserDTO>> Add([FromBody] UserDTO user)
+        public async Task<Response<UserDto>> Add([FromBody] UserDto userDto)
         {
-            return await this.businessService.Add(user);
+            return await BusinessService.Add(userDto);
         }
 
         [HttpGet]
         [Route("IsEmailAvailable/{email}")]
         public async Task<Response<bool>> IsEmailAvailable(string email)
         {
-            Response<bool> response = new Response<bool>()
+            var response = new Response<bool>()
             {
-                Object = await this.businessService.IsEmailAvailable(email)
+                Object = await BusinessService.IsEmailAvailable(email)
             };
             return response;
         }
 
         [HttpGet("{id}")]
-        public async Task<Response<UserDTO>> GetById(Guid id)
+        public async Task<Response<UserDto>> GetById(Guid id)
         {
-            return await this.businessService.Get(id);
+            return await BusinessService.Get(id);
         }
 
         [HttpGet("All")]
-        public async Task<Response<IEnumerable<UserDTO>>> GetAll()
+        public async Task<Response<IEnumerable<UserDto>>> GetAll()
         {
-            return await this.businessService.GetAll();
+            return await BusinessService.GetAll();
         }
 
         [HttpPost("Paginated")]
-        [ProducesResponseType(typeof(PagedQueryResultDTO<UserDTO>), StatusCodes.Status200OK)]
-        public async Task<Response<PagedQueryResultDTO<UserDTO>>> GetPaginated([FromBody] PagedListDTO pagedModel)
+        [ProducesResponseType(typeof(PagedQueryResultDto<UserDto>), StatusCodes.Status200OK)]
+        public async Task<Response<PagedQueryResultDto<UserDto>>> GetPaginated(
+            [FromBody] PagedListDto pagedModel
+        )
         {
-            return await this.businessService.GetPaginated(pagedModel);
+            return await BusinessService.GetPaginated(pagedModel);
         }
 
         [HttpDelete("{id}")]
-        public async Task<Response<UserDTO>> RemoveById(Guid id)
+        public async Task<Response<UserDto>> RemoveById(Guid id)
         {
-            Response<UserDTO> response = new Response<UserDTO>();
-            await this.businessService.Remove(id);
+            var response = new Response<UserDto>();
+            await BusinessService.Remove(id);
             return response;
         }
 
         [HttpPut]
-        public async Task<Response<UserDTO>> Update([FromBody] UserDTO user)
+        public async Task<Response<UserDto>> Update([FromBody] UserDto userDto)
         {
-            Response<UserDTO> response = new Response<UserDTO>();
-            await this.businessService.Update(user);
+            var response = new Response<UserDto>();
+            await BusinessService.Update(userDto);
             return response;
         }
-
     }
 }

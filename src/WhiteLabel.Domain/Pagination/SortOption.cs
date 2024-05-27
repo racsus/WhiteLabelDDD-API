@@ -1,5 +1,4 @@
-﻿
-namespace WhiteLabel.Domain.Pagination
+﻿namespace WhiteLabel.Domain.Pagination
 {
     /// <summary>
     /// SortDescriptor class to implement sorting in the Query
@@ -10,6 +9,7 @@ namespace WhiteLabel.Domain.Pagination
         /// Member
         /// </summary>
         public string Member { get; set; }
+
         /// <summary>
         /// Enumerable SortDirection
         /// </summary>

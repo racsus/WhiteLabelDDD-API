@@ -1,17 +1,15 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using WhiteLabel.ConvertToYeoman.Helpers;
 using WhiteLabel.ConvertToYeoman.Services;
 
 namespace WhiteLabel.ConvertToYeoman
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var services = ConfigureServices();
             var serviceProvider = services.BuildServiceProvider();
@@ -45,7 +43,7 @@ namespace WhiteLabel.ConvertToYeoman
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                .AddJsonFile("appsettings.json", true, true);
 
             return builder.Build();
         }

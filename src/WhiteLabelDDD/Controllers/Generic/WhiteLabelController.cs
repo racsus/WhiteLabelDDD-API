@@ -9,28 +9,33 @@ using WhiteLabel.Application.Interfaces.Users;
 
 namespace WhiteLabel.WebAPI.Controllers.Generic
 {
-    public abstract class WhiteLabelController<T> : Controller where T : IBusinessService
+    public abstract class WhiteLabelController<T> : Controller
+        where T : IBusinessService
     {
-        protected readonly IUserService userService;
-        protected readonly T businessService;
-        protected UserInfoDTO user;
+        private readonly IUserService userService;
+        protected readonly T BusinessService;
+        protected UserInfoDto user;
 
-        public WhiteLabelController(IUserService userService, T businessService)
+        protected WhiteLabelController(IUserService userService, T businessService)
         {
             this.userService = userService;
-            this.businessService = businessService;
+            BusinessService = businessService;
         }
-        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+
+        public override async Task OnActionExecutionAsync(
+            ActionExecutingContext context,
+            ActionExecutionDelegate next
+        )
         {
-            var hasNeedsUserFilter = context.Filters.Where(x => x.ToString().Contains("WebAPI.Security.NeedsUserFilter")).Count() > 0;
+            var hasNeedsUserFilter =
+                context.Filters.Any(x => x.ToString()!.Contains("WebAPI.Security.NeedsUserFilter"));
             if (hasNeedsUserFilter)
             {
                 var accessToken = Request.Headers[HeaderNames.Authorization];
-                user = await this.userService.GetUserInfo(accessToken, this.User);
+                user = await userService.GetUserInfo(accessToken, User);
             }
 
             await next();
         }
-
     }
 }

@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Linq;
 using System.Linq.Expressions;
+using WhiteLabel.Domain.Generic;
+using WhiteLabel.Infrastructure.Data.Extensions;
 
-namespace WhiteLabel.Domain.Generic
+namespace WhiteLabel.Infrastructure.Data.Pagination
 {
-    
     public class AndSpecification<T> : ComposeSpecification<T>
     {
         public AndSpecification(ISpecification<T> leftSide, ISpecification<T> rightSide)
-            : base(leftSide, rightSide)
-        {
-        }
+            : base(leftSide, rightSide) { }
 
-        public override Expression<Func<T, bool>> SpecExpression => this.Left.SpecExpression.AndAlso(this.Right.SpecExpression);
-
-
-        
+        public override Expression<Func<T, bool>> SpecExpression =>
+            Left.SpecExpression.AndAlso(Right.SpecExpression);
     }
 }

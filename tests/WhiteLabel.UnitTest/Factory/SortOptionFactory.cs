@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using WhiteLabel.Domain.Pagination;
+﻿using WhiteLabel.Domain.Pagination;
 
 namespace WhiteLabel.UnitTest.Factory
 {
@@ -10,13 +7,7 @@ namespace WhiteLabel.UnitTest.Factory
         public static SortOption Build(string sortMember, SortDirection sortDirection)
         {
             if (!string.IsNullOrEmpty(sortMember))
-            {
-                return new SortOption
-                {
-                    Member = sortMember,
-                    Direction = sortDirection
-                };
-            }
+                return new SortOption { Member = sortMember, Direction = sortDirection };
             return null;
         }
     }

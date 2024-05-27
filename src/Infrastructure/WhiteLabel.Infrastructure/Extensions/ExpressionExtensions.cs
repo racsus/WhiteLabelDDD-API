@@ -1,114 +1,132 @@
-﻿using WhiteLabel.Infrastructure.Data.Constants;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using WhiteLabel.Domain.Extensions;
 using WhiteLabel.Domain.Pagination;
+using WhiteLabel.Infrastructure.Data.Constants;
 
-namespace System.Linq.Expressions
+namespace WhiteLabel.Infrastructure.Data.Extensions
 {
     public static class ExpressionExtensions
     {
-        public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> first,
-            Expression<Func<T, bool>> second)
+        public static Expression<Func<T, bool>> And<T>(
+            this Expression<Func<T, bool>> first,
+            Expression<Func<T, bool>> second
+        )
         {
             return first.Compose(second, Expression.And);
         }
 
-        public static Expression<Func<T, bool>> AndAlso<T>(this Expression<Func<T, bool>> first,
-            Expression<Func<T, bool>> second)
+        public static Expression<Func<T, bool>> AndAlso<T>(
+            this Expression<Func<T, bool>> first,
+            Expression<Func<T, bool>> second
+        )
         {
             return first.Compose(second, Expression.AndAlso);
         }
 
-        public static Expression<T> Compose<T>(this Expression<T> first, Expression<T> second,
-            Func<Expression, Expression, Expression> merge)
+        public static Expression<T> Compose<T>(
+            this Expression<T> first,
+            Expression<T> second,
+            Func<Expression, Expression, Expression> merge
+        )
         {
             // build parameter map (from parameters of second to parameters of first)
-            var map = first.Parameters.Select((f, i) => new { f, s = second.Parameters[i] })
+            var map = first.Parameters
+                .Select((f, i) => new { f, s = second.Parameters[i] })
                 .ToDictionary(p => p.s, p => p.f);
 
             // replace parameters in the second lambda expression with parameters from the first
             var secondBody = ParameterRebinder.ReplaceParameters(map, second.Body);
 
-            // apply composition of lambda expression bodies to parameters from the first expression 
+            // apply composition of lambda expression bodies to parameters from the first expression
             return Expression.Lambda<T>(merge(first.Body, secondBody), first.Parameters);
         }
 
-
-        public static Expression<Func<T, bool>> Or<T>(this Expression<Func<T, bool>> first,
-            Expression<Func<T, bool>> second)
+        public static Expression<Func<T, bool>> Or<T>(
+            this Expression<Func<T, bool>> first,
+            Expression<Func<T, bool>> second
+        )
         {
             return first.Compose(second, Expression.Or);
         }
 
-        public static Expression<Func<T, bool>> OrElse<T>(this Expression<Func<T, bool>> first,
-            Expression<Func<T, bool>> second)
+        public static Expression<Func<T, bool>> OrElse<T>(
+            this Expression<Func<T, bool>> first,
+            Expression<Func<T, bool>> second
+        )
         {
             return first.Compose(second, Expression.OrElse);
         }
 
-        public static Expression<Func<T, bool>> Equals<T, TValue>(string propertyName, TValue constant)
+        public static Expression<Func<T, bool>> Equals<T, TValue>(
+            string propertyName,
+            TValue constant
+        )
         {
             var type = typeof(T);
             var parameterExpression = Expression.Parameter(type, type.Name);
-            return
-                Expression.Lambda<Func<T, bool>>(
-                    Expression.Equal(Expression.Property(parameterExpression, propertyName),
-                        Expression.Constant(constant)), parameterExpression);
+            return Expression.Lambda<Func<T, bool>>(
+                Expression.Equal(
+                    Expression.Property(parameterExpression, propertyName),
+                    Expression.Constant(constant)
+                ),
+                parameterExpression
+            );
         }
 
         public static string GetPropertyName<T>(Expression<Func<T>> propertyLambda)
         {
             var unaryExpression = propertyLambda.Body as UnaryExpression;
-            var memberExpression = unaryExpression == null
-                ? propertyLambda.Body as MemberExpression
-                : unaryExpression.Operand as MemberExpression;
+            var memberExpression =
+                unaryExpression == null
+                    ? propertyLambda.Body as MemberExpression
+                    : unaryExpression.Operand as MemberExpression;
 
             if (memberExpression == null)
-            {
                 throw new ArgumentException(
-                    "You must pass a lambda of the form: '() => Class.Property' or '() => object.Property'");
-            }
+                    "You must pass a lambda of the form: '() => Class.Property' or '() => object.Property'"
+                );
 
             return memberExpression.Member.Name;
         }
 
-        public static string GetPropertyName<T, TProperty>(Expression<Func<T, TProperty>> propertyLambda)
+        public static string GetPropertyName<T, TProperty>(
+            Expression<Func<T, TProperty>> propertyLambda
+        )
         {
             var unaryExpression = propertyLambda.Body as UnaryExpression;
-            var memberExpression = unaryExpression == null
-                ? propertyLambda.Body as MemberExpression
-                : unaryExpression.Operand as MemberExpression;
+            var memberExpression =
+                unaryExpression == null
+                    ? propertyLambda.Body as MemberExpression
+                    : unaryExpression.Operand as MemberExpression;
 
             if (memberExpression == null)
-            {
                 throw new ArgumentException(
-                    "You must pass a lambda of the form: 'e => Class.Property' or 'e => e.Property'");
-            }
+                    "You must pass a lambda of the form: 'e => Class.Property' or 'e => e.Property'"
+                );
 
             return memberExpression.Member.Name;
         }
 
-        public static string GetPropertyPath<T, TProperty>(Expression<Func<T, TProperty>> propertyLambda)
+        public static string GetPropertyPath<T, TProperty>(
+            Expression<Func<T, TProperty>> propertyLambda
+        )
         {
             var unaryExpression = propertyLambda.Body as UnaryExpression;
-            var memberExpression = unaryExpression == null
-                ? propertyLambda.Body as MemberExpression
-                : unaryExpression.Operand as MemberExpression;
+            var memberExpression =
+                unaryExpression == null
+                    ? propertyLambda.Body as MemberExpression
+                    : unaryExpression.Operand as MemberExpression;
 
             if (memberExpression == null)
-            {
                 throw new ArgumentException(
-                    "You must pass a lambda of the form: 'e => Class.Property' or 'e => e.Property'");
-            }
+                    "You must pass a lambda of the form: 'e => Class.Property' or 'e => e.Property'"
+                );
 
             var memberName = GetMemberExpressionName(memberExpression);
-
-
 
             return memberName;
         }
@@ -122,26 +140,34 @@ namespace System.Linq.Expressions
             MemberExpression memberAccess = null;
             var entityType = typeof(T);
 
-            ParameterExpression memberAccessParam = Expression.Parameter(entityType);
+            var memberAccessParam = Expression.Parameter(entityType);
             foreach (var route in propertyRoute)
             {
-                var propertyInfo = entityType.GetProperties().FirstOrDefault(p => p.Name.Equals(route, StringComparison.OrdinalIgnoreCase));
+                var propertyInfo = entityType
+                    .GetProperties()
+                    .FirstOrDefault(p => p.Name.Equals(route, StringComparison.OrdinalIgnoreCase));
                 if (propertyInfo == null)
-                    throw new ArgumentException($"Property '{route}' doesn't exist on type '{entityType}'");
+                    throw new ArgumentException(
+                        $"Property '{route}' doesn't exist on type '{entityType}'"
+                    );
 
                 memberType = propertyInfo.PropertyType;
 
                 var x = memberAccess ?? (Expression)memberAccessParam;
 
-                var propertyType = propertyInfo.DeclaringType != propertyInfo.ReflectedType ? propertyInfo.DeclaringType : propertyInfo.ReflectedType;
-                memberAccess = Expression.Property(x, propertyType, propertyInfo.Name);
+                var propertyType =
+                    propertyInfo.DeclaringType != propertyInfo.ReflectedType
+                        ? propertyInfo.DeclaringType
+                        : propertyInfo.ReflectedType;
+                if (propertyType != null) memberAccess = Expression.Property(x, propertyType, propertyInfo.Name);
 
                 entityType = propertyInfo.PropertyType;
             }
 
-
             if (memberAccess == null)
-                throw new ArgumentException($"Property '{propertyName}' doesn't exist on type '{typeof(T)}'");
+                throw new ArgumentException(
+                    $"Property '{propertyName}' doesn't exist on type '{typeof(T)}'"
+                );
 
             return new MemberAccessModel(memberAccess, memberAccessParam, memberType);
         }
@@ -157,16 +183,23 @@ namespace System.Linq.Expressions
         }
 
         //TODO: Change to multiple return type expression
-        public static Expression<Func<T, string>> MakeLambdaSelectorExpression<T>(string propertyName)
+        public static Expression<Func<T, string>> MakeLambdaSelectorExpression<T>(
+            string propertyName
+        )
         {
             var member = GetMemberAccessData<T>(propertyName);
 
             // build lambda expression: item => item.fieldName
-            return Expression.Lambda<Func<T, string>>(member.MemberAccess, member.MemberAccessParam);
+            return Expression.Lambda<Func<T, string>>(
+                member.MemberAccess,
+                member.MemberAccessParam
+            );
         }
 
         //TODO: Change to multiple return type expression
-        public static Tuple<Expression, ParameterExpression, Type> MakePropertyExpression<T>(string propertyName)
+        public static Tuple<Expression, ParameterExpression, Type> MakePropertyExpression<T>(
+            string propertyName
+        )
         {
             var entityType = typeof(T);
             var memberAccessParam = Expression.Parameter(entityType);
@@ -174,7 +207,6 @@ namespace System.Linq.Expressions
             var propertyRoute = propertyName.Split('.');
             Type propertyType = null;
             foreach (var route in propertyRoute)
-            {
                 if (route.IsNullOrEmpty())
                 {
                     propertyType = entityType;
@@ -182,12 +214,18 @@ namespace System.Linq.Expressions
                 }
                 else
                 {
-                    var type = (propertyType ?? entityType);
-                    var propertyInfo = type.GetProperties().FirstOrDefault(p => p.Name.Equals(route, StringComparison.OrdinalIgnoreCase));
+                    var type = propertyType ?? entityType;
+                    var propertyInfo = type.GetProperties()
+                        .FirstOrDefault(
+                            p => p.Name.Equals(route, StringComparison.OrdinalIgnoreCase)
+                        );
                     if (propertyInfo != null)
                     {
                         propertyType = propertyInfo.PropertyType;
-                        propertyAccess = Expression.Property(propertyAccess ?? memberAccessParam, route);
+                        propertyAccess = Expression.Property(
+                            propertyAccess ?? memberAccessParam,
+                            route
+                        );
                     }
                     else
                     {
@@ -195,28 +233,33 @@ namespace System.Linq.Expressions
                     }
                 }
 
-            }
-            return new Tuple<Expression, ParameterExpression, Type>(propertyAccess, memberAccessParam, propertyType);
+            return new Tuple<Expression, ParameterExpression, Type>(
+                propertyAccess,
+                memberAccessParam,
+                propertyType
+            );
         }
 
         private static string GetMemberExpressionName(MemberExpression expression)
         {
             var memberName = expression.Member.Name;
 
-            if (expression.Expression.NodeType == ExpressionType.MemberAccess)
-            {
-                memberName = GetMemberExpressionName((MemberExpression)expression.Expression) + "." + memberName;
-            }
+            if (expression.Expression is { NodeType: ExpressionType.MemberAccess })
+                memberName =
+                    GetMemberExpressionName((MemberExpression)expression.Expression)
+                    + "."
+                    + memberName;
 
             return memberName;
         }
 
         public static MethodInfo GetMethodInfo(Type type, string methodName, int parametersLength)
         {
-            return type.GetMethods().First(m => m.Name == methodName && m.GetParameters().Length == parametersLength);
+            return type.GetMethods()
+                .First(m => m.Name == methodName && m.GetParameters().Length == parametersLength);
         }
 
-        public static Expression StartsWithExpression(Expression left, Expression right)
+        private static Expression StartsWithExpression(Expression left, Expression right)
         {
             var method = StringExtensions.StartsWithMethod;
             IEnumerable<Expression> parameters = new[]
@@ -228,7 +271,7 @@ namespace System.Linq.Expressions
             return exp;
         }
 
-        public static Expression EndsWithExpression(Expression left, Expression right)
+        private static Expression EndsWithExpression(Expression left, Expression right)
         {
             var method = StringExtensions.EndsWithMethod;
             IEnumerable<Expression> parameters = new[]
@@ -240,51 +283,76 @@ namespace System.Linq.Expressions
             return exp;
         }
 
-        public static Expression ContainsWithExpression(Expression left, Expression right)
+        private static Expression ContainsWithExpression(Expression left, Expression right)
         {
             var method = StringExtensions.ContainsMethod;
-            IEnumerable<Expression> parameters = new[]
-            {
-                right
-            };
+            IEnumerable<Expression> parameters = new[] { right };
             var exp = Expression.Call(left, method, parameters);
 
             return exp;
         }
 
-        public static Expression IsContainedInExpression(Expression left, Expression right, Type propertyType)
+        private static Expression IsContainedInExpression(
+            Expression left,
+            Expression right,
+            Type propertyType
+        )
         {
             var method = EnumerableExtensions.ContainsMethod.MakeGenericMethod(propertyType);
-            IEnumerable<Expression> parameters = new[]
-            {
-                right, left
-            };
+            IEnumerable<Expression> parameters = new[] { right, left };
             var exp = Expression.Call(null, method, parameters);
 
             return exp;
         }
 
-        public static Expression IsContainedInDateExpression(Expression left, Expression right, Type propertyType)
+        private static Expression IsContainedInDateExpression(
+            Expression left,
+            Expression right,
+            Type propertyType
+        )
         {
             Expression res = null;
             var value = right.ToString().Replace("\"", "");
-            if (int.TryParse(value, out int n))
+            if (int.TryParse(value, out _))
             {
                 // filter by year or month
                 if (propertyType == typeof(DateTime?))
                 {
-                    left = value.Length <= 3 ? Expression.Property(Expression.Property(left, "Value"), "Month") : Expression.Property(Expression.Property(left, "Value"), "Year");
+                    left =
+                        value.Length <= 3
+                            ? Expression.Property(Expression.Property(left, "Value"), "Month")
+                            : Expression.Property(Expression.Property(left, "Value"), "Year");
                     res = Expression.Equal(left, Expression.Constant(Convert.ToInt32(value)));
                 }
                 else
                 {
-                    left = value.Length <= 3 ? Expression.Property(left, "Month") : Expression.Property(left, "Year");
+                    left =
+                        value.Length <= 3
+                            ? Expression.Property(left, "Month")
+                            : Expression.Property(left, "Year");
                     res = Expression.Equal(left, Expression.Constant(Convert.ToInt32(value)));
                 }
             }
-            else if (!string.IsNullOrEmpty(value) && (DateTime.TryParse(value, out DateTime d1) &&
-              (Regex.Match(value, GenericConstants._GENERIC_MONTH_YEAR_EXPRESSION, RegexOptions.IgnoreCase).Success ||
-              Regex.Match(value, GenericConstants._GENERIC_YEAR_MONTH_EXPRESSION, RegexOptions.IgnoreCase).Success)))
+            else if (
+                !string.IsNullOrEmpty(value)
+                && DateTime.TryParse(value, out _)
+                && (
+                    Regex
+                        .Match(
+                            value,
+                            GenericConstants.GenericMonthYearExpression,
+                            RegexOptions.IgnoreCase
+                        )
+                        .Success
+                    || Regex
+                        .Match(
+                            value,
+                            GenericConstants.GenericYearMonthExpression,
+                            RegexOptions.IgnoreCase
+                        )
+                        .Success
+                )
+            )
             {
                 // Filter by year and month
                 // Convert filter string to yyyy-MM
@@ -298,15 +366,20 @@ namespace System.Linq.Expressions
                 IEnumerable<Expression> parameters = new[] { Expression.Constant(filterYearMonth) };
                 res = Expression.Call(toDateString, methodContains, parameters);
             }
-            else if (DateTime.TryParse(value, out DateTime d2))
+            else if (DateTime.TryParse(value, out _))
             {
                 res = Expression.Equal(left, Expression.Constant(Convert.ToDateTime(value)));
             }
+
             return res;
         }
 
-        public static Expression GetAssignExpressionString(FilterOperator filterOperator,
-            Expression left, Expression right, Type propertyType)
+        public static Expression GetAssignExpressionString(
+            FilterOperator filterOperator,
+            Expression left,
+            Expression right,
+            Type propertyType
+        )
         {
             switch (filterOperator)
             {
@@ -315,18 +388,18 @@ namespace System.Linq.Expressions
                 case FilterOperator.IsNotEqualTo:
                     return Expression.NotEqual(left, right);
                 case FilterOperator.StartsWith:
-                    return ExpressionExtensions.StartsWithExpression(left, right);
+                    return StartsWithExpression(left, right);
                 case FilterOperator.EndsWith:
-                    return ExpressionExtensions.EndsWithExpression(left, right);
+                    return EndsWithExpression(left, right);
                 case FilterOperator.Contains:
-                    return ExpressionExtensions.ContainsWithExpression(left, right);
+                    return ContainsWithExpression(left, right);
                 case FilterOperator.DoesNotContain:
-                    var contains = ExpressionExtensions.ContainsWithExpression(left, right);
+                    var contains = ContainsWithExpression(left, right);
                     return Expression.Not(contains);
                 case FilterOperator.IsContainedIn:
-                    return ExpressionExtensions.IsContainedInExpression(left, right, propertyType);
+                    return IsContainedInExpression(left, right, propertyType);
                 case FilterOperator.IsNotContainedIn:
-                    var isContainedIn = ExpressionExtensions.IsContainedInExpression(left, right, propertyType);
+                    var isContainedIn = IsContainedInExpression(left, right, propertyType);
                     return Expression.Not(isContainedIn);
                 //Comparisons can't be applied to strings
                 case FilterOperator.IsGreaterThan:
@@ -339,8 +412,12 @@ namespace System.Linq.Expressions
             }
         }
 
-        public static Expression GetAssignExpressionNumeric(FilterOperator filterOperator,
-            Expression left, Expression right, Type propertyType)
+        public static Expression GetAssignExpressionNumeric(
+            FilterOperator filterOperator,
+            Expression left,
+            Expression right,
+            Type propertyType
+        )
         {
             switch (filterOperator)
             {
@@ -357,13 +434,13 @@ namespace System.Linq.Expressions
                 case FilterOperator.IsLessThanOrEqualTo:
                     return Expression.LessThanOrEqual(left, right);
                 case FilterOperator.IsContainedIn:
-                    return ExpressionExtensions.IsContainedInExpression(left, right, propertyType);
+                    return IsContainedInExpression(left, right, propertyType);
                 case FilterOperator.IsNotContainedIn:
-                    var isContainedIn = ExpressionExtensions.IsContainedInExpression(left, right, propertyType);
+                    var isContainedIn = IsContainedInExpression(left, right, propertyType);
                     return Expression.Not(isContainedIn);
                 //Comparisons can't be applied to numeric
                 case FilterOperator.Contains:
-                    return Expression.Equal(left, right);  // Exception
+                    return Expression.Equal(left, right); // Exception
                 case FilterOperator.DoesNotContain:
                 case FilterOperator.StartsWith:
                 case FilterOperator.EndsWith:
@@ -373,8 +450,12 @@ namespace System.Linq.Expressions
             }
         }
 
-        public static Expression GetAssignExpressionBoolean(FilterOperator filterOperator,
-            Expression left, Expression right, Type propertyType)
+        public static Expression GetAssignExpressionBoolean(
+            FilterOperator filterOperator,
+            Expression left,
+            Expression right,
+            Type propertyType
+        )
         {
             switch (filterOperator)
             {
@@ -383,9 +464,9 @@ namespace System.Linq.Expressions
                 case FilterOperator.IsNotEqualTo:
                     return Expression.NotEqual(left, right);
                 case FilterOperator.IsContainedIn:
-                    return ExpressionExtensions.IsContainedInExpression(left, right, propertyType);
+                    return IsContainedInExpression(left, right, propertyType);
                 case FilterOperator.IsNotContainedIn:
-                    var isContainedIn = ExpressionExtensions.IsContainedInExpression(left, right, propertyType);
+                    var isContainedIn = IsContainedInExpression(left, right, propertyType);
                     return Expression.Not(isContainedIn);
                 //Comparisons can't be applied to boolean
                 case FilterOperator.Contains:
@@ -402,8 +483,12 @@ namespace System.Linq.Expressions
             }
         }
 
-        public static Expression GetAssignExpressionDateTime(FilterOperator filterOperator,
-            Expression left, Expression right, Type propertyType)
+        public static Expression GetAssignExpressionDateTime(
+            FilterOperator filterOperator,
+            Expression left,
+            Expression right,
+            Type propertyType
+        )
         {
             switch (filterOperator)
             {
@@ -420,14 +505,14 @@ namespace System.Linq.Expressions
                 case FilterOperator.IsLessThanOrEqualTo:
                     return Expression.LessThanOrEqual(left, right);
                 case FilterOperator.IsContainedIn:
-                    return ExpressionExtensions.IsContainedInExpression(left, right, propertyType);
+                    return IsContainedInExpression(left, right, propertyType);
                 case FilterOperator.IsNotContainedIn:
-                    var isContainedIn = ExpressionExtensions.IsContainedInExpression(left, right, propertyType);
+                    var isContainedIn = IsContainedInExpression(left, right, propertyType);
                     return Expression.Not(isContainedIn);
                 //Comparisons can't be applied to DateTime
                 case FilterOperator.Contains:
                     // Filter by month and year
-                    return ExpressionExtensions.IsContainedInDateExpression(left, right, propertyType);
+                    return IsContainedInDateExpression(left, right, propertyType);
                 case FilterOperator.DoesNotContain:
                 case FilterOperator.StartsWith:
                 case FilterOperator.EndsWith:
@@ -437,8 +522,12 @@ namespace System.Linq.Expressions
             }
         }
 
-        public static Expression GetAssignExpressionEnum(FilterOperator filterOperator,
-            Expression left, ConstantExpression right, Type propertyType)
+        public static Expression GetAssignExpressionEnum(
+            FilterOperator filterOperator,
+            Expression left,
+            ConstantExpression right,
+            Type propertyType
+        )
         {
             Type enumType;
             UnaryExpression convertExpression;
@@ -471,9 +560,9 @@ namespace System.Linq.Expressions
                     convertValue = Expression.Convert(right, enumType);
                     return Expression.LessThanOrEqual(convertExpression, convertValue);
                 case FilterOperator.IsContainedIn:
-                    return ExpressionExtensions.IsContainedInExpression(left, right, propertyType);
+                    return IsContainedInExpression(left, right, propertyType);
                 case FilterOperator.IsNotContainedIn:
-                    var isContainedIn = ExpressionExtensions.IsContainedInExpression(left, right, propertyType);
+                    var isContainedIn = IsContainedInExpression(left, right, propertyType);
                     return Expression.Not(isContainedIn);
                 //Comparisons can't be applied to Enums
                 case FilterOperator.Contains:
@@ -485,7 +574,6 @@ namespace System.Linq.Expressions
                     return null;
             }
         }
-
     }
 
     public class MemberAccessModel
@@ -494,7 +582,11 @@ namespace System.Linq.Expressions
         public ParameterExpression MemberAccessParam { get; set; }
         public Type MemberType { get; set; }
 
-        public MemberAccessModel(MemberExpression memberAccess, ParameterExpression memberAccessParam, Type memberType)
+        public MemberAccessModel(
+            MemberExpression memberAccess,
+            ParameterExpression memberAccessParam,
+            Type memberType
+        )
         {
             MemberAccess = memberAccess;
             MemberAccessParam = memberAccessParam;

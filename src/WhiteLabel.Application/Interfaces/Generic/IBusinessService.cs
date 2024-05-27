@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WhiteLabel.Application.Interfaces.Generic
+﻿namespace WhiteLabel.Application.Interfaces.Generic
 {
-    public interface IBusinessService
-    {
-    }
+    public interface IBusinessService { }
 }

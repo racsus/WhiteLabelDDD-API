@@ -15,18 +15,24 @@ namespace WhiteLabel.Domain.Pagination
 
     public class SpecificationBuilder : ISpecificationBuilder
     {
-        private static readonly MethodInfo CreateExpressionMethodInfo = typeof(SpecificationBuilder).GetMethod(nameof(CreateExpression), BindingFlags.Instance | BindingFlags.NonPublic);
-
+        private static readonly MethodInfo CreateExpressionMethodInfo =
+            typeof(SpecificationBuilder).GetMethod(
+                nameof(CreateExpression),
+                BindingFlags.Instance | BindingFlags.NonPublic
+            );
 
         public const char AllCharOperator = '&';
         public const char AnyCharOperator = '|';
 
         private readonly char[] CompositeCharOperators = { AllCharOperator, AnyCharOperator };
 
-        private readonly IDictionary<char, MethodInfo> CompositeCharMethods = new Dictionary<char, MethodInfo>()
+        private readonly IDictionary<char, MethodInfo> CompositeCharMethods = new Dictionary<
+            char,
+            MethodInfo
+        >()
         {
-            {AllCharOperator, EnumerableExtensions.AllMethod},
-            {AnyCharOperator, EnumerableExtensions.AnyMethod}
+            { AllCharOperator, EnumerableExtensions.AllMethod },
+            { AnyCharOperator, EnumerableExtensions.AnyMethod }
         };
 
         //private readonly ILogger<SpecificationBuilder> logger;
@@ -70,7 +76,6 @@ namespace WhiteLabel.Domain.Pagination
         {
             var expression = this.CreateExpression<T>(filter);
 
-
             if (expression == null)
             {
                 return null;
@@ -89,7 +94,6 @@ namespace WhiteLabel.Domain.Pagination
             {
                 expression = this.CreateMemberExpressionComposite<T>(filter, index);
             }
-
             else
             {
                 expression = this.CreateMemberExpressionSimple<T>(filter);
@@ -98,12 +102,17 @@ namespace WhiteLabel.Domain.Pagination
             return expression;
         }
 
-
-        private Expression<Func<T, bool>> CreateMemberExpressionComposite<T>(FilterDescriptor filter, int index)
+        private Expression<Func<T, bool>> CreateMemberExpressionComposite<T>(
+            FilterDescriptor filter,
+            int index
+        )
         {
             var collectionPath = filter.Member.Substring(0, index);
             var separator = filter.Member[index];
-            var childPropertyPath = filter.Member.Substring(index + 1, (filter.Member.Length - (index + 1)));
+            var childPropertyPath = filter.Member.Substring(
+                index + 1,
+                (filter.Member.Length - (index + 1))
+            );
             var childFilter = new FilterDescriptor
             {
                 Member = childPropertyPath,
@@ -115,18 +124,19 @@ namespace WhiteLabel.Domain.Pagination
             var collectionPropertyTye = collectionInfo.Item3;
             var collectionChildPropertyType = collectionPropertyTye.GenericTypeArguments[0];
 
-            var createMethod = CreateExpressionMethodInfo.MakeGenericMethod(collectionChildPropertyType);
-            var childExpression = createMethod.Invoke(this, new object[] { childFilter }) as Expression;
+            var createMethod = CreateExpressionMethodInfo.MakeGenericMethod(
+                collectionChildPropertyType
+            );
+            var childExpression =
+                createMethod.Invoke(this, new object[] { childFilter }) as Expression;
 
-            if (childExpression == null) return null;
+            if (childExpression == null)
+                return null;
 
             var method = this.CompositeCharMethods[separator];
             var concreteMethod = method.MakeGenericMethod(collectionChildPropertyType);
 
-            IEnumerable<Expression> parameters = new[]
-            {
-                collectionInfo.Item1, childExpression
-            };
+            IEnumerable<Expression> parameters = new[] { collectionInfo.Item1, childExpression };
             var exp = Expression.Call(null, concreteMethod, parameters);
             var expression = Expression.Lambda<Func<T, bool>>(exp, collectionInfo.Item2);
 
@@ -148,7 +158,6 @@ namespace WhiteLabel.Domain.Pagination
             return Expression.Lambda<Func<T, bool>>(assign, left.Item2);
         }
 
-
         private ConstantExpression GetExpressionValue(FilterDescriptor filter, Type properType)
         {
             switch (filter.Operator)
@@ -167,7 +176,10 @@ namespace WhiteLabel.Domain.Pagination
                     return Expression.Constant(effectiveValue, properType);
                 case FilterOperator.IsContainedIn:
                 case FilterOperator.IsNotContainedIn:
-                    var array = filter.Value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    var array = filter.Value.Split(
+                        new[] { "," },
+                        StringSplitOptions.RemoveEmptyEntries
+                    );
                     var arrayValues = array.Select(x => x.ConvertTo(properType));
                     var castMethod = EnumerableExtensions.CastMethod;
                     var genericCastMethod = castMethod.MakeGenericMethod(properType);
@@ -178,7 +190,12 @@ namespace WhiteLabel.Domain.Pagination
             }
         }
 
-        private Expression GetAssignExpression(Type propertyType, FilterOperator filterOperator, Expression left, ConstantExpression right)
+        private Expression GetAssignExpression(
+            Type propertyType,
+            FilterOperator filterOperator,
+            Expression left,
+            ConstantExpression right
+        )
         {
             var effectiveType = propertyType.GetEffectiveType();
 
@@ -237,16 +254,17 @@ namespace WhiteLabel.Domain.Pagination
         private Expression ContainsWithExpression(Expression left, Expression right)
         {
             var method = StringExtensions.ContainsMethod;
-            IEnumerable<Expression> parameters = new[]
-            {
-                right
-            };
+            IEnumerable<Expression> parameters = new[] { right };
             var exp = Expression.Call(left, method, parameters);
 
             return exp;
         }
 
-        private Expression IsContainedInExpression(Expression left, Expression right, Type propertyType)
+        private Expression IsContainedInExpression(
+            Expression left,
+            Expression right,
+            Type propertyType
+        )
         {
             //var r = new[] {"1", "2", "3"};
             //var l = "1";
@@ -254,10 +272,7 @@ namespace WhiteLabel.Domain.Pagination
             // r.Contains(l);
 
             var method = EnumerableExtensions.ContainsMethod.MakeGenericMethod(propertyType);
-            IEnumerable<Expression> parameters = new[]
-            {
-                right, left
-            };
+            IEnumerable<Expression> parameters = new[] { right, left };
             var exp = Expression.Call(null, method, parameters);
 
             return exp;
@@ -267,8 +282,12 @@ namespace WhiteLabel.Domain.Pagination
 
         #region - String expression
 
-        private Expression GetAssignExpressionString(FilterOperator filterOperator, Expression left, Expression right,
-            Type propertyType)
+        private Expression GetAssignExpressionString(
+            FilterOperator filterOperator,
+            Expression left,
+            Expression right,
+            Type propertyType
+        )
         {
             switch (filterOperator)
             {
@@ -305,8 +324,12 @@ namespace WhiteLabel.Domain.Pagination
 
         #region - Numeric expression
 
-        private Expression GetAssignExpressionNumeric(FilterOperator filterOperator, Expression left, Expression right,
-            Type propertyType)
+        private Expression GetAssignExpressionNumeric(
+            FilterOperator filterOperator,
+            Expression left,
+            Expression right,
+            Type propertyType
+        )
         {
             switch (filterOperator)
             {
@@ -342,8 +365,12 @@ namespace WhiteLabel.Domain.Pagination
 
         #region - Boolean expression
 
-        private Expression GetAssignExpressionBoolean(FilterOperator filterOperator, Expression left, Expression right,
-            Type propertyType)
+        private Expression GetAssignExpressionBoolean(
+            FilterOperator filterOperator,
+            Expression left,
+            Expression right,
+            Type propertyType
+        )
         {
             switch (filterOperator)
             {
@@ -375,8 +402,12 @@ namespace WhiteLabel.Domain.Pagination
 
         #region - DateTime expression
 
-        private Expression GetAssignExpressionDateTime(FilterOperator filterOperator, Expression left, Expression right,
-            Type propertyType)
+        private Expression GetAssignExpressionDateTime(
+            FilterOperator filterOperator,
+            Expression left,
+            Expression right,
+            Type propertyType
+        )
         {
             switch (filterOperator)
             {
@@ -412,8 +443,12 @@ namespace WhiteLabel.Domain.Pagination
 
         #region - Enum expression
 
-        private Expression GetAssignExpressionEnum(FilterOperator filterOperator, Expression left, ConstantExpression right,
-            Type propertyType)
+        private Expression GetAssignExpressionEnum(
+            FilterOperator filterOperator,
+            Expression left,
+            ConstantExpression right,
+            Type propertyType
+        )
         {
             Type enumType;
             UnaryExpression convertExpression;

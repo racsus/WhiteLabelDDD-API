@@ -1,35 +1,35 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="DTOs\Customers\**" />
-    <Compile Remove="Interfaces\Customers\**" />
-    <EmbeddedResource Remove="DTOs\Customers\**" />
-    <EmbeddedResource Remove="Interfaces\Customers\**" />
-    <None Remove="DTOs\Customers\**" />
-    <None Remove="Interfaces\Customers\**" />
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="DTOs\Customers\**"/>
+        <Compile Remove="Interfaces\Customers\**"/>
+        <EmbeddedResource Remove="DTOs\Customers\**"/>
+        <EmbeddedResource Remove="Interfaces\Customers\**"/>
+        <None Remove="DTOs\Customers\**"/>
+        <None Remove="Interfaces\Customers\**"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Services\CustomerService.cs" />
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Services\CustomerService.cs"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Autofac" Version="6.1.0" />
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
-    <PackageReference Include="AutoMapper" Version="10.1.1" />
-    <PackageReference Include="FluentValidation" Version="9.3.0" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Autofac" Version="6.1.0"/>
+        <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0"/>
+        <PackageReference Include="AutoMapper" Version="10.1.1"/>
+        <PackageReference Include="FluentValidation" Version="9.3.0"/>
+        <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\WhiteLabel.Domain\WhiteLabel.Domain.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\WhiteLabel.Domain\WhiteLabel.Domain.csproj"/>
+    </ItemGroup>
 
 </Project>

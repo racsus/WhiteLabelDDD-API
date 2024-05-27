@@ -23,6 +23,7 @@ namespace WhiteLabel.Domain.Pagination
         {
             this.Specification = specification;
         }
+
         /// <summary>
         /// Specification to realize the query
         /// </summary>
@@ -48,10 +49,18 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="evaluator">IQueryableEvaluator</param>
         /// <param name="cancellationToken">CancelationsToken</param>
         /// <returns>Data resulting from the query</returns>
-        public virtual async Task<TResult> RunAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator,CancellationToken cancellationToken = default)
+        public virtual async Task<TResult> RunAsync(
+            IQueryable<TEntity> queryable,
+            IQueryableEvaluator evaluator,
+            CancellationToken cancellationToken = default
+        )
         {
             var processedQuery = this.RunQuery(queryable);
-            var result = await this.GenerateResultAsync(processedQuery, evaluator, cancellationToken);
+            var result = await this.GenerateResultAsync(
+                processedQuery,
+                evaluator,
+                cancellationToken
+            );
             return result;
         }
 
@@ -71,7 +80,10 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="queryable">IQueryable</param>
         /// <param name="evaluator">IQueryableEvaluator</param>
         /// <returns>Data resulting from the query</returns>
-        protected abstract TResult GenerateResult(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator);
+        protected abstract TResult GenerateResult(
+            IQueryable<TEntity> queryable,
+            IQueryableEvaluator evaluator
+        );
 
         /// <summary>
         /// Abstract method to be implemented in the inheriting classes that generates asynchronously the query result <typeparamref name="TResult"/>
@@ -80,7 +92,10 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="evaluator">IQueryableEvaluator</param>
         /// <param name="cancellationToken">CancelationToken</param>
         /// <returns>Data resulting from the query</returns>
-        protected abstract Task<TResult> GenerateResultAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator,CancellationToken cancellationToken = default);
-
+        protected abstract Task<TResult> GenerateResultAsync(
+            IQueryable<TEntity> queryable,
+            IQueryableEvaluator evaluator,
+            CancellationToken cancellationToken = default
+        );
     }
 }

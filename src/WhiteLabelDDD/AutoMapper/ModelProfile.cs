@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 
-
 namespace WhiteLabelDDD.WebAPI.AutoMapper
 {
     public class ModelProfile : Profile

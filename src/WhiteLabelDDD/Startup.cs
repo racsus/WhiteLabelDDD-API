@@ -3,22 +3,19 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using WhiteLabel.Application.Configuration;
 using WhiteLabel.Application.DTOs.Users;
 using WhiteLabel.Infrastructure.DependencyInjection;
+using WhiteLabel.WebAPI.Exceptions;
 using WhiteLabel.WebAPI.Filters;
-using WhiteLabelDDD.Exceptions;
-using WhiteLabelDDD.OAuth;
-using WhiteLabelDDD.Swagger;
+using WhiteLabel.WebAPI.OAuth;
+using WhiteLabel.WebAPI.Swagger;
 
-namespace WhiteLabelDDD
+namespace WhiteLabel.WebAPI
 {
     public class Startup
     {
@@ -29,91 +26,98 @@ namespace WhiteLabelDDD
 
         public Startup(IConfiguration configuration)
         {
-            this.Configuration = configuration;
-            this.AuthConfiguration = configuration.GetSection(AuthConfiguration.Section).Get<AuthConfiguration>();
-            this.SwaggerConfiguration = configuration.GetSection(SwaggerConfiguration.Section).Get<SwaggerConfiguration>();
-            this.ApiMetadata = configuration.GetSection(ApiMetadataConfiguration.Section).Get<ApiMetadataConfiguration>();
+            Configuration = configuration;
+            AuthConfiguration = configuration
+                .GetSection(AuthConfiguration.Section)
+                .Get<AuthConfiguration>();
+            SwaggerConfiguration = configuration
+                .GetSection(SwaggerConfiguration.Section)
+                .Get<SwaggerConfiguration>();
+            ApiMetadata = configuration
+                .GetSection(ApiMetadataConfiguration.Section)
+                .Get<ApiMetadataConfiguration>();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            JwtConfig.ConfigureServices(services, this.AuthConfiguration);
+            JwtConfig.ConfigureServices(services, AuthConfiguration);
 
             #region Allow-Orgin
+
             services.AddCors(c =>
             {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
+
             #endregion
 
             services.AddControllers();
             // Fluent Validation
-            services.AddMvc(options =>
-            {
-                options.Filters.Add(new ValidationFilter());
-            }).AddFluentValidation(options =>
-            {
-                options.RegisterValidatorsFromAssemblyContaining<UserDTO>();
-            });
+            services
+                .AddMvc(options =>
+                {
+                    options.Filters.Add(new ValidationFilter());
+                })
+                .AddFluentValidation(options =>
+                {
+                    options.RegisterValidatorsFromAssemblyContaining<UserDto>();
+                });
 
-            // Add API Versioning to as service to your project 
+            // Add API Versioning to as service to your project
             services.AddApiVersioning(config =>
             {
                 // Specify the default API Version as 1.0
                 config.DefaultApiVersion = new ApiVersion(1, 0);
-                // If the client hasn't specified the API version in the request, use the default API version number 
+                // If the client hasn't specified the API version in the request, use the default API version number
                 config.AssumeDefaultVersionWhenUnspecified = true;
                 // Advertise the API versions supported for the particular endpoint
                 config.ReportApiVersions = true;
                 // Supporting multiple versioning scheme
-                config.ApiVersionReader = ApiVersionReader.Combine(new HeaderApiVersionReader("X-version"), new QueryStringApiVersionReader("api-version"));
+                config.ApiVersionReader = ApiVersionReader.Combine(
+                    new HeaderApiVersionReader("X-version"),
+                    new QueryStringApiVersionReader("api-version")
+                );
             });
 
             // Add Swagger services
-            SwaggerConfig.ConfigureServices(services, this.AuthConfiguration, this.ApiMetadata);
+            SwaggerConfig.ConfigureServices(services, AuthConfiguration, ApiMetadata);
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            ContainerSetup.Initialize(builder, Configuration, this.AuthConfiguration);
+            ContainerSetup.Initialize(builder, Configuration, AuthConfiguration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
 
             // global error handler
             app.UseMiddleware<ErrorHandlingMiddleware>();
 
             app.UseHttpsRedirection();
 
-            JwtConfig.Configure(app, this.AuthConfiguration);
-            
+            JwtConfig.Configure(app, AuthConfiguration);
+
             // Configure Swagger
-            SwaggerConfig.Configure(app, this.SwaggerConfiguration, this.AuthConfiguration, this.ApiMetadata);
+            SwaggerConfig.Configure(app, SwaggerConfiguration, AuthConfiguration, ApiMetadata);
 
             // CORS
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseRouting();
 
-            if (this.AuthConfiguration?.IsEnabled == true)
+            if (AuthConfiguration?.IsEnabled == true)
             {
                 app.UseAuthentication();
                 app.UseAuthorization();
 
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapControllers()
-                    .RequireAuthorization();
+                    endpoints.MapControllers().RequireAuthorization();
                 });
             }
             else
@@ -123,7 +127,6 @@ namespace WhiteLabelDDD
                     endpoints.MapControllers();
                 });
             }
-
         }
     }
 }

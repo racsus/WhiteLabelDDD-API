@@ -2,10 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using System;
 using System.Threading.Tasks;
-using WhiteLabel.Domain.Pagination;
 using WhiteLabel.Infrastructure.Data;
+using WhiteLabel.Infrastructure.Data.Pagination;
 using WhiteLabel.Infrastructure.Data.Repositories;
 using WhiteLabel.Infrastructure.Events;
 
@@ -13,15 +12,15 @@ namespace WhiteLabel.UnitTest.Repository
 {
     public abstract class BaseAppDbContextTest<TId>
     {
-        protected AppDbContext _dbContext;
+        protected AppDbContext DbContext;
         protected GenericRepository<TId> Repository;
 
         public BaseAppDbContextTest()
         {
-            this.Repository = GetRepository();
+            Repository = GetRepository();
         }
 
-        protected static DbContextOptions<AppDbContext> CreateNewContextOptions()
+        private static DbContextOptions<AppDbContext> CreateNewContextOptions()
         {
             // Create a fresh service provider, and therefore a fresh
             // InMemory database instance.
@@ -32,55 +31,49 @@ namespace WhiteLabel.UnitTest.Repository
             // Create a new options instance telling the context to use an
             // InMemory database and the new service provider.
             var builder = new DbContextOptionsBuilder<AppDbContext>();
-            builder.UseInMemoryDatabase("cleanarchitecture")
-                   .UseInternalServiceProvider(serviceProvider);
+            builder
+                .UseInMemoryDatabase("WhiteLabelMemoryDatabase")
+                .UseInternalServiceProvider(serviceProvider);
 
             return builder.Options;
         }
 
-        protected GenericRepository<TId> GetRepository()
+        private GenericRepository<TId> GetRepository()
         {
             var options = CreateNewContextOptions();
             var mockDispatcher = new Mock<IDomainEventDispatcher>();
 
-            SpecificationBuilder specificationBuilder = new SpecificationBuilder(new NullLogger<SpecificationBuilder>());
-            EfCoreQueryableEvaluator evaluator = new EfCoreQueryableEvaluator();
-            _dbContext = new AppDbContext(options, mockDispatcher.Object);
+            var specificationBuilder = new SpecificationBuilder(
+                new NullLogger<SpecificationBuilder>()
+            );
+            var evaluator = new EfCoreQueryableEvaluator();
+            DbContext = new AppDbContext(options, mockDispatcher.Object);
 
-            return new GenericRepository<TId>(_dbContext, evaluator, specificationBuilder);
+            return new GenericRepository<TId>(DbContext, evaluator, specificationBuilder);
         }
 
         protected void SaveChanges()
         {
-            if (_dbContext != null)
-            {
-                _dbContext.SaveChanges();
-            }
+            if (DbContext != null)
+                DbContext.SaveChanges();
         }
 
         protected async Task SaveChangesAsync()
         {
-            if (_dbContext != null)
-            {
-                await _dbContext.SaveChangesAsync();
-            }
+            if (DbContext != null)
+                await DbContext.SaveChangesAsync();
         }
 
         protected void ClearMemory()
         {
-            if (_dbContext != null)
-            {
-                _dbContext.Database.EnsureDeleted();
-            }
+            if (DbContext != null)
+                DbContext.Database.EnsureDeleted();
         }
 
         protected async Task ClearMemoryAsync()
         {
-            if (_dbContext != null)
-            {
-                await _dbContext.Database.EnsureDeletedAsync();
-            }
+            if (DbContext != null)
+                await DbContext.Database.EnsureDeletedAsync();
         }
-
     }
 }

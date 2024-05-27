@@ -17,9 +17,7 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="take">Take</param>
         /// <param name="skip">Skip</param>
         public EntityPagedValueQuery(ISpecification<TEntity> specification, int? take, int? skip)
-            : base(specification, take, skip)
-        {
-        }
+            : base(specification, take, skip) { }
 
         /// <summary>
         /// Materializes the query and returns data in <typeparamref name="TEntity"/>

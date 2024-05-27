@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using WhiteLabel.Domain.Users;
 
 namespace WhiteLabel.UnitTest.Builders
@@ -10,38 +8,38 @@ namespace WhiteLabel.UnitTest.Builders
     /// </summary>
     public class UserBuilder
     {
-        private User _entity = new User();
+        private User entity = new();
+
         public UserBuilder Id(Guid id)
         {
-            _entity.Id = id;
+            entity.Id = id;
             return this;
         }
 
         public UserBuilder Name(string name)
         {
-            _entity.Name = name;
+            entity.Name = name;
             return this;
         }
 
         public UserBuilder Email(string email)
         {
-            _entity.Email = email;
+            entity.Email = email;
             return this;
         }
-
 
         // more methods omitted
 
         public User Build()
         {
-            return _entity;
+            return entity;
         }
 
         // This approach allows easy modification of test values
         // Another approach would just have a static method returning AddressDTO
         public UserBuilder WithTestValues()
         {
-            _entity = new User
+            entity = new User
             {
                 Id = Guid.NewGuid(),
                 Name = "Test Name",

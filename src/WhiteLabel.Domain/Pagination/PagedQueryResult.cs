@@ -2,7 +2,8 @@
 
 namespace WhiteLabel.Domain.Pagination
 {
-    public class PagedQueryResult<T> : MultipleQueryResult<T>, IPagedQueryResult<T> where T : class
+    public class PagedQueryResult<T> : MultipleQueryResult<T>, IPagedQueryResult<T>
+        where T : class
     {
         /// <summary>
         /// Creates an instance of <see cref="PagedQueryResult"/>
@@ -11,7 +12,8 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="take">Take</param>
         /// <param name="skip">Skip</param>
         /// <param name="total">Total results</param>
-        public PagedQueryResult(IEnumerable<T> result, int? take, int? skip, int total) : base(result)
+        public PagedQueryResult(IEnumerable<T> result, int? take, int? skip, int total)
+            : base(result)
         {
             this.Skip = skip;
             this.Take = take;
@@ -22,10 +24,12 @@ namespace WhiteLabel.Domain.Pagination
         /// Skip
         /// </summary>
         public int? Skip { get; }
+
         /// <summary>
         /// Take
         /// </summary>
         public int? Take { get; }
+
         /// <summary>
         /// Total result
         /// </summary>

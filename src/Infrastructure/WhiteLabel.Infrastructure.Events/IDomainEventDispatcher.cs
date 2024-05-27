@@ -1,5 +1,4 @@
-﻿
-using WhiteLabel.Domain.Generic;
+﻿using WhiteLabel.Domain.Generic;
 
 namespace WhiteLabel.Infrastructure.Events
 {

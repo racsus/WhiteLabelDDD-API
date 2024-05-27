@@ -1,7 +1,6 @@
-﻿
-namespace WhiteLabel.Application.DTOs.Generic
+﻿namespace WhiteLabel.Application.DTOs.Generic
 {
-    public class GroupDTO
+    public class GroupDto
     {
         public string Key { get; set; }
     }

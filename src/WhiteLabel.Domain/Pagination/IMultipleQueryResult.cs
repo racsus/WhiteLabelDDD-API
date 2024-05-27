@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-
 namespace WhiteLabel.Domain.Pagination
 {
     /// <summary>
@@ -8,7 +7,8 @@ namespace WhiteLabel.Domain.Pagination
     /// </summary>
     /// <typeparam name="T">Entity type</typeparam>
 
-    public interface IMultipleQueryResult<T> : IQueryResult<T> where T : class
+    public interface IMultipleQueryResult<T> : IQueryResult<T>
+        where T : class
     {
         /// <summary>
         /// Data resulting form the query in <typeparamref name="T"/>

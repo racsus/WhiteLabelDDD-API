@@ -10,44 +10,55 @@ namespace WhiteLabel.WebAPI.Security
 {
     public class AuthorizeWithPermissionsFilter : IAsyncAuthorizationFilter
     {
-        private readonly IAuthorizationService _authorization;
-        private readonly AuthConfiguration _authConfiguration;
-        public string Policy { get; private set; }
+        private readonly IAuthorizationService authorization;
+        private readonly AuthConfiguration authConfiguration;
+        private string Policy { get; set; }
 
-        public AuthorizeWithPermissionsFilter(string policy, IAuthorizationService authorization, AuthConfiguration authConfiguration)
+        public AuthorizeWithPermissionsFilter(
+            string policy,
+            IAuthorizationService authorization,
+            AuthConfiguration authConfiguration
+        )
         {
-            this.Policy = policy;
-            _authorization = authorization;
-            _authConfiguration = authConfiguration;
+            Policy = policy;
+            this.authorization = authorization;
+            this.authConfiguration = authConfiguration;
         }
 
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            if (_authConfiguration.AuthType.ToUpper() == AuthConstants.Auth0)
+            if (authConfiguration.AuthType.ToUpper() == AuthConstants.Auth0)
             {
-                var permissions = context.HttpContext.User.Claims.Where(x => x.Type == "permissions")?.Select(x => x.Value).ToList();
-                var authorized = permissions.Contains(this.Policy);
+                var permissions = context.HttpContext.User.Claims
+                    .Where(x => x.Type == "permissions")
+                    .Select(x => x.Value)
+                    .ToList();
+                var authorized = permissions.Contains(Policy);
                 if (!authorized)
                 {
                     context.Result = new ForbidResult();
-                    return;
-                }
-            } else if (_authConfiguration.AuthType.ToUpper() == AuthConstants.Azure)
-            {
-                var authorized = await _authorization.AuthorizeAsync(context.HttpContext.User, this.Policy);
-                if (!authorized.Succeeded)
-                {
-                    context.Result = new ForbidResult();
-                    return;
                 }
             }
-            else if (_authConfiguration.AuthType.ToUpper() == AuthConstants.Database)
+            else if (authConfiguration.AuthType.ToUpper() == AuthConstants.Azure)
             {
-                var authorized = await _authorization.AuthorizeAsync(context.HttpContext.User, this.Policy);
+                var authorized = await authorization.AuthorizeAsync(
+                    context.HttpContext.User,
+                    Policy
+                );
                 if (!authorized.Succeeded)
                 {
                     context.Result = new ForbidResult();
-                    return;
+                }
+            }
+            else if (authConfiguration.AuthType.ToUpper() == AuthConstants.Database)
+            {
+                var authorized = await authorization.AuthorizeAsync(
+                    context.HttpContext.User,
+                    Policy
+                );
+                if (!authorized.Succeeded)
+                {
+                    context.Result = new ForbidResult();
                 }
             }
         }

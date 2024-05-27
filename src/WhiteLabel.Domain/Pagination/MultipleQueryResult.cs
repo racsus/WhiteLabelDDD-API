@@ -2,7 +2,8 @@
 
 namespace WhiteLabel.Domain.Pagination
 {
-    public class MultipleQueryResult<T> : IMultipleQueryResult<T> where T : class
+    public class MultipleQueryResult<T> : IMultipleQueryResult<T>
+        where T : class
     {
         /// <summary>
         /// Creates an instance of <see cref="MultipleQueryResult"/>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using WhiteLabel.Application.DTOs.Generic;
 using WhiteLabel.Application.DTOs.Users;
@@ -10,16 +9,16 @@ using WhiteLabel.Domain.Pagination;
 
 namespace WhiteLabel.Application.Interfaces.Users
 {
-    public interface IUserService: IBusinessService
+    public interface IUserService : IBusinessService
     {
-        Task<UserInfoDTO> GetUserInfo(string token, ClaimsPrincipal principal);
-        Task<Response<UserDTO>> Add(UserDTO userDto);
-        Task Update(UserDTO userDto);
+        Task<UserInfoDto> GetUserInfo(string token, ClaimsPrincipal principal);
+        Task<Response<UserDto>> Add(UserDto userDto);
+        Task Update(UserDto userDto);
         Task Remove(Guid userId);
-        Task<Response<UserDTO>> Get(Guid userId);
-        Task<Response<IEnumerable<UserDTO>>> GetAll();
+        Task<Response<UserDto>> Get(Guid userId);
+        Task<Response<IEnumerable<UserDto>>> GetAll();
         Task<bool> IsEmailAvailable(string email);
-        Task<Response<PagedQueryResultDTO<UserDTO>>> GetPaginated(IPageOption pageDescriptor);
-        Task<Response<IEnumerable<GroupDTO>>> GetGrouped(string fieldToGroup);
+        Task<Response<PagedQueryResultDto<UserDto>>> GetPaginated(IPageOption pageDescriptor);
+        Task<Response<IEnumerable<GroupDto>>> GetGrouped(string fieldToGroup);
     }
 }

@@ -9,14 +9,17 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using WhiteLabel.Application.Configuration;
 using WhiteLabel.Application.Constants;
 
-namespace WhiteLabelDDD.Swagger
+namespace WhiteLabel.WebAPI.Swagger
 {
     internal class SecurityRequirementsOperationFilter : IOperationFilter
     {
         private readonly IOptions<AuthorizationOptions> authorizationOptions;
         private readonly AuthConfiguration authConfiguration;
 
-        public SecurityRequirementsOperationFilter(IOptions<AuthorizationOptions> authorizationOptions, AuthConfiguration authConfiguration)
+        public SecurityRequirementsOperationFilter(
+            IOptions<AuthorizationOptions> authorizationOptions,
+            AuthConfiguration authConfiguration
+        )
         {
             this.authorizationOptions = authorizationOptions;
             this.authConfiguration = authConfiguration;
@@ -35,36 +38,51 @@ namespace WhiteLabelDDD.Swagger
                     securitySchemeId = "Bearer";
                     break;
             }
-            var controllerPolicies = context.MethodInfo.DeclaringType.GetTypeInfo().GetCustomAttributes(true)
+
+            var controllerPolicies = context.MethodInfo.DeclaringType
+                .GetTypeInfo()
+                .GetCustomAttributes(true)
                 .OfType<AuthorizeAttribute>()
                 .Select(attr => attr.Policy);
-            var actionPolicies = context.MethodInfo.DeclaringType.GetTypeInfo().GetCustomAttributes(true)
+            var actionPolicies = context.MethodInfo.DeclaringType
+                .GetTypeInfo()
+                .GetCustomAttributes(true)
                 .OfType<AuthorizeAttribute>()
                 .Select(attr => attr.Policy);
             var policies = controllerPolicies.Union(actionPolicies).Distinct();
             var requiredClaimTypes = policies
-                .Select<string, AuthorizationPolicy>(x => this.authorizationOptions.Value.GetPolicy(x))
+                .Select(x => authorizationOptions.Value.GetPolicy(x))
                 .SelectMany(x => x.Requirements)
                 .OfType<ClaimsAuthorizationRequirement>()
                 .Select(x => x.ClaimType);
 
-            if ((requiredClaimTypes.Any() || this.authConfiguration.IsEnabled) && (!string.IsNullOrEmpty(securitySchemeId)))
+            if (
+                (requiredClaimTypes.Any() || authConfiguration.IsEnabled)
+                && !string.IsNullOrEmpty(securitySchemeId)
+            )
             {
-                operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
+                operation.Responses.Add(
+                    "401",
+                    new OpenApiResponse { Description = "Unauthorized" }
+                );
                 operation.Responses.Add("403", new OpenApiResponse { Description = "Forbidden" });
 
                 operation.Security = new List<OpenApiSecurityRequirement>
                 {
-                    new OpenApiSecurityRequirement
+                    new()
+                    {
                         {
+                            new OpenApiSecurityScheme
                             {
-                                new OpenApiSecurityScheme
+                                Reference = new OpenApiReference
                                 {
-                                    Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = securitySchemeId }
-                                },
-                                new[] { "readAccess", "writeAccess" }
-                            }
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = securitySchemeId
+                                }
+                            },
+                            new[] { "readAccess", "writeAccess" }
                         }
+                    }
                 };
             }
         }

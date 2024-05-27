@@ -19,7 +19,10 @@ namespace WhiteLabel.Domain.Pagination
         /// </summary>
         /// <param name="filters"></param>
         /// <param name="sorts"></param>
-        public PageDescriptor(ICollection<FilterDescriptor> filters, ICollection<SortDescriptor> sorts)
+        public PageDescriptor(
+            ICollection<FilterDescriptor> filters,
+            ICollection<SortDescriptor> sorts
+        )
         {
             this.Filters = filters ?? new Collection<FilterDescriptor>();
             this.Sorts = sorts ?? new Collection<SortDescriptor>();
@@ -29,6 +32,7 @@ namespace WhiteLabel.Domain.Pagination
         /// Number of elements to skip in a section
         /// </summary>
         public int? Skip { get; set; }
+
         /// <summary>
         /// Number of elements to select
         /// </summary>
@@ -38,6 +42,7 @@ namespace WhiteLabel.Domain.Pagination
         /// Collection of FiltersDescriptors
         /// </summary>
         public ICollection<FilterDescriptor> Filters { get; }
+
         /// <summary>
         /// Collection of SortDescriptors
         /// </summary>

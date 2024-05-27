@@ -1,13 +1,11 @@
 ﻿using Ardalis.GuardClauses;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using WhiteLabel.Domain.Events;
 using WhiteLabel.Domain.Generic;
 
 namespace WhiteLabel.Domain.Users
 {
-    public class User: BaseEntity<Guid>
+    public class User : BaseEntity<Guid>
     {
         public string Name { get; set; }
         public string Email { get; set; }
@@ -23,7 +21,7 @@ namespace WhiteLabel.Domain.Users
             Guard.Against.Null(name, nameof(name));
             Guard.Against.Null(email, nameof(email));
 
-            User user = new User()
+            var user = new User()
             {
                 Id = id,
                 Name = name,
@@ -40,8 +38,8 @@ namespace WhiteLabel.Domain.Users
             Guard.Against.Null(name, nameof(name));
             Guard.Against.Null(email, nameof(email));
 
-            this.Name = name;
-            this.Email = email;
+            Name = name;
+            Email = email;
         }
     }
 }

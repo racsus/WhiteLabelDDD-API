@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using WhiteLabel.Domain.Pagination;
 
-namespace WhiteLabel.Domain.Pagination
+namespace WhiteLabel.Infrastructure.Data.Pagination
 {
     public class PagedListModel : IPageOption
     {

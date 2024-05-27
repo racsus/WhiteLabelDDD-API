@@ -12,8 +12,9 @@ namespace WhiteLabel.Domain.Pagination
     /// </summary>
     /// <typeparam name="TEntity">Entity Type</typeparam>
     /// <typeparam name="TResult">Result Type</typeparam>
-    public abstract class PagedValueQuery<TEntity, TResult> : Query<TEntity, IPagedQueryResult<TResult>>,
-        IPagedValueQuery<TEntity, TResult>
+    public abstract class PagedValueQuery<TEntity, TResult>
+        : Query<TEntity, IPagedQueryResult<TResult>>,
+            IPagedValueQuery<TEntity, TResult>
         where TEntity : class
         where TResult : class
     {
@@ -44,6 +45,7 @@ namespace WhiteLabel.Domain.Pagination
         /// Skip
         /// </summary>
         public int? Skip { get; }
+
         /// <summary>
         /// Take
         /// </summary>
@@ -55,7 +57,10 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="queryable">IQueryable</param>
         /// <param name="evaluator">IQueryableEvaluator</param>
         /// <returns>Data resulting from the query</returns>
-        public override IPagedQueryResult<TResult> Run(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator)
+        public override IPagedQueryResult<TResult> Run(
+            IQueryable<TEntity> queryable,
+            IQueryableEvaluator evaluator
+        )
         {
             queryable = this.RunQuery(queryable);
             this.count = evaluator.Count(queryable);
@@ -72,7 +77,11 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="evaluator">IQueryableEvaluator</param>
         /// <param name="cancellationToken">CancelationToken</param>
         /// <returns>Data resulting from the query</returns>
-        public override async Task<IPagedQueryResult<TResult>> RunAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator, CancellationToken cancellationToken = default)
+        public override async Task<IPagedQueryResult<TResult>> RunAsync(
+            IQueryable<TEntity> queryable,
+            IQueryableEvaluator evaluator,
+            CancellationToken cancellationToken = default
+        )
         {
             queryable = this.RunQuery(queryable);
             this.count = await evaluator.CountAsync(queryable, cancellationToken);
@@ -100,7 +109,6 @@ namespace WhiteLabel.Domain.Pagination
                 }
             }
 
-
             return queryable.Sort(effectiveSort);
         }
 
@@ -121,7 +129,6 @@ namespace WhiteLabel.Domain.Pagination
                 queryable = queryable.Take(this.Take.Value);
             }
 
-
             return queryable;
         }
 
@@ -131,7 +138,10 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="queryable">IQueryable</param>
         /// <param name="evaluator">IQueryableEvaluatos</param>
         /// <returns>Data resulting from the query</returns>
-        protected override IPagedQueryResult<TResult> GenerateResult(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator)
+        protected override IPagedQueryResult<TResult> GenerateResult(
+            IQueryable<TEntity> queryable,
+            IQueryableEvaluator evaluator
+        )
         {
             var materialized = this.Materialize(queryable);
             var values = evaluator.ToArray(materialized);
@@ -145,7 +155,11 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="evaluator">IqueryableEvaluator</param>
         /// <param name="cancellationToken">CancelationToken</param>
         /// <returns>Data resulting from the query</returns>
-        protected override async Task<IPagedQueryResult<TResult>> GenerateResultAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator, CancellationToken cancellationToken = default)
+        protected override async Task<IPagedQueryResult<TResult>> GenerateResultAsync(
+            IQueryable<TEntity> queryable,
+            IQueryableEvaluator evaluator,
+            CancellationToken cancellationToken = default
+        )
         {
             var materialized = this.Materialize(queryable);
             var values = await evaluator.ToArrayAsync(materialized, cancellationToken);

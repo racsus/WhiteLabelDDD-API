@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WhiteLabel.Application.Configuration
+﻿namespace WhiteLabel.Application.Configuration
 {
     public class ApiContactData
     {

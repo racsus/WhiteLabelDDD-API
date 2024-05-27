@@ -1,17 +1,24 @@
-﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using WhiteLabel.Application.DTOs.Generic;
 
-namespace WhiteLabelDDD.Exceptions
+namespace WhiteLabel.WebAPI.Exceptions
 {
     public class ErrorHandlingMiddleware
     {
         private readonly RequestDelegate next;
-        public ErrorHandlingMiddleware(RequestDelegate next) { this.next = next; }
-        public async Task Invoke(HttpContext context /* other dependencies */)
+
+        public ErrorHandlingMiddleware(RequestDelegate next)
+        {
+            this.next = next;
+        }
+
+        public async Task Invoke(
+            HttpContext context /* other dependencies */
+        )
         {
             try
             {
@@ -28,7 +35,7 @@ namespace WhiteLabelDDD.Exceptions
             var code = HttpStatusCode.InternalServerError;
 
             var result = JsonConvert.SerializeObject(new Response<string>(exception.Message));
-            context.Response.ContentType = "application/json"; 
+            context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)code;
             return context.Response.WriteAsync(result);
         }

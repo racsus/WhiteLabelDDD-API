@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using WhiteLabel.Domain.Pagination;
+﻿using System.Collections.Generic;
 
 namespace WhiteLabel.Application.DTOs.Generic
 {
-    public class PagedQueryResultDTO<T> 
+    public class PagedQueryResultDto<T>
         where T : class
-
     {
         public int? Take { get; }
 
@@ -17,12 +13,12 @@ namespace WhiteLabel.Application.DTOs.Generic
 
         public IEnumerable<T> Result { get; }
 
-        public PagedQueryResultDTO(int? take, int? skip, int total, IEnumerable<T> result)
+        public PagedQueryResultDto(int? take, int? skip, int total, IEnumerable<T> result)
         {
-            this.Take = take;
-            this.Skip = skip;
-            this.Total = total;
-            this.Result = result;
+            Take = take;
+            Skip = skip;
+            Total = total;
+            Result = result;
         }
     }
 }

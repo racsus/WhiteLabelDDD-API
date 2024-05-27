@@ -1,16 +1,19 @@
 ﻿using System.Collections.Generic;
 
-namespace WhiteLabel.Domain.Pagination
+namespace WhiteLabel.Infrastructure.Data.Pagination
 {
-    public class MultipleQueryResult<T> : IMultipleQueryResult<T> where T : class
+    public class MultipleQueryResult<T> : IMultipleQueryResult<T>
+        where T : class
     {
         /// <summary>
-        /// Creates an instance of <see cref="MultipleQueryResult"/>
+        /// Creates an instance of <see>
+        ///     <cref>MultipleQueryResult</cref>
+        /// </see>
         /// </summary>
         /// <param name="result"></param>
-        public MultipleQueryResult(IEnumerable<T> result)
+        protected MultipleQueryResult(IEnumerable<T> result)
         {
-            this.Result = result;
+            Result = result;
         }
 
         /// <summary>

@@ -8,15 +8,22 @@ namespace System.Linq
     {
         public static MethodInfo GetOrderMethod(this SortDirection direction)
         {
-            return direction == SortDirection.Ascending ? QueryableExtensions.OrderByMethod : QueryableExtensions.OrderByDescendingMethod;
+            return direction == SortDirection.Ascending
+                ? QueryableExtensions.OrderByMethod
+                : QueryableExtensions.OrderByDescendingMethod;
         }
 
         public static MethodInfo GetThenMethod(this SortDirection direction)
         {
-            return direction == SortDirection.Ascending ? QueryableExtensions.ThenByMethod : QueryableExtensions.ThenByDescendingMethod;
+            return direction == SortDirection.Ascending
+                ? QueryableExtensions.ThenByMethod
+                : QueryableExtensions.ThenByDescendingMethod;
         }
 
-        public static IQueryable<T> Sort<T>(this IQueryable<T> queryable, SortDescriptor[] effectiveSort)
+        public static IQueryable<T> Sort<T>(
+            this IQueryable<T> queryable,
+            SortDescriptor[] effectiveSort
+        )
         {
             if (effectiveSort == null)
             {

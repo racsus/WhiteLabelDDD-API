@@ -5,7 +5,7 @@ using WhiteLabel.Domain.Generic;
 
 namespace WhiteLabel.Domain.Customers
 {
-    public class CustomerEmail: BaseEntity<int>
+    public class CustomerEmail : BaseEntity<int>
     {
         public int CustomerId { get; set; }
         public string EmailAddress { get; set; }

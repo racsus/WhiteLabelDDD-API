@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace WhiteLabel.Domain.Generic
 {
     public abstract class BaseEntityWithEvents
     {
-        public List<BaseDomainEvent> Events = new List<BaseDomainEvent>();
+        public readonly List<BaseDomainEvent> Events = new();
     }
 }

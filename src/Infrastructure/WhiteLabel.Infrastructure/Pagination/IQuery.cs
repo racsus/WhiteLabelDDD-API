@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using WhiteLabel.Domain.Pagination;
 
-namespace WhiteLabel.Domain.Pagination
+namespace WhiteLabel.Infrastructure.Data.Pagination
 {
     /// <summary>
     /// Query interface
@@ -25,9 +26,15 @@ namespace WhiteLabel.Domain.Pagination
         /// Given a queryable and a queryableEvaluator realizes the query asynchronously
         /// </summary>
         /// <param name="queryable">IQueryable</param>
-        /// <param name="evaluator">IQueryableEvaluator</param>
-        /// <param name="cancellationToken">CancelationToken</param>
+        /// <param name="includes"></param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <param name="evaluatorRunAsync"></param>
         /// <returns>Data resulting from the query</returns>
-        Task<TResult> RunAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluatorRunAsync, string[] includes, CancellationToken cancellationToken = default);
+        Task<TResult> RunAsync(
+            IQueryable<TEntity> queryable,
+            IQueryableEvaluator evaluatorRunAsync,
+            string[] includes,
+            CancellationToken cancellationToken = default
+        );
     }
 }

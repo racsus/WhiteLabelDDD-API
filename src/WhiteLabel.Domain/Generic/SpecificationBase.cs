@@ -5,12 +5,10 @@ namespace WhiteLabel.Domain.Generic
 {
     public class SpecificationBase<T> : ISpecification<T>
     {
-        private Func<T, bool> _compiledExpression;
+        private Func<T, bool> compiledExpression;
 
-        private Func<T, bool> CompiledExpression
-        {
-            get { return _compiledExpression ?? (_compiledExpression = SpecExpression.Compile()); }
-        }
+        private Func<T, bool> CompiledExpression =>
+            compiledExpression ??= SpecExpression.Compile();
 
         public static ISpecification<T> False { get; } = new SpecificationBase<T>(x => false);
         public static ISpecification<T> True { get; } = new SpecificationBase<T>(x => true);
@@ -23,8 +21,7 @@ namespace WhiteLabel.Domain.Generic
 
         public SpecificationBase(Expression<Func<T, bool>> specExpression)
         {
-            this.SpecExpression = specExpression;
+            SpecExpression = specExpression;
         }
-
     }
 }

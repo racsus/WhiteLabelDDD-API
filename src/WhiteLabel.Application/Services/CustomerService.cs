@@ -4,7 +4,5 @@ using System.Text;
 
 namespace WhiteLabel.Application.Services
 {
-    public class CustomerService
-    {
-    }
+    public class CustomerService { }
 }

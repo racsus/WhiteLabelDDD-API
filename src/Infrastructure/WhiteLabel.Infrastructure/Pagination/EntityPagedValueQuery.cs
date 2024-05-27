@@ -1,7 +1,8 @@
 using System.Linq;
 using WhiteLabel.Domain.Generic;
+using WhiteLabel.Domain.Pagination;
 
-namespace WhiteLabel.Domain.Pagination
+namespace WhiteLabel.Infrastructure.Data.Pagination
 {
     /// <summary>
     /// Class to build pagination in queries
@@ -11,9 +12,7 @@ namespace WhiteLabel.Domain.Pagination
         where TEntity : class
     {
         public EntityPagedValueQuery(ISpecification<TEntity> specification, int? take, int? skip)
-            : base(specification, take, skip)
-        {
-        }
+            : base(specification, take, skip) { }
 
         /// <summary>
         /// Materializes the query and returns data in <typeparamref name="TEntity"/>

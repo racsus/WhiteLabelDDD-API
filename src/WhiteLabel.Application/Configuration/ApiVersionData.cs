@@ -1,5 +1,4 @@
-﻿
-namespace WhiteLabel.Application.Configuration
+﻿namespace WhiteLabel.Application.Configuration
 {
     public class ApiVersionData
     {

@@ -1,22 +1,19 @@
 ﻿using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace WhiteLabel.WebAPI.Swagger
 {
-    public class ReplaceVersionWithExactValueInPath : IDocumentFilter
+    public abstract class ReplaceVersionWithExactValueInPath : IDocumentFilter
     {
         public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
             var paths = new Dictionary<string, OpenApiPathItem>(swaggerDoc.Paths);
             swaggerDoc.Paths.Clear();
-            foreach (var path in paths)
+            foreach (var (s, value) in paths)
             {
-                var key = path.Key.Replace("{version}", swaggerDoc.Info.Version);
-                var value = path.Value;
+                var key = s.Replace("{version}", swaggerDoc.Info.Version);
                 swaggerDoc.Paths.Add(key, value);
-
             }
         }
     }

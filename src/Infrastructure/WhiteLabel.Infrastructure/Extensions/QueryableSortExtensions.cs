@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using WhiteLabel.Domain.Pagination;
+using WhiteLabel.Infrastructure.Data.Extensions;
 
 // ReSharper disable once CheckNamespace
 namespace System.Linq
@@ -8,20 +9,25 @@ namespace System.Linq
     {
         public static MethodInfo GetOrderMethod(this SortDirection direction)
         {
-            return direction == SortDirection.Ascending ? QueryableExtensions.OrderByMethod : QueryableExtensions.OrderByDescendingMethod;
+            return direction == SortDirection.Ascending
+                ? QueryableExtensions.OrderByMethod
+                : QueryableExtensions.OrderByDescendingMethod;
         }
 
         public static MethodInfo GetThenMethod(this SortDirection direction)
         {
-            return direction == SortDirection.Ascending ? QueryableExtensions.ThenByMethod : QueryableExtensions.ThenByDescendingMethod;
+            return direction == SortDirection.Ascending
+                ? QueryableExtensions.ThenByMethod
+                : QueryableExtensions.ThenByDescendingMethod;
         }
 
-        public static IQueryable<T> Sort<T>(this IQueryable<T> queryable, SortOption[] effectiveSort)
+        public static IQueryable<T> Sort<T>(
+            this IQueryable<T> queryable,
+            SortOption[] effectiveSort
+        )
         {
             if (effectiveSort == null)
-            {
                 return queryable;
-            }
 
             var first = effectiveSort.FirstOrDefault();
             if (first != null)

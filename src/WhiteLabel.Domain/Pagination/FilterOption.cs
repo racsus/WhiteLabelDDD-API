@@ -1,5 +1,4 @@
-﻿
-namespace WhiteLabel.Domain.Pagination
+﻿namespace WhiteLabel.Domain.Pagination
 {
     /// <summary>
     ///  Indicates the filter options
@@ -8,7 +7,7 @@ namespace WhiteLabel.Domain.Pagination
     public class FilterOption
     {
         /// <summary>
-        /// Property or field where the filter will be applied. 
+        /// Property or field where the filter will be applied.
         /// It can also be used to indicate whether the Any function (with the | character) or the All function (with the & character) will be applied.
         /// </summary>
         public string Member { get; set; }

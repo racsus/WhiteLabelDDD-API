@@ -1,8 +1,6 @@
 ﻿namespace WhiteLabel.Domain.Pagination
 {
-    public interface IObject
-    {
-    }
+    public interface IObject { }
 
     public interface IObject<TKey> : IObject
     {

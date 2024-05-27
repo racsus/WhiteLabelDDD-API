@@ -20,15 +20,19 @@ namespace WhiteLabel.Infrastructure.Events
 
         public void Dispatch(BaseDomainEvent domainEvent)
         {
-            Type handlerType = typeof(IHandle<>).MakeGenericType(domainEvent.GetType());
-            Type wrapperType = typeof(DomainEventHandler<>).MakeGenericType(domainEvent.GetType());
-            IEnumerable handlers = (IEnumerable)this.container.Resolve(typeof(IEnumerable<>).MakeGenericType(handlerType));
-            IEnumerable<DomainEventHandler> wrappedHandlers = handlers.Cast<object>()
-                .Select(handler => (DomainEventHandler)Activator.CreateInstance(wrapperType, handler));
+            var handlerType = typeof(IHandle<>).MakeGenericType(domainEvent.GetType());
+            var wrapperType = typeof(DomainEventHandler<>).MakeGenericType(domainEvent.GetType());
+            var handlers = (IEnumerable)
+                container.Resolve(typeof(IEnumerable<>).MakeGenericType(handlerType));
+            var wrappedHandlers = handlers
+                .Cast<object>()
+                .Select(
+                    handler => (DomainEventHandler)Activator.CreateInstance(wrapperType, handler)
+                );
 
-            foreach (DomainEventHandler handler in wrappedHandlers)
+            foreach (var handler in wrappedHandlers)
             {
-                handler.Handle(domainEvent);
+                handler?.Handle(domainEvent);
             }
         }
 
@@ -40,16 +44,16 @@ namespace WhiteLabel.Infrastructure.Events
         private class DomainEventHandler<T> : DomainEventHandler
             where T : BaseDomainEvent
         {
-            private readonly IHandle<T> _handler;
+            private readonly IHandle<T> handler;
 
             public DomainEventHandler(IHandle<T> handler)
             {
-                _handler = handler;
+                this.handler = handler;
             }
 
             public override void Handle(BaseDomainEvent domainEvent)
             {
-                _handler.Handle((T)domainEvent);
+                handler.Handle((T)domainEvent);
             }
         }
     }

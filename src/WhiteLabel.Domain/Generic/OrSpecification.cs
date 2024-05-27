@@ -10,12 +10,9 @@ namespace WhiteLabel.Domain.Generic
     public class OrSpecification<T> : CompositeSpecification<T>
     {
         public OrSpecification(ISpecification<T> leftSide, ISpecification<T> rightSide)
-            : base(leftSide, rightSide)
-        {
-        }
+            : base(leftSide, rightSide) { }
 
-        public override Expression<Func<T, bool>> SpecExpression => this.LeftSide.SpecExpression.OrElse(this.RightSide.SpecExpression);
-
-        
+        public override Expression<Func<T, bool>> SpecExpression =>
+            this.LeftSide.SpecExpression.OrElse(this.RightSide.SpecExpression);
     }
 }

@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 
 namespace WhiteLabel.Domain.Generic
 {
-   
     public abstract class CompositeSpecification<T> : ISpecification<T>
     {
         protected readonly ISpecification<T> LeftSide;

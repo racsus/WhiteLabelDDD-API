@@ -4,7 +4,5 @@ using System.Text;
 
 namespace WhiteLabel.Infrastructure.Data.DbMapping.Customers
 {
-    public class CustomerMap
-    {
-    }
+    public class CustomerMap { }
 }

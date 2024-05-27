@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
 using WhiteLabel.Domain.Generic;
 using WhiteLabel.Domain.Users;
 
@@ -10,8 +7,6 @@ namespace WhiteLabel.Domain.Specification.Users
     public class UserRegisteredSpec : SpecificationBase<User>
     {
         public UserRegisteredSpec(Guid userId)
-            : base(x => x.Id == userId)
-        {
-        }
+            : base(x => x.Id == userId) { }
     }
 }

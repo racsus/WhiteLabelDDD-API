@@ -1,4 +1,4 @@
-﻿namespace WhiteLabelDDD.Swagger
+﻿namespace WhiteLabel.WebAPI.Swagger
 {
     internal class SwaggerConfiguration
     {

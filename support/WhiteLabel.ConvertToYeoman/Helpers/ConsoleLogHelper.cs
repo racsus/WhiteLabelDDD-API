@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace WhiteLabel.ConvertToYeoman.Helpers
 {
@@ -13,7 +11,12 @@ namespace WhiteLabel.ConvertToYeoman.Helpers
             Console.ResetColor();
         }
 
-        public static void ShowInfoMessage(string text1, ConsoleColor color1, string text2, ConsoleColor color2)
+        public static void ShowInfoMessage(
+            string text1,
+            ConsoleColor color1,
+            string text2,
+            ConsoleColor color2
+        )
         {
             Console.ForegroundColor = color1;
             Console.Write(text1 + " ");
@@ -29,6 +32,5 @@ namespace WhiteLabel.ConvertToYeoman.Helpers
             Console.WriteLine("Press any key to continue...");
             Console.ReadLine();
         }
-
     }
 }

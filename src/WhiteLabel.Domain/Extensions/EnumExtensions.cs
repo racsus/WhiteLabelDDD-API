@@ -20,11 +20,9 @@ namespace WhiteLabel.Domain.Extensions
 
         private static DisplayAttribute GetDisplayAttribute(object value)
         {
-            Type type = value.GetType();
+            var type = value.GetType();
             if (!type.IsEnum)
-            {
                 throw new ArgumentException(string.Format("Type {0} is not an enum", type));
-            }
 
             // Get the enum field.
             var field = type.GetField(value.ToString());

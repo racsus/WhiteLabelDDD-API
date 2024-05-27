@@ -14,9 +14,21 @@ namespace WhiteLabel.Domain.Extensions
     /// </summary>
     public static class StringExtensions
     {
-        public static readonly MethodInfo StartsWithMethod = ExpressionExtensions.GetMethodInfo(typeof(string), "StartsWith", 1);
-        public static readonly MethodInfo EndsWithMethod = ExpressionExtensions.GetMethodInfo(typeof(string), "EndsWith", 1);
-        public static readonly MethodInfo ContainsMethod = ExpressionExtensions.GetMethodInfo(typeof(string), "Contains", 1);
+        public static readonly MethodInfo StartsWithMethod = ExpressionExtensions.GetMethodInfo(
+            typeof(string),
+            "StartsWith",
+            1
+        );
+        public static readonly MethodInfo EndsWithMethod = ExpressionExtensions.GetMethodInfo(
+            typeof(string),
+            "EndsWith",
+            1
+        );
+        public static readonly MethodInfo ContainsMethod = ExpressionExtensions.GetMethodInfo(
+            typeof(string),
+            "Contains",
+            1
+        );
 
         /// <summary>
         /// Converts a string into an object of the specified type
@@ -26,11 +38,11 @@ namespace WhiteLabel.Domain.Extensions
         /// <returns>Object in <typeparamref name="T"/> type with the String value if its possible</returns>
         public static T ConvertTo<T>(this string s)
         {
-            var targetType = typeof (T).GetEffectiveType();
+            var targetType = typeof(T).GetEffectiveType();
 
-            if (targetType == typeof (string))
+            if (targetType == typeof(string))
             {
-                return (T) (object) s;
+                return (T)(object)s;
             }
             if (s.IsNullOrEmpty())
             {
@@ -39,10 +51,10 @@ namespace WhiteLabel.Domain.Extensions
 
             if (targetType.IsEnum())
             {
-                return (T) s.ToEnum(targetType, default(T));
+                return (T)s.ToEnum(targetType, default(T));
             }
 
-            return (T) Convert.ChangeType(s, targetType);
+            return (T)Convert.ChangeType(s, targetType);
         }
 
         /// <summary>
@@ -81,6 +93,7 @@ namespace WhiteLabel.Domain.Extensions
         {
             return string.IsNullOrWhiteSpace(s);
         }
+
         /// <summary>
         /// Concatenates the elements of a specified array or the members of a collection, using the specified separator between each element or member
         /// </summary>
@@ -98,7 +111,8 @@ namespace WhiteLabel.Domain.Extensions
         /// <typeparam name="T">EnumType</typeparam>
         /// <param name="value">String</param>
         /// <returns>An object of type <typeparamref name="T"/> whose value is represented by <paramref name="value"/></returns>
-        public static T ToEnum<T>(this string value) where T : struct
+        public static T ToEnum<T>(this string value)
+            where T : struct
         {
             return ToEnum(value, default(T));
         }
@@ -110,9 +124,10 @@ namespace WhiteLabel.Domain.Extensions
         /// <param name="value">String</param>
         /// <param name="defaultValue">Default value</param>
         /// <returns>An object of type <typeparamref name="T"/> whose value is represented by <paramref name="value"/></returns>
-        public static T ToEnum<T>(this string value, T defaultValue) where T : struct
+        public static T ToEnum<T>(this string value, T defaultValue)
+            where T : struct
         {
-            var type = typeof (T);
+            var type = typeof(T);
             if (!type.IsEnum())
             {
                 return defaultValue;
@@ -120,12 +135,13 @@ namespace WhiteLabel.Domain.Extensions
             var names = Enum.GetNames(type);
             if (names.Contains(value))
             {
-                return (T) Enum.Parse(type, value, true);
+                return (T)Enum.Parse(type, value, true);
             }
-            var res =
-                Enum.GetValues(type)
-                    .OfType<T>()
-                    .FirstOrDefault(v => ((int) (object) v).ToString(CultureInfo.InvariantCulture) == value);
+            var res = Enum.GetValues(type)
+                .OfType<T>()
+                .FirstOrDefault(
+                    v => ((int)(object)v).ToString(CultureInfo.InvariantCulture) == value
+                );
 
             return !Equals(res, default(T)) ? res : defaultValue;
         }
@@ -150,7 +166,7 @@ namespace WhiteLabel.Domain.Extensions
             }
             foreach (var v in Enum.GetValues(type))
             {
-                if (((int) v).ToString(CultureInfo.InvariantCulture) == value)
+                if (((int)v).ToString(CultureInfo.InvariantCulture) == value)
                 {
                     return v;
                 }
@@ -194,7 +210,7 @@ namespace WhiteLabel.Domain.Extensions
         {
             var sha1 = SHA1.Create();
             var encoding = new ASCIIEncoding();
-            
+
             var sb = new StringBuilder();
             var stream = sha1.ComputeHash(encoding.GetBytes(str));
 

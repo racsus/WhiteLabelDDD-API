@@ -3,10 +3,11 @@ using System.Collections.Generic;
 
 namespace WhiteLabel.Application.DTOs.Users
 {
-    public class UserInfoDTO
+    public class UserInfoDto
     {
         [JsonProperty("given_name")]
         public string GivenName { get; set; }
+
         [JsonProperty("family_name")]
         public string FamilyName { get; set; }
         public string NickName { get; set; }

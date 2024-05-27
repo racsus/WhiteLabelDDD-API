@@ -17,7 +17,8 @@ namespace WhiteLabel.Domain.Pagination
 
         public bool? Envelope { get; set; }
 
-        public ICollection<FilterDescriptor> Filters { get; set; } = new Collection<FilterDescriptor>();
+        public ICollection<FilterDescriptor> Filters { get; set; } =
+            new Collection<FilterDescriptor>();
 
         public ICollection<SortDescriptor> Sorts { get; set; } = new Collection<SortDescriptor>();
     }

@@ -4,7 +4,7 @@ using WhiteLabel.Domain.Pagination;
 
 namespace WhiteLabel.Application.DTOs.Generic
 {
-    public class PagedListDTO : IPageOption
+    public class PagedListDto : IPageOption
     {
         public const string SkipKey = "skip";
         public const string TakeKey = "take";

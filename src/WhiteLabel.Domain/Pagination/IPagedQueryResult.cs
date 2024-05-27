@@ -13,14 +13,17 @@ namespace WhiteLabel.Domain.Pagination
         /// Take
         /// </summary>
         int? Take { get; }
+
         /// <summary>
         /// Skip
         /// </summary>
         int? Skip { get; }
+
         /// <summary>
         /// Total results
         /// </summary>
         int Total { get; }
+
         /// <summary>
         /// Data resulting form the query in <typeparamref name="T"/>
         /// </summary>

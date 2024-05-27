@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Linq.Expressions;
+using WhiteLabel.Domain.Generic;
+using WhiteLabel.Infrastructure.Data.Extensions;
 
-namespace WhiteLabel.Domain.Generic
+namespace WhiteLabel.Infrastructure.Data.Pagination
 {
     /// <summary>
     ///     http://devlicio.us/blogs/jeff_perrin/archive/2006/12/13/the-specification-pattern.aspx
@@ -10,12 +11,9 @@ namespace WhiteLabel.Domain.Generic
     public class OrSpecification<T> : ComposeSpecification<T>
     {
         public OrSpecification(ISpecification<T> leftSide, ISpecification<T> rightSide)
-            : base(leftSide, rightSide)
-        {
-        }
+            : base(leftSide, rightSide) { }
 
-        public override Expression<Func<T, bool>> SpecExpression => this.Left.SpecExpression.OrElse(this.Right.SpecExpression);
-
-        
+        public override Expression<Func<T, bool>> SpecExpression =>
+            Left.SpecExpression.OrElse(Right.SpecExpression);
     }
 }

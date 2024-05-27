@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\WhiteLabel.Application\WhiteLabel.Application.csproj" />
-    <ProjectReference Include="..\..\WhiteLabel.Domain\WhiteLabel.Domain.csproj" />
-    <ProjectReference Include="..\WhiteLabel.Infrastructure\WhiteLabel.Infrastructure.Data.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\WhiteLabel.Application\WhiteLabel.Application.csproj"/>
+        <ProjectReference Include="..\..\WhiteLabel.Domain\WhiteLabel.Domain.csproj"/>
+        <ProjectReference Include="..\WhiteLabel.Infrastructure\WhiteLabel.Infrastructure.Data.csproj"/>
+    </ItemGroup>
 
 </Project>

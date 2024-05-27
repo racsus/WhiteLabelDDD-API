@@ -1,5 +1,4 @@
-﻿
-namespace WhiteLabel.Domain.Pagination
+﻿namespace WhiteLabel.Domain.Pagination
 {
     /// <summary>
     /// Enumerable to specify the direction sort

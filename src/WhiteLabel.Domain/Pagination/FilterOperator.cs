@@ -1,5 +1,4 @@
-﻿
-namespace WhiteLabel.Domain.Pagination
+﻿namespace WhiteLabel.Domain.Pagination
 {
     public enum FilterOperator
     {

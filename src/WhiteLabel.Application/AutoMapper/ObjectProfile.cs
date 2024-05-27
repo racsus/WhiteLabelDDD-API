@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using WhiteLabel.Application.DTOs.Users;
 using WhiteLabel.Domain.Users;
 
@@ -10,7 +9,7 @@ namespace WhiteLabel.Application.AutoMapper
         public ObjectProfile()
         {
             //Users
-            CreateMap<User, UserDTO>();
+            CreateMap<User, UserDto>();
         }
     }
 }

@@ -1,20 +1,22 @@
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using WhiteLabel.Domain.Extensions;
+using Microsoft.EntityFrameworkCore;
 using WhiteLabel.Domain.Generic;
+using WhiteLabel.Domain.Pagination;
+using WhiteLabel.Infrastructure.Data.Extensions;
 
-namespace WhiteLabel.Domain.Pagination
+namespace WhiteLabel.Infrastructure.Data.Pagination
 {
     /// <summary>
     /// Class to realize queries with paged value
     /// </summary>
     /// <typeparam name="TEntity">Entity Type</typeparam>
     /// <typeparam name="TResult">Result Type</typeparam>
-    public abstract class PagedValueQuery<TEntity, TResult> : Query<TEntity, IPagedQueryResult<TResult>>,
-        IPagedValueQuery<TEntity, TResult>
+    public abstract class PagedValueQuery<TEntity, TResult>
+        : Query<TEntity, IPagedQueryResult<TResult>>,
+            IPagedValueQuery<TEntity, TResult>
         where TEntity : class
         where TResult : class
     {
@@ -24,7 +26,9 @@ namespace WhiteLabel.Domain.Pagination
         private int count;
 
         /// <summary>
-        /// Creates an instance of <see cref="PagedValueQuery"/>
+        /// Creates an instance of <see>
+        ///     <cref>PagedValueQuery</cref>
+        /// </see>
         /// </summary>
         /// <param name="specification">ISpecification</param>
         /// <param name="take">Take</param>
@@ -32,19 +36,20 @@ namespace WhiteLabel.Domain.Pagination
         protected PagedValueQuery(ISpecification<TEntity> specification, int? take, int? skip)
             : base(specification)
         {
-            this.Skip = skip;
-            this.Take = take;
+            Skip = skip;
+            Take = take;
         }
 
         /// <summary>
         /// Sort descriptor
         /// </summary>
-        public IEnumerable<SortOption> Sorts { get; set; } = new SortOption[] { };
+        public IEnumerable<SortOption> Sorts { get; init; } = new SortOption[] { };
 
         /// <summary>
         /// Skip
         /// </summary>
         public int? Skip { get; }
+
         /// <summary>
         /// Take
         /// </summary>
@@ -56,13 +61,16 @@ namespace WhiteLabel.Domain.Pagination
         /// <param name="queryable">IQueryable</param>
         /// <param name="evaluator">IQueryableEvaluator</param>
         /// <returns>Data resulting from the query</returns>
-        public override IPagedQueryResult<TResult> Run(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator)
+        public override IPagedQueryResult<TResult> Run(
+            IQueryable<TEntity> queryable,
+            IQueryableEvaluator evaluator
+        )
         {
-            queryable = this.RunQuery(queryable);
-            this.count = evaluator.Count(queryable);
-            queryable = this.Sort(queryable);
-            queryable = this.Paginate(queryable);
-            var result = this.GenerateResult(queryable, evaluator);
+            queryable = RunQuery(queryable);
+            count = evaluator.Count(queryable);
+            queryable = Sort(queryable);
+            queryable = Paginate(queryable);
+            var result = GenerateResult(queryable, evaluator);
             return result;
         }
 
@@ -71,22 +79,24 @@ namespace WhiteLabel.Domain.Pagination
         /// </summary>
         /// <param name="queryable">IQueryable</param>
         /// <param name="evaluator">IQueryableEvaluator</param>
+        /// <param name="includes"></param>
         /// <param name="cancellationToken">CancelationToken</param>
         /// <returns>Data resulting from the query</returns>
-        public override async Task<IPagedQueryResult<TResult>> RunAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator, string[] includes, CancellationToken cancellationToken = default)
+        public override async Task<IPagedQueryResult<TResult>> RunAsync(
+            IQueryable<TEntity> queryable,
+            IQueryableEvaluator evaluator,
+            string[] includes,
+            CancellationToken cancellationToken = default
+        )
         {
-            queryable = this.RunQuery(queryable);
-            this.count = await evaluator.CountAsync(queryable, cancellationToken);
-            queryable = this.Sort(queryable);
-            queryable = this.Paginate(queryable);
+            queryable = RunQuery(queryable);
+            count = await evaluator.CountAsync(queryable, cancellationToken);
+            queryable = Sort(queryable);
+            queryable = Paginate(queryable);
             if (includes != null)
-            {
-                foreach (string include in includes)
-                {
+                foreach (var include in includes)
                     queryable = queryable.Include(include);
-                }
-            }
-            var result = await this.GenerateResultAsync(queryable, evaluator, cancellationToken);
+            var result = await GenerateResultAsync(queryable, evaluator, cancellationToken);
             return result;
         }
 
@@ -97,17 +107,14 @@ namespace WhiteLabel.Domain.Pagination
         /// <returns>Data sorted</returns>
         protected virtual IQueryable<TEntity> Sort(IQueryable<TEntity> queryable)
         {
-            var effectiveSort = this.Sorts.ToArray();
+            var effectiveSort = Sorts.ToArray();
 
             if (!effectiveSort.Any())
             {
-                var defaultSort = this.GetDefaultSort();
+                var defaultSort = GetDefaultSort();
                 if (defaultSort != null)
-                {
                     effectiveSort.Add(defaultSort);
-                }
             }
-
 
             return queryable.Sort(effectiveSort);
         }
@@ -119,16 +126,11 @@ namespace WhiteLabel.Domain.Pagination
         /// <returns>Paginated data</returns>
         protected virtual IQueryable<TEntity> Paginate(IQueryable<TEntity> queryable)
         {
-            if (this.Skip.HasValue)
-            {
-                queryable = queryable.Skip(this.Skip.Value);
-            }
+            if (Skip.HasValue)
+                queryable = queryable.Skip(Skip.Value);
 
-            if (this.Take.HasValue)
-            {
-                queryable = queryable.Take(this.Take.Value);
-            }
-
+            if (Take.HasValue)
+                queryable = queryable.Take(Take.Value);
 
             return queryable;
         }
@@ -137,27 +139,34 @@ namespace WhiteLabel.Domain.Pagination
         /// Generates the query and returns data in <typeparamref name="TResult"/>
         /// </summary>
         /// <param name="queryable">IQueryable</param>
-        /// <param name="evaluator">IQueryableEvaluatos</param>
+        /// <param name="evaluator">IQueryableEvaluates</param>
         /// <returns>Data resulting from the query</returns>
-        protected override IPagedQueryResult<TResult> GenerateResult(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator)
+        protected override IPagedQueryResult<TResult> GenerateResult(
+            IQueryable<TEntity> queryable,
+            IQueryableEvaluator evaluator
+        )
         {
-            var materialized = this.Materialize(queryable);
+            var materialized = Materialize(queryable);
             var values = evaluator.ToArray(materialized);
-            return new PagedQueryResult<TResult>(values, this.Take, this.Skip, this.count);
+            return new PagedQueryResult<TResult>(values, Take, Skip, count);
         }
 
         /// <summary>
         /// Generates the query asynchronously and returns data in <typeparamref name="TResult"/>
         /// </summary>
         /// <param name="queryable">IQueryable</param>
-        /// <param name="evaluator">IqueryableEvaluator</param>
-        /// <param name="cancellationToken">CancelationToken</param>
+        /// <param name="evaluator">QueryableEvaluator</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>Data resulting from the query</returns>
-        protected override async Task<IPagedQueryResult<TResult>> GenerateResultAsync(IQueryable<TEntity> queryable, IQueryableEvaluator evaluator, CancellationToken cancellationToken = default)
+        protected override async Task<IPagedQueryResult<TResult>> GenerateResultAsync(
+            IQueryable<TEntity> queryable,
+            IQueryableEvaluator evaluator,
+            CancellationToken cancellationToken = default
+        )
         {
-            var materialized = this.Materialize(queryable);
+            var materialized = Materialize(queryable);
             var values = await evaluator.ToArrayAsync(materialized, cancellationToken);
-            return new PagedQueryResult<TResult>(values, this.Take, this.Skip, this.count);
+            return new PagedQueryResult<TResult>(values, Take, Skip, count);
         }
 
         /// <summary>

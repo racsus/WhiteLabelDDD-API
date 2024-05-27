@@ -14,13 +14,22 @@ namespace WhiteLabel.Domain.Extensions
         /// <summary>
         /// Set of numeric types
         /// </summary>
-        private static readonly ISet<Type> NumericTypes = new HashSet<Type>(new[]
-        {
-            typeof(sbyte), typeof(byte),
-            typeof(decimal), typeof(double), typeof(float),
-            typeof(short), typeof(int), typeof(long),
-            typeof(ushort), typeof(uint), typeof(ulong)
-        });
+        private static readonly ISet<Type> NumericTypes = new HashSet<Type>(
+            new[]
+            {
+                typeof(sbyte),
+                typeof(byte),
+                typeof(decimal),
+                typeof(double),
+                typeof(float),
+                typeof(short),
+                typeof(int),
+                typeof(long),
+                typeof(ushort),
+                typeof(uint),
+                typeof(ulong)
+            }
+        );
 
         /// <summary>
         /// Determines whether an instance of a specified type can be assigned to a variable of the current type.
@@ -57,7 +66,7 @@ namespace WhiteLabel.Domain.Extensions
         public static bool IsGenericType(this Type clrType)
         {
             return clrType.IsGenericType;
-        }   
+        }
 
         /// <summary>
         /// Gets a collection of the methods defined by <paramref name="type"/>
@@ -73,7 +82,7 @@ namespace WhiteLabel.Domain.Extensions
         /// Gets the properties of <paramref name="type"/>
         /// </summary>
         /// <param name="type">type to get the properties</param>
-        /// <returns>An array of PropertyInfo objects representing all public properties of <paramref name="type"/> or 
+        /// <returns>An array of PropertyInfo objects representing all public properties of <paramref name="type"/> or
         /// An empty array of type PropertyInfo, <paramref name="type"/> does not have public properties.</returns>
         public static IEnumerable<PropertyInfo> GetProperties(this Type type)
         {
@@ -89,7 +98,7 @@ namespace WhiteLabel.Domain.Extensions
         }
 
         /// <summary>
-        /// Returns an object that represents the specified public field declared by <paramref name="type"/> 
+        /// Returns an object that represents the specified public field declared by <paramref name="type"/>
         /// </summary>
         /// <param name="type">Type to get the field</param>
         /// <param name="fieldName">Name of the field</param>
@@ -100,7 +109,7 @@ namespace WhiteLabel.Domain.Extensions
         }
 
         /// <summary>
-        /// Gets a collection of the types defined in <paramref name="assembly"/> 
+        /// Gets a collection of the types defined in <paramref name="assembly"/>
         /// </summary>
         /// <param name="assembly">Assembly to get the types</param>
         /// <returns>A collection of the types defined in <paramref name="assembly"/></returns>
@@ -108,7 +117,7 @@ namespace WhiteLabel.Domain.Extensions
         {
             return assembly.DefinedTypes.Select(x => x.DeclaringType);
         }
-        
+
         /// <summary>
         /// Find all derived types from assembly. If assembly is not given, given type assembly is used.
         /// </summary>
@@ -127,14 +136,19 @@ namespace WhiteLabel.Domain.Extensions
         /// <param name="includeItself"></param>
         /// <param name="assembly"></param>
         /// <returns></returns>
-        public static Type[] GetDerivedTypes(this Type type, bool includeItself, Assembly assembly = null)
+        public static Type[] GetDerivedTypes(
+            this Type type,
+            bool includeItself,
+            Assembly assembly = null
+        )
         {
             if (assembly == null)
-                assembly = type
-                    .GetTypeInfo()
-                    .Assembly;
+                assembly = type.GetTypeInfo().Assembly;
 
-            return assembly.GetTypes().Where(t => (includeItself || t != type) && type.IsAssignableFrom(t)).ToArray();
+            return assembly
+                .GetTypes()
+                .Where(t => (includeItself || t != type) && type.IsAssignableFrom(t))
+                .ToArray();
         }
 
         public static Type GetEffectiveType(this Type type)
@@ -145,7 +159,9 @@ namespace WhiteLabel.Domain.Extensions
         public static MethodInfo[] GetMethodsExtended(this Type type)
         {
             var current = type.GetMethods();
-            var parentMethods = type.GetInterfaces().SelectMany(it => it.GetMethodsExtended()).ToArray();
+            var parentMethods = type.GetInterfaces()
+                .SelectMany(it => it.GetMethodsExtended())
+                .ToArray();
             var result = current.Union(parentMethods).Distinct().ToArray();
             return result;
         }
@@ -153,7 +169,9 @@ namespace WhiteLabel.Domain.Extensions
         public static PropertyInfo[] GetPropertiesExtended(this Type type)
         {
             var current = type.GetProperties();
-            var parentProperties = type.GetInterfaces().SelectMany(it => it.GetPropertiesExtended()).ToArray();
+            var parentProperties = type.GetInterfaces()
+                .SelectMany(it => it.GetPropertiesExtended())
+                .ToArray();
             var result = current.Union(parentProperties).Distinct().ToArray();
             return result;
         }
@@ -181,11 +199,13 @@ namespace WhiteLabel.Domain.Extensions
         /// </remarks>
         public static bool IsNumericType(this Type type)
         {
-            if (type == null) return false;
+            if (type == null)
+                return false;
 
             var effectiveType = type.GetEffectiveType();
 
-            if (effectiveType.IsEnum()) return false;
+            if (effectiveType.IsEnum())
+                return false;
 
             return NumericTypes.Contains(effectiveType);
         }
@@ -196,12 +216,17 @@ namespace WhiteLabel.Domain.Extensions
         /// <param name="assemblyNames">The list of assembly names</param>
         /// <param name="assemblies">The list of assemblies to look in </param>
         /// <returns>Type list</returns>
-        public static IEnumerable<Type> GetClasses(IEnumerable<Assembly> assemblies, IEnumerable<string> assemblyNames)
+        public static IEnumerable<Type> GetClasses(
+            IEnumerable<Assembly> assemblies,
+            IEnumerable<string> assemblyNames
+        )
         {
-            if (assemblies is null) return Array.Empty<Type>();
+            if (assemblies is null)
+                return Array.Empty<Type>();
 
-            var effectiveAssemblies =
-                assemblies.Where(assembly => assemblyNames?.Contains(assembly.GetName().Name) == true);
+            var effectiveAssemblies = assemblies.Where(
+                assembly => assemblyNames?.Contains(assembly.GetName().Name) == true
+            );
             return GetClasses(effectiveAssemblies);
         }
 
@@ -212,26 +237,25 @@ namespace WhiteLabel.Domain.Extensions
         /// <returns>Type list</returns>
         public static IEnumerable<Type> GetClasses(IEnumerable<Assembly> assemblies)
         {
-            if (assemblies is null) return Array.Empty<Type>();
+            if (assemblies is null)
+                return Array.Empty<Type>();
 
             return assemblies
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(type => type?.GetTypeInfo()?.IsClass == true);
         }
 
-        public static bool IsNullableProperty(this PropertyInfo propertyInfo)
-            => propertyInfo.PropertyType.Name.IndexOf("Nullable`", StringComparison.Ordinal) > -1;
-
+        public static bool IsNullableProperty(this PropertyInfo propertyInfo) =>
+            propertyInfo.PropertyType.Name.IndexOf("Nullable`", StringComparison.Ordinal) > -1;
 
         public static bool IsEnumerable(this PropertyInfo propertyInfo)
         {
-            return propertyInfo.PropertyType != typeof(string) && propertyInfo.GetMethod.ReturnType
-                .GetInterfaces()
-                .Any(i => i == typeof(IEnumerable));
+            return propertyInfo.PropertyType != typeof(string)
+                && propertyInfo.GetMethod.ReturnType
+                    .GetInterfaces()
+                    .Any(i => i == typeof(IEnumerable));
         }
 
-
-        
         /// <summary>
         /// Determine if a type is abstract.
         /// </summary>
@@ -273,12 +297,12 @@ namespace WhiteLabel.Domain.Extensions
                 return false;
             }
 
-            Type collectionInterface
-                = clrType.GetInterfaces()
-                    .Union(new[] { clrType })
-                    .FirstOrDefault(
-                        t => IsGenericType(t)
-                             && t.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+            Type collectionInterface = clrType
+                .GetInterfaces()
+                .Union(new[] { clrType })
+                .FirstOrDefault(
+                    t => IsGenericType(t) && t.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+                );
 
             if (collectionInterface != null)
             {
@@ -289,7 +313,6 @@ namespace WhiteLabel.Domain.Extensions
             return false;
         }
 
-        
         /// <summary>
         /// Return the reflected type from a member info.
         /// </summary>

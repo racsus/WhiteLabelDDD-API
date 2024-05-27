@@ -1,59 +1,54 @@
 ﻿using System.Threading.Tasks;
 using WhiteLabel.Application.Interfaces.Generic;
-using WhiteLabel.Domain.Generic;
 
 namespace WhiteLabel.Infrastructure.Data.Repositories
 {
-    public class GenericUnitOfWork: IUnitOfWork
+    public class GenericUnitOfWork : IUnitOfWork
     {
-        private readonly AppDbContext _dbContext;
+        private readonly AppDbContext dbContext;
 
         public GenericUnitOfWork(AppDbContext dbContext)
         {
-            _dbContext = dbContext;
+            this.dbContext = dbContext;
         }
 
         public void BeginTransaction()
         {
-            _dbContext.Database.BeginTransaction();
+            dbContext.Database.BeginTransaction();
         }
 
         public void Commit()
         {
-            if (_dbContext.Database.CurrentTransaction != null)
-            {
-                _dbContext.Database.CommitTransaction();
-            }            
-            _dbContext.SaveChanges();
+            if (dbContext.Database.CurrentTransaction != null)
+                dbContext.Database.CommitTransaction();
+            dbContext.SaveChanges();
         }
 
         public async Task CommitAsync()
         {
-            if (_dbContext.Database.CurrentTransaction != null)
-            {
-                _dbContext.Database.CommitTransaction();
-            }
-            await _dbContext.SaveChangesAsync();
+            if (dbContext.Database.CurrentTransaction != null)
+                await dbContext.Database.CommitTransactionAsync();
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task SaveChangesAsync()
         {
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
 
         public void SaveChanges()
         {
-            _dbContext.SaveChanges();
+            dbContext.SaveChanges();
         }
 
         public void Rollback()
         {
-            _dbContext.Database.RollbackTransaction();
+            dbContext.Database.RollbackTransaction();
         }
 
         public void Dispose()
         {
-            _dbContext.Dispose();
+            dbContext.Dispose();
         }
     }
 }
