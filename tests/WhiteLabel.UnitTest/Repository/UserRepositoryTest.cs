@@ -26,7 +26,7 @@ namespace WhiteLabel.UnitTest.Repository
 
             var newItem = Repository.FindAll<User>().FirstOrDefault();
 
-            Assert.AreEqual(item, newItem);
+            Assert.Equals(item, newItem);
             Assert.True(newItem?.Id != null);
             ClearMemory();
         }

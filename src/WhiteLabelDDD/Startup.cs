@@ -1,4 +1,5 @@
 using Autofac;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -54,15 +55,12 @@ namespace WhiteLabel.WebAPI
 
             services.AddControllers();
             // Fluent Validation
-            services
-                .AddMvc(options =>
-                {
-                    options.Filters.Add(new ValidationFilter());
-                })
-                .AddFluentValidation(options =>
-                {
-                    options.RegisterValidatorsFromAssemblyContaining<UserDto>();
-                });
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(new ValidationFilter());
+            });
+            services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+            services.AddValidatorsFromAssemblyContaining<UserDto>();
 
             // Add API Versioning to as service to your project
             services.AddApiVersioning(config =>

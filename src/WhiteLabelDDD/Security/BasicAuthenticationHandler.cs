@@ -13,12 +13,12 @@ namespace WhiteLabel.WebAPI.Security
 {
     public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
+        [Obsolete("Use TimeProvider on AuthenticationSchemeOptions instead.")]
         public BasicAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            ISystemClock clock
-        )
+            ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
         }
@@ -37,14 +37,20 @@ namespace WhiteLabel.WebAPI.Security
                     username = credentials.FirstOrDefault();
                 }
 
-                //if (!await _userService.ValidateCredentials(username, password))
-                //    throw new ArgumentException("Invalid credentials");
+                // Uncomment and implement the validation logic
+                // if (!await _userService.ValidateCredentials(username, password))
+                //     throw new ArgumentException("Invalid credentials");
             }
             catch (Exception ex)
             {
-                return Task.FromResult(AuthenticateResult.Fail($"Authentication failed: {ex.Message}"));
+                return Task.FromResult(
+                    AuthenticateResult.Fail($"Authentication failed: {ex.Message}")
+                );
             }
-            
+
+            if (username is null)
+                return Task.FromResult(AuthenticateResult.Fail("Authentication failed"));
+
             var claims = new[] { new Claim(ClaimTypes.Name, username) };
             var identity = new ClaimsIdentity(claims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);

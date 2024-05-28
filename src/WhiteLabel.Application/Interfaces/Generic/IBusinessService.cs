@@ -1,4 +1,4 @@
 ﻿namespace WhiteLabel.Application.Interfaces.Generic
 {
-    public interface IBusinessService { }
+    public interface IBusinessService;
 }

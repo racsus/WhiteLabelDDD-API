@@ -19,21 +19,15 @@ namespace WhiteLabel.WebAPI.Controllers.Users
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class UserController : WhiteLabelController<IUserService>
+    public class UserController(
+        IUserService userService,
+        IUserService businessService,
+        IConfiguration configuration)
+        : WhiteLabelController<IUserService>(userService, businessService)
     {
-        private AuthConfiguration AuthConfiguration { get; }
-
-        public UserController(
-            IUserService userService,
-            IUserService businessService,
-            IConfiguration configuration
-        )
-            : base(userService, businessService)
-        {
-            AuthConfiguration = configuration
-                .GetSection(AuthConfiguration.Section)
-                .Get<AuthConfiguration>();
-        }
+        private AuthConfiguration AuthConfiguration { get; } = configuration
+            .GetSection(AuthConfiguration.Section)
+            .Get<AuthConfiguration>();
 
         /// <summary>
         /// Returns user information for logged in user using token information
@@ -49,7 +43,7 @@ namespace WhiteLabel.WebAPI.Controllers.Users
             var response = new Response<UserInfoDto>()
             {
                 //Object = await this.businessService.GetUserInfo(accessToken, this.User)
-                Object = user
+                Object = UserInfoDto
             };
             return Task.FromResult(response);
         }
@@ -64,15 +58,14 @@ namespace WhiteLabel.WebAPI.Controllers.Users
         [ProducesResponseType(typeof(UserInfoDto), StatusCodes.Status200OK)]
         public Response<string> GetToken([FromBody] LoginUserRequest loginUserRequest)
         {
-            if (AuthConfiguration.AuthType.ToUpper() == AuthConstants.Bearer)
+            if (AuthConfiguration.AuthType.Equals(AuthConstants.Bearer, StringComparison.CurrentCultureIgnoreCase))
             {
                 List<Claim> claims =
-                    new()
-                    {
-                        new Claim("id", "1"),
-                        new Claim(ClaimTypes.Email, "test@test.com"),
-                        new Claim(ClaimTypes.Name, loginUserRequest.UserName)
-                    };
+                [
+                    new Claim("id", "1"),
+                    new Claim(ClaimTypes.Email, "test@test.com"),
+                    new Claim(ClaimTypes.Name, loginUserRequest.UserName)
+                ];
 
                 var token = JwtConfig.Generate(
                     AuthConfiguration.AccessTokenSecret,
@@ -85,10 +78,8 @@ namespace WhiteLabel.WebAPI.Controllers.Users
                 var response = new Response<string>() { Object = token };
                 return response;
             }
-            else
-            {
-                return new Response<string>("Token endpoint can only be used with Bearear Auth");
-            }
+
+            return new Response<string>("Token endpoint can only be used with Bearer Auth");
         }
 
         [HttpPost]
@@ -108,7 +99,7 @@ namespace WhiteLabel.WebAPI.Controllers.Users
             return response;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<Response<UserDto>> GetById(Guid id)
         {
             return await BusinessService.Get(id);
@@ -129,7 +120,7 @@ namespace WhiteLabel.WebAPI.Controllers.Users
             return await BusinessService.GetPaginated(pagedModel);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public async Task<Response<UserDto>> RemoveById(Guid id)
         {
             var response = new Response<UserDto>();

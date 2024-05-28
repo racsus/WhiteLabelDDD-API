@@ -37,11 +37,11 @@ namespace WhiteLabel.ConvertToYeoman.Helpers
 
             process.StartInfo = psi;
             process.Start();
-            process.OutputDataReceived += (sender, e) =>
+            process.OutputDataReceived += (_, e) =>
             {
                 Console.WriteLine(e.Data);
             };
-            process.ErrorDataReceived += (sender, e) =>
+            process.ErrorDataReceived += (_, e) =>
             {
                 Console.WriteLine(e.Data);
             };

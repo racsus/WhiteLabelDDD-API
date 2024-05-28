@@ -191,24 +191,24 @@ namespace WhiteLabel.Infrastructure.Data.Pagination
             if (
                 (properType == typeof(DateTime) || properType == typeof(DateTime?))
                 && (
-                    int.TryParse(filter.Value, out var c)
+                    int.TryParse(filter.Value, out _)
                     || Regex
                         .Match(
-                            filter.Value.ToString(),
+                            filter.Value,
                             GenericConstants.GenericMonthYearExpression,
                             RegexOptions.IgnoreCase
                         )
                         .Success
                     || Regex
                         .Match(
-                            filter.Value.ToString(),
+                            filter.Value,
                             GenericConstants.GenericYearExpression,
                             RegexOptions.IgnoreCase
                         )
                         .Success
                     || Regex
                         .Match(
-                            filter.Value.ToString(),
+                            filter.Value,
                             GenericConstants.GenericYearMonthExpression,
                             RegexOptions.IgnoreCase
                         )
