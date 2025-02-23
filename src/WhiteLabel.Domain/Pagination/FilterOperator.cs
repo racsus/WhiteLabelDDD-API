@@ -60,6 +60,6 @@
         /// <summary>
         ///     Left operand must not be contained in the right one.
         /// </summary>
-        IsNotContainedIn = 11
+        IsNotContainedIn = 11,
     }
 }

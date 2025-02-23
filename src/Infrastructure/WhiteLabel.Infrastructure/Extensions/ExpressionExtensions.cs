@@ -27,15 +27,15 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
             return first.Compose(second, Expression.AndAlso);
         }
 
-        public static Expression<T> Compose<T>(
+        private static Expression<T> Compose<T>(
             this Expression<T> first,
             Expression<T> second,
             Func<Expression, Expression, Expression> merge
         )
         {
             // build parameter map (from parameters of second to parameters of first)
-            var map = first.Parameters
-                .Select((f, i) => new { f, s = second.Parameters[i] })
+            var map = first
+                .Parameters.Select((f, i) => new { f, s = second.Parameters[i] })
                 .ToDictionary(p => p.s, p => p.f);
 
             // replace parameters in the second lambda expression with parameters from the first
@@ -77,62 +77,8 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
             );
         }
 
-        public static string GetPropertyName<T>(Expression<Func<T>> propertyLambda)
-        {
-            var unaryExpression = propertyLambda.Body as UnaryExpression;
-            var memberExpression =
-                unaryExpression == null
-                    ? propertyLambda.Body as MemberExpression
-                    : unaryExpression.Operand as MemberExpression;
-
-            if (memberExpression == null)
-                throw new ArgumentException(
-                    "You must pass a lambda of the form: '() => Class.Property' or '() => object.Property'"
-                );
-
-            return memberExpression.Member.Name;
-        }
-
-        public static string GetPropertyName<T, TProperty>(
-            Expression<Func<T, TProperty>> propertyLambda
-        )
-        {
-            var unaryExpression = propertyLambda.Body as UnaryExpression;
-            var memberExpression =
-                unaryExpression == null
-                    ? propertyLambda.Body as MemberExpression
-                    : unaryExpression.Operand as MemberExpression;
-
-            if (memberExpression == null)
-                throw new ArgumentException(
-                    "You must pass a lambda of the form: 'e => Class.Property' or 'e => e.Property'"
-                );
-
-            return memberExpression.Member.Name;
-        }
-
-        public static string GetPropertyPath<T, TProperty>(
-            Expression<Func<T, TProperty>> propertyLambda
-        )
-        {
-            var unaryExpression = propertyLambda.Body as UnaryExpression;
-            var memberExpression =
-                unaryExpression == null
-                    ? propertyLambda.Body as MemberExpression
-                    : unaryExpression.Operand as MemberExpression;
-
-            if (memberExpression == null)
-                throw new ArgumentException(
-                    "You must pass a lambda of the form: 'e => Class.Property' or 'e => e.Property'"
-                );
-
-            var memberName = GetMemberExpressionName(memberExpression);
-
-            return memberName;
-        }
-
         //TODO: Change to multiple return type expression
-        public static MemberAccessModel GetMemberAccessData<T>(string propertyName)
+        private static MemberAccessModel GetMemberAccessData<T>(string propertyName)
         {
             Type memberType = null;
 
@@ -159,7 +105,8 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
                     propertyInfo.DeclaringType != propertyInfo.ReflectedType
                         ? propertyInfo.DeclaringType
                         : propertyInfo.ReflectedType;
-                if (propertyType != null) memberAccess = Expression.Property(x, propertyType, propertyInfo.Name);
+                if (propertyType != null)
+                    memberAccess = Expression.Property(x, propertyType, propertyInfo.Name);
 
                 entityType = propertyInfo.PropertyType;
             }
@@ -207,7 +154,7 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
             var propertyRoute = propertyName.Split('.');
             Type propertyType = null;
             foreach (var route in propertyRoute)
-                if (route.IsNullOrEmpty())
+                if (route.NullOrEmpty())
                 {
                     propertyType = entityType;
                     propertyAccess = memberAccessParam;
@@ -216,8 +163,8 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
                 {
                     var type = propertyType ?? entityType;
                     var propertyInfo = type.GetProperties()
-                        .FirstOrDefault(
-                            p => p.Name.Equals(route, StringComparison.OrdinalIgnoreCase)
+                        .FirstOrDefault(p =>
+                            p.Name.Equals(route, StringComparison.OrdinalIgnoreCase)
                         );
                     if (propertyInfo != null)
                     {
@@ -240,19 +187,6 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
             );
         }
 
-        private static string GetMemberExpressionName(MemberExpression expression)
-        {
-            var memberName = expression.Member.Name;
-
-            if (expression.Expression is { NodeType: ExpressionType.MemberAccess })
-                memberName =
-                    GetMemberExpressionName((MemberExpression)expression.Expression)
-                    + "."
-                    + memberName;
-
-            return memberName;
-        }
-
         public static MethodInfo GetMethodInfo(Type type, string methodName, int parametersLength)
         {
             return type.GetMethods()
@@ -264,7 +198,7 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
             var method = StringExtensions.StartsWithMethod;
             IEnumerable<Expression> parameters = new[]
             {
-                right //, Expression.Constant(StringComparison.InvariantCultureIgnoreCase)
+                right, //, Expression.Constant(StringComparison.InvariantCultureIgnoreCase)
             };
             var exp = Expression.Call(left, method, parameters);
 
@@ -276,7 +210,7 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
             var method = StringExtensions.EndsWithMethod;
             IEnumerable<Expression> parameters = new[]
             {
-                right //, Expression.Constant(StringComparison.InvariantCultureIgnoreCase)
+                right, //, Expression.Constant(StringComparison.InvariantCultureIgnoreCase)
             };
             var exp = Expression.Call(left, method, parameters);
 
@@ -292,7 +226,7 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
             return exp;
         }
 
-        private static Expression IsContainedInExpression(
+        private static Expression ContainedInExpression(
             Expression left,
             Expression right,
             Type propertyType
@@ -305,7 +239,7 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
             return exp;
         }
 
-        private static Expression IsContainedInDateExpression(
+        private static Expression ContainedInDateExpression(
             Expression left,
             Expression right,
             Type propertyType
@@ -397,9 +331,9 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
                     var contains = ContainsWithExpression(left, right);
                     return Expression.Not(contains);
                 case FilterOperator.IsContainedIn:
-                    return IsContainedInExpression(left, right, propertyType);
+                    return ContainedInExpression(left, right, propertyType);
                 case FilterOperator.IsNotContainedIn:
-                    var isContainedIn = IsContainedInExpression(left, right, propertyType);
+                    var isContainedIn = ContainedInExpression(left, right, propertyType);
                     return Expression.Not(isContainedIn);
                 //Comparisons can't be applied to strings
                 case FilterOperator.IsGreaterThan:
@@ -434,9 +368,9 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
                 case FilterOperator.IsLessThanOrEqualTo:
                     return Expression.LessThanOrEqual(left, right);
                 case FilterOperator.IsContainedIn:
-                    return IsContainedInExpression(left, right, propertyType);
+                    return ContainedInExpression(left, right, propertyType);
                 case FilterOperator.IsNotContainedIn:
-                    var isContainedIn = IsContainedInExpression(left, right, propertyType);
+                    var isContainedIn = ContainedInExpression(left, right, propertyType);
                     return Expression.Not(isContainedIn);
                 //Comparisons can't be applied to numeric
                 case FilterOperator.Contains:
@@ -464,9 +398,9 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
                 case FilterOperator.IsNotEqualTo:
                     return Expression.NotEqual(left, right);
                 case FilterOperator.IsContainedIn:
-                    return IsContainedInExpression(left, right, propertyType);
+                    return ContainedInExpression(left, right, propertyType);
                 case FilterOperator.IsNotContainedIn:
-                    var isContainedIn = IsContainedInExpression(left, right, propertyType);
+                    var isContainedIn = ContainedInExpression(left, right, propertyType);
                     return Expression.Not(isContainedIn);
                 //Comparisons can't be applied to boolean
                 case FilterOperator.Contains:
@@ -505,14 +439,14 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
                 case FilterOperator.IsLessThanOrEqualTo:
                     return Expression.LessThanOrEqual(left, right);
                 case FilterOperator.IsContainedIn:
-                    return IsContainedInExpression(left, right, propertyType);
+                    return ContainedInExpression(left, right, propertyType);
                 case FilterOperator.IsNotContainedIn:
-                    var isContainedIn = IsContainedInExpression(left, right, propertyType);
+                    var isContainedIn = ContainedInExpression(left, right, propertyType);
                     return Expression.Not(isContainedIn);
                 //Comparisons can't be applied to DateTime
                 case FilterOperator.Contains:
                     // Filter by month and year
-                    return IsContainedInDateExpression(left, right, propertyType);
+                    return ContainedInDateExpression(left, right, propertyType);
                 case FilterOperator.DoesNotContain:
                 case FilterOperator.StartsWith:
                 case FilterOperator.EndsWith:
@@ -560,9 +494,9 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
                     convertValue = Expression.Convert(right, enumType);
                     return Expression.LessThanOrEqual(convertExpression, convertValue);
                 case FilterOperator.IsContainedIn:
-                    return IsContainedInExpression(left, right, propertyType);
+                    return ContainedInExpression(left, right, propertyType);
                 case FilterOperator.IsNotContainedIn:
-                    var isContainedIn = IsContainedInExpression(left, right, propertyType);
+                    var isContainedIn = ContainedInExpression(left, right, propertyType);
                     return Expression.Not(isContainedIn);
                 //Comparisons can't be applied to Enums
                 case FilterOperator.Contains:
@@ -576,21 +510,14 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
         }
     }
 
-    public class MemberAccessModel
+    public class MemberAccessModel(
+        MemberExpression memberAccess,
+        ParameterExpression memberAccessParam,
+        Type memberType
+    )
     {
-        public MemberExpression MemberAccess { get; set; }
-        public ParameterExpression MemberAccessParam { get; set; }
-        public Type MemberType { get; set; }
-
-        public MemberAccessModel(
-            MemberExpression memberAccess,
-            ParameterExpression memberAccessParam,
-            Type memberType
-        )
-        {
-            MemberAccess = memberAccess;
-            MemberAccessParam = memberAccessParam;
-            MemberType = memberType;
-        }
+        public MemberExpression MemberAccess { get; set; } = memberAccess;
+        public ParameterExpression MemberAccessParam { get; set; } = memberAccessParam;
+        public Type MemberType { get; set; } = memberType;
     }
 }

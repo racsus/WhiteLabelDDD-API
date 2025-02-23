@@ -43,7 +43,7 @@ namespace WhiteLabel.UnitTest.Builders
             {
                 Id = Guid.NewGuid(),
                 Name = "Test Name",
-                Email = "testname@testdomain.com"
+                Email = "testname@testdomain.com",
             };
             return this;
         }

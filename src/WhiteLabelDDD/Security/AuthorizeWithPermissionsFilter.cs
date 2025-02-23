@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System.Linq;
-using System.Threading.Tasks;
 using WhiteLabel.Application.Configuration;
 using WhiteLabel.Application.Constants;
 
@@ -29,8 +29,8 @@ namespace WhiteLabel.WebAPI.Security
         {
             if (authConfiguration.AuthType.ToUpper() == AuthConstants.Auth0)
             {
-                var permissions = context.HttpContext.User.Claims
-                    .Where(x => x.Type == "permissions")
+                var permissions = context
+                    .HttpContext.User.Claims.Where(x => x.Type == "permissions")
                     .Select(x => x.Value)
                     .ToList();
                 var authorized = permissions.Contains(Policy);

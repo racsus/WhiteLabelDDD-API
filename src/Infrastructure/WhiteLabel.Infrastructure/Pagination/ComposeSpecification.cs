@@ -4,21 +4,16 @@ using WhiteLabel.Domain.Generic;
 
 namespace WhiteLabel.Infrastructure.Data.Pagination
 {
-    public abstract class ComposeSpecification<T> : ISpecification<T>
+    public abstract class ComposeSpecification<T>(ISpecification<T> left, ISpecification<T> right)
+        : ISpecification<T>
     {
-        protected readonly ISpecification<T> Left;
+        protected readonly ISpecification<T> Left = left;
 
-        protected readonly ISpecification<T> Right;
-
-        protected ComposeSpecification(ISpecification<T> left, ISpecification<T> right)
-        {
-            Left = left;
-            Right = right;
-        }
+        protected readonly ISpecification<T> Right = right;
 
         public abstract Expression<Func<T, bool>> SpecExpression { get; }
 
-        public bool IsSatisfiedBy(T obj)
+        public bool SatisfiedBy(T obj)
         {
             throw new NotImplementedException();
         }

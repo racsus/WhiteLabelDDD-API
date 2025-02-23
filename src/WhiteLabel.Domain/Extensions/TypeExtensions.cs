@@ -27,7 +27,7 @@ namespace WhiteLabel.Domain.Extensions
                 typeof(long),
                 typeof(ushort),
                 typeof(uint),
-                typeof(ulong)
+                typeof(ulong),
             }
         );
 
@@ -224,8 +224,8 @@ namespace WhiteLabel.Domain.Extensions
             if (assemblies is null)
                 return Array.Empty<Type>();
 
-            var effectiveAssemblies = assemblies.Where(
-                assembly => assemblyNames?.Contains(assembly.GetName().Name) == true
+            var effectiveAssemblies = assemblies.Where(assembly =>
+                assemblyNames?.Contains(assembly.GetName().Name) == true
             );
             return GetClasses(effectiveAssemblies);
         }
@@ -251,8 +251,8 @@ namespace WhiteLabel.Domain.Extensions
         public static bool IsEnumerable(this PropertyInfo propertyInfo)
         {
             return propertyInfo.PropertyType != typeof(string)
-                && propertyInfo.GetMethod.ReturnType
-                    .GetInterfaces()
+                && propertyInfo
+                    .GetMethod.ReturnType.GetInterfaces()
                     .Any(i => i == typeof(IEnumerable));
         }
 
@@ -300,8 +300,8 @@ namespace WhiteLabel.Domain.Extensions
             Type collectionInterface = clrType
                 .GetInterfaces()
                 .Union(new[] { clrType })
-                .FirstOrDefault(
-                    t => IsGenericType(t) && t.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+                .FirstOrDefault(t =>
+                    IsGenericType(t) && t.GetGenericTypeDefinition() == typeof(IEnumerable<>)
                 );
 
             if (collectionInterface != null)

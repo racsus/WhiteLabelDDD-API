@@ -10,21 +10,21 @@ namespace WhiteLabel.Application.Interfaces.Generic
     {
         T FindById<T>(TId id)
             where T : BaseEntity<TId>;
-        T FindById<T>(TId id, string[] include)
+        T FindById<T>(TId id, IEnumerable<string> include)
             where T : BaseEntity<TId>;
         Task<T> FindByIdAsync<T>(TId id, CancellationToken cancellationToken = default)
             where T : BaseEntity<TId>;
 
         Task<T> FindByIdAsync<T>(
             TId id,
-            string[] include,
+            IEnumerable<string> include,
             CancellationToken cancellationToken = default
         )
             where T : BaseEntity<TId>;
 
         IEnumerable<T> Find<T>(ISpecification<T> spec)
             where T : BaseEntity<TId>;
-        IEnumerable<T> Find<T>(ISpecification<T> spec, string[] includes)
+        IEnumerable<T> Find<T>(ISpecification<T> spec, IEnumerable<string> includes)
             where T : BaseEntity<TId>;
 
         Task<IEnumerable<T>> FindAsync<T>(
@@ -41,7 +41,7 @@ namespace WhiteLabel.Application.Interfaces.Generic
             where T : BaseEntity<TId>;
 
         Task<IEnumerable<T>> FindAsync<T>(
-            ICollection<FilterOption> filters,
+            IEnumerable<FilterOption> filters,
             ISpecification<T> spec = null,
             string[] includes = null,
             CancellationToken cancellationToken = default
@@ -50,7 +50,7 @@ namespace WhiteLabel.Application.Interfaces.Generic
 
         T FindOne<T>(ISpecification<T> spec)
             where T : BaseEntity<TId>;
-        T FindOne<T>(ISpecification<T> spec, string[] includes)
+        T FindOne<T>(ISpecification<T> spec, IEnumerable<string> includes)
             where T : BaseEntity<TId>;
 
         Task<T> FindOneAsync<T>(

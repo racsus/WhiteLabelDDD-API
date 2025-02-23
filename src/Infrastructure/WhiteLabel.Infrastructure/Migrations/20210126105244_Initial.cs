@@ -9,13 +9,12 @@ namespace WhiteLabel.Infrastructure.Data.Migrations
         {
             migrationBuilder.CreateTable(
                 name: "Users",
-                columns: table =>
-                    new
-                    {
-                        Id = table.Column<Guid>(nullable: false),
-                        Name = table.Column<string>(nullable: false),
-                        Email = table.Column<string>(nullable: false)
-                    },
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Email = table.Column<string>(nullable: false),
+                },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);

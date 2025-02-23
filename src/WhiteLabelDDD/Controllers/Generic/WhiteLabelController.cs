@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Net.Http.Headers;
-using System.Linq;
-using System.Threading.Tasks;
 using WhiteLabel.Application.DTOs.Users;
 using WhiteLabel.Application.Interfaces.Generic;
 using WhiteLabel.Application.Interfaces.Users;
 
 namespace WhiteLabel.WebAPI.Controllers.Generic
 {
-    public abstract class WhiteLabelController<T>(IUserService userService, T businessService) : Controller
+    public abstract class WhiteLabelController<T>(IUserService userService, T businessService)
+        : Controller
         where T : IBusinessService
     {
         protected readonly T BusinessService = businessService;
@@ -20,8 +21,9 @@ namespace WhiteLabel.WebAPI.Controllers.Generic
             ActionExecutionDelegate next
         )
         {
-            var hasNeedsUserFilter =
-                context.Filters.Any(x => x.ToString()!.Contains("WebAPI.Security.NeedsUserFilter"));
+            var hasNeedsUserFilter = context.Filters.Any(x =>
+                x.ToString()!.Contains("WebAPI.Security.NeedsUserFilter")
+            );
             if (hasNeedsUserFilter)
             {
                 var accessToken = Request.Headers[HeaderNames.Authorization];

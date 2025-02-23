@@ -36,7 +36,7 @@ namespace WhiteLabel.Infrastructure.Data.Pagination
         >()
         {
             { AllCharOperator, EnumerableExtensions.AllMethod },
-            { AnyCharOperator, EnumerableExtensions.AnyMethod }
+            { AnyCharOperator, EnumerableExtensions.AnyMethod },
         };
 
         private readonly ILogger<SpecificationBuilder> logger;
@@ -54,11 +54,12 @@ namespace WhiteLabel.Infrastructure.Data.Pagination
                 return spec;
 
             // And
-            foreach (var filter in filters)
+            var filterOptions = filters as FilterOption[] ?? filters.ToArray();
+            foreach (var filter in filterOptions)
                 try
                 {
                     // Check if we have more than 1 filter for the same member (Or)
-                    var isRepeated = filters.Count(x => x.Member == filter.Member) > 1;
+                    var isRepeated = filterOptions.Count(x => x.Member == filter.Member) > 1;
                     if (!isRepeated)
                     {
                         var fSpec = Create<T>(filter);
@@ -67,7 +68,7 @@ namespace WhiteLabel.Infrastructure.Data.Pagination
                     }
                     else
                     {
-                        if (repeatedMembers.Where(x => x == filter.Member).Count() == 0)
+                        if (repeatedMembers.All(x => x != filter.Member))
                             repeatedMembers.Add(filter.Member);
                     }
                 }
@@ -85,7 +86,7 @@ namespace WhiteLabel.Infrastructure.Data.Pagination
                 var specOr = SpecificationBase<T>.False;
                 foreach (var member in repeatedMembers)
                 {
-                    foreach (var filter in filters.Where(x => x.Member == member))
+                    foreach (var filter in filterOptions.Where(x => x.Member == member))
                         try
                         {
                             var fSpec = Create<T>(filter);
@@ -146,7 +147,7 @@ namespace WhiteLabel.Infrastructure.Data.Pagination
             {
                 Member = childPropertyPath,
                 Operator = filter.Operator,
-                Value = filter.Value
+                Value = filter.Value,
             };
 
             var collectionInfo = ExpressionExtensions.MakePropertyExpression<T>(collectionPath);
@@ -264,7 +265,7 @@ namespace WhiteLabel.Infrastructure.Data.Pagination
                     propertyType
                 );
 
-            if (effectiveType.IsNumericType())
+            if (effectiveType.NumericType())
                 return ExpressionExtensions.GetAssignExpressionNumeric(
                     filterOperator,
                     left,
@@ -288,7 +289,7 @@ namespace WhiteLabel.Infrastructure.Data.Pagination
                     propertyType
                 );
 
-            if (effectiveType.IsEnum())
+            if (effectiveType.Enum())
                 return ExpressionExtensions.GetAssignExpressionEnum(
                     filterOperator,
                     left,

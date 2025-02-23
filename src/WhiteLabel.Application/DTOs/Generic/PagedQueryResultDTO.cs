@@ -2,23 +2,15 @@
 
 namespace WhiteLabel.Application.DTOs.Generic
 {
-    public class PagedQueryResultDto<T>
+    public class PagedQueryResultDto<T>(int? take, int? skip, int total, IEnumerable<T> result)
         where T : class
     {
-        public int? Take { get; }
+        public int? Take { get; } = take;
 
-        public int? Skip { get; }
+        public int? Skip { get; } = skip;
 
-        public int Total { get; }
+        public int Total { get; } = total;
 
-        public IEnumerable<T> Result { get; }
-
-        public PagedQueryResultDto(int? take, int? skip, int total, IEnumerable<T> result)
-        {
-            Take = take;
-            Skip = skip;
-            Total = total;
-            Result = result;
-        }
+        public IEnumerable<T> Result { get; } = result;
     }
 }

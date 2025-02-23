@@ -16,8 +16,8 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
         public static T[] Add<T>(this T[] target, params T[] items)
         {
             // Validate the parameters
-            target ??= new T[] { };
-            items ??= new T[] { };
+            target ??= [];
+            items ??= [];
 
             // Join the arrays
             var result = new T[target.Length + items.Length];

@@ -8,12 +8,13 @@ namespace WhiteLabel.Infrastructure.Data.Pagination
     /// Class to build pagination in queries
     /// </summary>
     /// <typeparam name="TEntity">Entity type (generic)</typeparam>
-    public class EntityPagedValueQuery<TEntity> : PagedValueQuery<TEntity, TEntity>
+    public class EntityPagedValueQuery<TEntity>(
+        ISpecification<TEntity> specification,
+        int? take,
+        int? skip
+    ) : PagedValueQuery<TEntity, TEntity>(specification, take, skip)
         where TEntity : class
     {
-        public EntityPagedValueQuery(ISpecification<TEntity> specification, int? take, int? skip)
-            : base(specification, take, skip) { }
-
         /// <summary>
         /// Materializes the query and returns data in <typeparamref name="TEntity"/>
         /// </summary>

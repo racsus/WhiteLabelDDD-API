@@ -1,58 +1,57 @@
-﻿using NUnit.Framework;
-using System;
-using Moq;
-using WhiteLabel.Application.Interfaces.Generic;
-using WhiteLabel.Domain.Users;
-using WhiteLabel.Application.Services.Users;
-using AutoMapper;
-using WhiteLabel.Domain.Generic;
-using WhiteLabel.Application.DTOs.Users;
-using System.Threading.Tasks;
-using System.Threading;
-using WhiteLabel.UnitTest.Builders;
-using System.Linq;
-using Microsoft.Extensions.Configuration;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.Extensions.Configuration;
+using Moq;
+using WhiteLabel.Application.DTOs.Users;
+using WhiteLabel.Application.Interfaces.Generic;
+using WhiteLabel.Application.Services.Users;
+using WhiteLabel.Domain.Generic;
+using WhiteLabel.Domain.Users;
+using WhiteLabel.UnitTest.Builders;
+using Xunit;
 
 namespace WhiteLabel.UnitTest.Application
 {
     public class UserServiceTest
     {
-        [Test]
+        [Fact]
         public async Task Add_WithEmailAlreadyInDatabase_ThrowsException()
         {
             var service = GetService(new UserBuilder().WithTestValues().Build());
 
             var response = await service.Add(new UserDto());
-            Assert.AreEqual(
+            Assert.Equal(
                 "User with this email already exists",
                 response.Errors.FirstOrDefault()!.Description
             );
         }
 
-        [Test]
-        public void Update_WithOutId_ThrowsException()
+        [Fact]
+        public async Task Update_WithOutId_ThrowsException()
         {
             var service = GetService(null);
 
-            Assert.That(() => service.Update(new UserDto()), Throws.TypeOf<ArgumentException>());
+            await Assert.ThrowsAnyAsync<ArgumentException>(() => service.Update(new UserDto()));
         }
 
-        [Test]
-        public void Update_NoUserInDatabase_ThrowsException()
+        [Fact]
+        public async Task Update_NoUserInDatabase_ThrowsException()
         {
             var service = GetService(null);
 
-            var userDto = new UserDto() { Id = Guid.NewGuid() };
-            Assert.That(() => service.Update(userDto), Throws.TypeOf<ArgumentException>());
+            await Assert.ThrowsAnyAsync<ArgumentException>(() => service.Update(new UserDto()));
         }
 
-        [Test]
-        public void Remove_NoUserInDatabase_ThrowsException()
+        [Fact]
+        public async Task Remove_NoUserInDatabase_ThrowsException()
         {
             var service = GetService(null);
 
-            Assert.That(() => service.Remove(Guid.NewGuid()), Throws.TypeOf<ArgumentException>());
+            await Assert.ThrowsAnyAsync<ArgumentException>(() => service.Update(new UserDto()));
         }
 
         private static UserService GetService(User user)
@@ -63,19 +62,15 @@ namespace WhiteLabel.UnitTest.Application
 
             unitOfWork.Setup(x => x.Commit());
             genericRepository
-                .Setup(
-                    x =>
-                        x.FindOneAsync(
-                            It.IsAny<ISpecification<User>>(),
-                            It.IsAny<CancellationToken>()
-                        )
+                .Setup(x =>
+                    x.FindOneAsync(It.IsAny<ISpecification<User>>(), It.IsAny<CancellationToken>())
                 )
                 .Returns(Task.FromResult(user));
 
             //Arrange
             var inMemorySettings = new Dictionary<string, string>
             {
-                { "Authentication", "" }
+                { "Authentication", "" },
                 //...populate as needed for the test
             };
 

@@ -22,12 +22,11 @@ namespace WhiteLabel.WebAPI.Controllers.Users
     public class UserController(
         IUserService userService,
         IUserService businessService,
-        IConfiguration configuration)
-        : WhiteLabelController<IUserService>(userService, businessService)
+        IConfiguration configuration
+    ) : WhiteLabelController<IUserService>(userService, businessService)
     {
-        private AuthConfiguration AuthConfiguration { get; } = configuration
-            .GetSection(AuthConfiguration.Section)
-            .Get<AuthConfiguration>();
+        private AuthConfiguration AuthConfiguration { get; } =
+            configuration.GetSection(AuthConfiguration.Section).Get<AuthConfiguration>();
 
         /// <summary>
         /// Returns user information for logged in user using token information
@@ -43,7 +42,7 @@ namespace WhiteLabel.WebAPI.Controllers.Users
             var response = new Response<UserInfoDto>()
             {
                 //Object = await this.businessService.GetUserInfo(accessToken, this.User)
-                Object = UserInfoDto
+                Object = UserInfoDto,
             };
             return Task.FromResult(response);
         }
@@ -58,13 +57,18 @@ namespace WhiteLabel.WebAPI.Controllers.Users
         [ProducesResponseType(typeof(UserInfoDto), StatusCodes.Status200OK)]
         public Response<string> GetToken([FromBody] LoginUserRequest loginUserRequest)
         {
-            if (AuthConfiguration.AuthType.Equals(AuthConstants.Bearer, StringComparison.CurrentCultureIgnoreCase))
+            if (
+                AuthConfiguration.AuthType.Equals(
+                    AuthConstants.Bearer,
+                    StringComparison.CurrentCultureIgnoreCase
+                )
+            )
             {
                 List<Claim> claims =
                 [
                     new Claim("id", "1"),
                     new Claim(ClaimTypes.Email, "test@test.com"),
-                    new Claim(ClaimTypes.Name, loginUserRequest.UserName)
+                    new Claim(ClaimTypes.Name, loginUserRequest.UserName),
                 ];
 
                 var token = JwtConfig.Generate(
@@ -89,12 +93,12 @@ namespace WhiteLabel.WebAPI.Controllers.Users
         }
 
         [HttpGet]
-        [Route("IsEmailAvailable/{email}")]
-        public async Task<Response<bool>> IsEmailAvailable(string email)
+        [Route("EmailAvailable/{email}")]
+        public async Task<Response<bool>> EmailAvailable(string email)
         {
             var response = new Response<bool>()
             {
-                Object = await BusinessService.IsEmailAvailable(email)
+                Object = await BusinessService.EmailAvailable(email),
             };
             return response;
         }

@@ -8,11 +8,9 @@ namespace WhiteLabel.Infrastructure.Data.Pagination
     /// <summary>
     ///     http://devlicio.us/blogs/jeff_perrin/archive/2006/12/13/the-specification-pattern.aspx
     /// </summary>
-    public class OrSpecification<T> : ComposeSpecification<T>
+    public class OrSpecification<T>(ISpecification<T> leftSide, ISpecification<T> rightSide)
+        : ComposeSpecification<T>(leftSide, rightSide)
     {
-        public OrSpecification(ISpecification<T> leftSide, ISpecification<T> rightSide)
-            : base(leftSide, rightSide) { }
-
         public override Expression<Func<T, bool>> SpecExpression =>
             Left.SpecExpression.OrElse(Right.SpecExpression);
     }

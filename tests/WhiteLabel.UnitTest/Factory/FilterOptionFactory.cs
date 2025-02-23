@@ -15,7 +15,7 @@ namespace WhiteLabel.UnitTest.Factory
                 {
                     Member = filterMember,
                     Value = filterValue,
-                    Operator = filterOperator
+                    Operator = filterOperator,
                 };
             return null;
         }

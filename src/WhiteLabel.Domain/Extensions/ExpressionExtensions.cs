@@ -31,8 +31,8 @@ namespace System.Linq.Expressions
         )
         {
             // build parameter map (from parameters of second to parameters of first)
-            var map = first.Parameters
-                .Select((f, i) => new { f, s = second.Parameters[i] })
+            var map = first
+                .Parameters.Select((f, i) => new { f, s = second.Parameters[i] })
                 .ToDictionary(p => p.s, p => p.f);
 
             // replace parameters in the second lambda expression with parameters from the first
@@ -198,8 +198,8 @@ namespace System.Linq.Expressions
                 {
                     var type = (propertyType ?? entityType);
                     var propertyInfo = type.GetProperties()
-                        .FirstOrDefault(
-                            p => p.Name.Equals(route, StringComparison.OrdinalIgnoreCase)
+                        .FirstOrDefault(p =>
+                            p.Name.Equals(route, StringComparison.OrdinalIgnoreCase)
                         );
                     if (propertyInfo != null)
                     {

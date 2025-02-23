@@ -4,15 +4,9 @@ using WhiteLabel.Domain.Users;
 
 namespace WhiteLabel.Domain.Events
 {
-    public class UserCreatedEvent : BaseDomainEvent
+    public class UserCreatedEvent(Guid id, User user) : BaseDomainEvent
     {
-        public Guid Id { get; }
-        public User User { get; }
-
-        public UserCreatedEvent(Guid id, User user)
-        {
-            Id = id;
-            User = user;
-        }
+        public Guid Id { get; } = id;
+        public User User { get; } = user;
     }
 }

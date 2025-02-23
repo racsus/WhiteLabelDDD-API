@@ -22,10 +22,10 @@ namespace WhiteLabel.Domain.Extensions
         {
             var type = value.GetType();
             if (!type.IsEnum)
-                throw new ArgumentException(string.Format("Type {0} is not an enum", type));
+                throw new ArgumentException($"Type {type} is not an enum");
 
             // Get the enum field.
-            var field = type.GetField(value.ToString());
+            var field = type.GetField(value.ToString()!);
             return field == null ? null : field.GetCustomAttribute<DisplayAttribute>();
         }
     }

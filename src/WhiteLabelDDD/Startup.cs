@@ -108,7 +108,7 @@ namespace WhiteLabel.WebAPI
 
             app.UseRouting();
 
-            if (AuthConfiguration?.IsEnabled == true)
+            if (AuthConfiguration?.Enabled == true)
             {
                 app.UseAuthentication();
                 app.UseAuthorization();

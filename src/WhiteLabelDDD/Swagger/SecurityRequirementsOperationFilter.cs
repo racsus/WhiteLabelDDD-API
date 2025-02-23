@@ -39,13 +39,13 @@ namespace WhiteLabel.WebAPI.Swagger
                     break;
             }
 
-            var controllerPolicies = context.MethodInfo.DeclaringType
-                .GetTypeInfo()
+            var controllerPolicies = context
+                .MethodInfo.DeclaringType.GetTypeInfo()
                 .GetCustomAttributes(true)
                 .OfType<AuthorizeAttribute>()
                 .Select(attr => attr.Policy);
-            var actionPolicies = context.MethodInfo.DeclaringType
-                .GetTypeInfo()
+            var actionPolicies = context
+                .MethodInfo.DeclaringType.GetTypeInfo()
                 .GetCustomAttributes(true)
                 .OfType<AuthorizeAttribute>()
                 .Select(attr => attr.Policy);
@@ -57,7 +57,7 @@ namespace WhiteLabel.WebAPI.Swagger
                 .Select(x => x.ClaimType);
 
             if (
-                (requiredClaimTypes.Any() || authConfiguration.IsEnabled)
+                (requiredClaimTypes.Any() || authConfiguration.Enabled)
                 && !string.IsNullOrEmpty(securitySchemeId)
             )
             {
@@ -77,12 +77,12 @@ namespace WhiteLabel.WebAPI.Swagger
                                 Reference = new OpenApiReference
                                 {
                                     Type = ReferenceType.SecurityScheme,
-                                    Id = securitySchemeId
-                                }
+                                    Id = securitySchemeId,
+                                },
                             },
                             new[] { "readAccess", "writeAccess" }
-                        }
-                    }
+                        },
+                    },
                 };
             }
         }

@@ -42,10 +42,10 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
                 return s;
             if (targetType == typeof(Guid))
                 return Guid.Parse(s);
-            if (s.IsNullOrEmpty())
+            if (s.NullOrEmpty())
                 return null;
 
-            if (targetType.IsEnum())
+            if (targetType.Enum())
                 return s.ToEnum(targetType, null);
 
             return Convert.ChangeType(s, targetType);
@@ -58,7 +58,7 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
         /// <returns>True if
         ///     is null, empty or consists only of white-spaces characters if not returns false
         /// </returns>
-        public static bool IsNullOrEmpty(this string s)
+        public static bool NullOrEmpty(this string s)
         {
             return string.IsNullOrWhiteSpace(s);
         }
@@ -74,15 +74,15 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
             where T : struct
         {
             var type = typeof(T);
-            if (!type.IsEnum())
+            if (!type.Enum())
                 return defaultValue;
             var names = Enum.GetNames(type);
             if (names.Contains(value))
                 return (T)Enum.Parse(type, value, true);
             var res = Enum.GetValues(type)
                 .OfType<T>()
-                .FirstOrDefault(
-                    v => ((int)(object)v).ToString(CultureInfo.InvariantCulture) == value
+                .FirstOrDefault(v =>
+                    ((int)(object)v).ToString(CultureInfo.InvariantCulture) == value
                 );
 
             return !Equals(res, default(T)) ? res : defaultValue;
@@ -97,7 +97,7 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
         /// <returns>An object of type</returns>
         private static object ToEnum(this string value, Type type, object defaultValue)
         {
-            if (!type.IsEnum())
+            if (!type.Enum())
                 return defaultValue;
             var names = Enum.GetNames(type);
             if (names.Contains(value))

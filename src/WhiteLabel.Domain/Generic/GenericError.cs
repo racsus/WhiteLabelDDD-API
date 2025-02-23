@@ -10,7 +10,7 @@ namespace WhiteLabel.Domain.Generic
         Generic = 100000,
 
         [Display(Name = "Data Validation")]
-        DataValidation = 100001
+        DataValidation = 100001,
     }
 
     public class GenericError
@@ -27,7 +27,7 @@ namespace WhiteLabel.Domain.Generic
         {
             Code = singleError.GetHashCode().ToString();
             Description = singleError.GetDisplayName();
-            Name = EnumExtensions.GetDescription(singleError);
+            Name = singleError.GetDescription();
             Exception = null;
         }
 
@@ -43,7 +43,7 @@ namespace WhiteLabel.Domain.Generic
         {
             Code = ApplicationErrorEnum.Generic.GetHashCode().ToString();
             Description = errorMessage;
-            Name = EnumExtensions.GetDisplayName(ApplicationErrorEnum.Generic);
+            Name = ApplicationErrorEnum.Generic.GetDisplayName();
             Exception = null;
         }
 
@@ -55,7 +55,7 @@ namespace WhiteLabel.Domain.Generic
         {
             Code = singleError.GetHashCode().ToString();
             Description = errorMessage;
-            Name = EnumExtensions.GetDisplayName(singleError);
+            Name = singleError.GetDisplayName();
             Exception = exception;
         }
 
@@ -63,7 +63,7 @@ namespace WhiteLabel.Domain.Generic
         {
             Code = ApplicationErrorEnum.Generic.GetHashCode().ToString();
             Description = "";
-            Name = EnumExtensions.GetDisplayName(ApplicationErrorEnum.Generic);
+            Name = ApplicationErrorEnum.Generic.GetDisplayName();
             Exception = null;
         }
     }

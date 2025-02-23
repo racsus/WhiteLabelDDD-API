@@ -1,11 +1,11 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using WhiteLabel.Application.Configuration;
 using WhiteLabel.Application.Constants;
 using WhiteLabel.Application.DTOs.Generic;
@@ -21,19 +21,19 @@ namespace WhiteLabel.Application.Services.Users
 {
     public class UserService : IUserService
     {
-        private readonly IGenericRepository<Guid> genericRepository;
+        private readonly IGenericRepository<Guid> userRepository;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
         private AuthConfiguration AuthConfiguration { get; }
 
         public UserService(
-            IGenericRepository<Guid> genericRepository,
+            IGenericRepository<Guid> userRepository,
             IUnitOfWork unitOfWork,
             IMapper mapper,
             IConfiguration configuration
         )
         {
-            this.genericRepository = genericRepository;
+            this.userRepository = userRepository;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             AuthConfiguration = configuration
@@ -68,12 +68,12 @@ namespace WhiteLabel.Application.Services.Users
             {
                 // Configure a new rule in Auth0 in Auth Pipeline / Rules
                 // https://oscarchelo.blogspot.com/2021/09/get-permissions-and-roles-with-auth0.html
-                userInfo.Roles = principal.Claims
-                    .Where(x => x.Type == $"{AuthConfiguration.Namespace}/roles")
+                userInfo.Roles = principal
+                    .Claims.Where(x => x.Type == $"{AuthConfiguration.Namespace}/roles")
                     .Select(x => x.Value)
                     .ToList();
-                userInfo.Permissions = principal.Claims
-                    .Where(x => x.Type == $"{AuthConfiguration.Namespace}/permissions")
+                userInfo.Permissions = principal
+                    .Claims.Where(x => x.Type == $"{AuthConfiguration.Namespace}/permissions")
                     .Select(x => x.Value)
                     .ToList();
             }
@@ -83,11 +83,9 @@ namespace WhiteLabel.Application.Services.Users
 
         public async Task<Response<UserDto>> Add(UserDto userDto)
         {
-            ISpecification<User> alreadyRegisteredSpec = new UserAlreadyRegisteredSpec(
-                userDto.Email
-            );
+            var alreadyRegisteredSpec = new UserByEmailSpec(userDto.Email);
 
-            var existingUser = await genericRepository.FindOneAsync(alreadyRegisteredSpec);
+            var existingUser = await userRepository.FindOneAsync(alreadyRegisteredSpec);
 
             if (existingUser != null)
                 return new Response<UserDto>("User with this email already exists");
@@ -95,7 +93,9 @@ namespace WhiteLabel.Application.Services.Users
             var user = User.Create(userDto.Name, userDto.Email);
 
             unitOfWork.BeginTransaction();
-            genericRepository.Add(user);
+
+            userRepository.Add(user);
+
             await unitOfWork.CommitAsync();
 
             return new Response<UserDto>(mapper.Map<User, UserDto>(user));
@@ -106,53 +106,56 @@ namespace WhiteLabel.Application.Services.Users
             if (userDto.Id == Guid.Empty)
                 throw new ArgumentException("Id can't be empty");
 
-            ISpecification<User> registeredSpec = new UserRegisteredSpec(userDto.Id);
+            var registeredSpec = new UserByIdSpec(userDto.Id);
 
-            var user = await genericRepository.FindOneAsync(registeredSpec);
+            var user = await userRepository.FindOneAsync(registeredSpec);
 
             if (user == null)
                 throw new ArgumentException("No such user exists");
 
-            user.Update(userDto.Name, userDto.Email);
+            user.Name = userDto.Name;
+            user.Email = userDto.Email;
+
             await unitOfWork.CommitAsync();
         }
 
         public async Task Remove(Guid userId)
         {
-            ISpecification<User> registeredSpec = new UserRegisteredSpec(userId);
+            var registeredSpec = new UserByIdSpec(userId);
 
-            var user = await genericRepository.FindOneAsync(registeredSpec);
+            var user = await userRepository.FindOneAsync(registeredSpec);
 
             if (user == null)
                 throw new ArgumentException("No such customer exists");
 
-            genericRepository.Delete(user);
+            userRepository.Delete(user);
+
             await unitOfWork.CommitAsync();
         }
 
         public async Task<Response<UserDto>> Get(Guid userId)
         {
-            ISpecification<User> registeredSpec = new UserRegisteredSpec(userId);
+            ISpecification<User> registeredSpec = new UserByIdSpec(userId);
 
-            var user = await genericRepository.FindOneAsync(registeredSpec);
+            var user = await userRepository.FindOneAsync(registeredSpec);
 
             return new Response<UserDto>(mapper.Map<User, UserDto>(user));
         }
 
         public async Task<Response<IEnumerable<UserDto>>> GetAll()
         {
-            var result = await genericRepository.FindAllAsync<User>();
+            var result = await userRepository.FindAllAsync<User>();
 
             return new Response<IEnumerable<UserDto>>(
                 mapper.Map<IEnumerable<User>, IEnumerable<UserDto>>(result)
             );
         }
 
-        public async Task<bool> IsEmailAvailable(string email)
+        public async Task<bool> EmailAvailable(string email)
         {
-            ISpecification<User> alreadyRegisteredSpec = new UserAlreadyRegisteredSpec(email);
+            ISpecification<User> alreadyRegisteredSpec = new UserByEmailSpec(email);
 
-            var existingUser = await genericRepository.FindOneAsync(alreadyRegisteredSpec);
+            var existingUser = await userRepository.FindOneAsync(alreadyRegisteredSpec);
 
             return existingUser != null;
         }
@@ -161,7 +164,7 @@ namespace WhiteLabel.Application.Services.Users
             IPageOption pageOption
         )
         {
-            var result = await genericRepository.FindPagedAsync<User>(pageOption, null);
+            var result = await userRepository.FindPagedAsync<User>(pageOption, null);
 
             return new Response<PagedQueryResultDto<UserDto>>(
                 new PagedQueryResultDto<UserDto>(
@@ -175,7 +178,7 @@ namespace WhiteLabel.Application.Services.Users
 
         public async Task<Response<IEnumerable<GroupDto>>> GetGrouped(string fieldToGroup)
         {
-            var result = await genericRepository.FindGroupAsync<User>(fieldToGroup, null);
+            var result = await userRepository.FindGroupAsync<User>(fieldToGroup, null);
 
             return new Response<IEnumerable<GroupDto>>(
                 mapper.Map<IEnumerable<string>, IEnumerable<GroupDto>>(result)

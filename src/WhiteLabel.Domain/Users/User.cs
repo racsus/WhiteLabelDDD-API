@@ -1,5 +1,4 @@
-﻿using Ardalis.GuardClauses;
-using System;
+﻿using System;
 using WhiteLabel.Domain.Events;
 using WhiteLabel.Domain.Generic;
 
@@ -17,29 +16,16 @@ namespace WhiteLabel.Domain.Users
 
         public static User Create(Guid id, string name, string email)
         {
-            Guard.Against.Null(id, nameof(id));
-            Guard.Against.Null(name, nameof(name));
-            Guard.Against.Null(email, nameof(email));
-
-            var user = new User()
+            var user = new User
             {
                 Id = id,
                 Name = name,
-                Email = email
+                Email = email,
             };
 
             user.Events.Add(new UserCreatedEvent(user.Id, user));
 
             return user;
-        }
-
-        public void Update(string name, string email)
-        {
-            Guard.Against.Null(name, nameof(name));
-            Guard.Against.Null(email, nameof(email));
-
-            Name = name;
-            Email = email;
         }
     }
 }

@@ -1,17 +1,17 @@
-﻿using Moq;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Moq;
 using WhiteLabel.Application.DTOs.Generic;
 using WhiteLabel.Application.DTOs.Users;
 using WhiteLabel.Application.Interfaces.Users;
 using WhiteLabel.WebAPI.Controllers.Users;
+using Xunit;
 
 namespace WhiteLabel.UnitTest.API
 {
     public class UserControllerTest
     {
-        [Test]
+        [Fact]
         public async Task PostAdd_InsertElement_ReturnOkAndObject()
         {
             // This version uses a mock UrlHelper.
@@ -26,7 +26,7 @@ namespace WhiteLabel.UnitTest.API
             var res = await controller.Add(userDto);
 
             // Assert
-            Assert.AreEqual(res.Succeeded, true);
+            Assert.True(res.Succeeded);
         }
     }
 }

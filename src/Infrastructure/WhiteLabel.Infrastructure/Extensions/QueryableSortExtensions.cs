@@ -7,14 +7,14 @@ namespace System.Linq
 {
     public static class QueryableSortExtensions
     {
-        public static MethodInfo GetOrderMethod(this SortDirection direction)
+        private static MethodInfo GetOrderMethod(this SortDirection direction)
         {
             return direction == SortDirection.Ascending
                 ? QueryableExtensions.OrderByMethod
                 : QueryableExtensions.OrderByDescendingMethod;
         }
 
-        public static MethodInfo GetThenMethod(this SortDirection direction)
+        private static MethodInfo GetThenMethod(this SortDirection direction)
         {
             return direction == SortDirection.Ascending
                 ? QueryableExtensions.ThenByMethod

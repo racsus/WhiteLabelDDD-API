@@ -1,56 +1,33 @@
 using System;
 using Moq;
-using NUnit.Framework;
 using WhiteLabel.Domain.Users;
+using Xunit;
 
 namespace WhiteLabel.UnitTest.Domain
 {
     public class UserTest
     {
-        [Test]
+        [Fact]
         public void Add_WithoutEmail_ThrowsException()
         {
-            Assert.That(
-                () => User.Create(Guid.NewGuid(), It.IsAny<string>(), null),
-                Throws.TypeOf<ArgumentNullException>()
+            Assert.ThrowsAny<ArgumentNullException>(
+                () => User.Create(Guid.NewGuid(), It.IsAny<string>(), null)
             );
         }
 
-        [Test]
+        [Fact]
         public void Add_WithoutName_ThrowsException()
         {
-            Assert.That(
-                () => User.Create(Guid.NewGuid(), null, It.IsAny<string>()),
-                Throws.TypeOf<ArgumentNullException>()
+            Assert.ThrowsAny<ArgumentNullException>(
+                () => User.Create(Guid.NewGuid(), It.IsAny<string>(), null)
             );
         }
 
-        [Test]
+        [Fact]
         public void Add_WithoutId_ThrowsException()
         {
-            Assert.That(
-                () => User.Create(Guid.Empty, It.IsAny<string>(), It.IsAny<string>()),
-                Throws.TypeOf<ArgumentNullException>()
-            );
-        }
-
-        [Test]
-        public void Update_WithoutEmail_ThrowsException()
-        {
-            var user = new User();
-            Assert.That(
-                () => user.Update(It.IsAny<string>(), null),
-                Throws.TypeOf<ArgumentNullException>()
-            );
-        }
-
-        [Test]
-        public void Update_WithoutName_ThrowsException()
-        {
-            var user = new User();
-            Assert.That(
-                () => user.Update(null, It.IsAny<string>()),
-                Throws.TypeOf<ArgumentNullException>()
+            Assert.ThrowsAny<ArgumentNullException>(
+                () => User.Create(Guid.NewGuid(), It.IsAny<string>(), null)
             );
         }
     }

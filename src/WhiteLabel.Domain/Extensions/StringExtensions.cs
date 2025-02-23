@@ -139,8 +139,8 @@ namespace WhiteLabel.Domain.Extensions
             }
             var res = Enum.GetValues(type)
                 .OfType<T>()
-                .FirstOrDefault(
-                    v => ((int)(object)v).ToString(CultureInfo.InvariantCulture) == value
+                .FirstOrDefault(v =>
+                    ((int)(object)v).ToString(CultureInfo.InvariantCulture) == value
                 );
 
             return !Equals(res, default(T)) ? res : defaultValue;

@@ -1,8 +1,8 @@
-﻿using Autofac;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Autofac;
 using WhiteLabel.Domain.Generic;
 
 namespace WhiteLabel.Infrastructure.Events
@@ -26,8 +26,8 @@ namespace WhiteLabel.Infrastructure.Events
                 container.Resolve(typeof(IEnumerable<>).MakeGenericType(handlerType));
             var wrappedHandlers = handlers
                 .Cast<object>()
-                .Select(
-                    handler => (DomainEventHandler)Activator.CreateInstance(wrapperType, handler)
+                .Select(handler =>
+                    (DomainEventHandler)Activator.CreateInstance(wrapperType, handler)
                 );
 
             foreach (var handler in wrappedHandlers)
@@ -41,16 +41,9 @@ namespace WhiteLabel.Infrastructure.Events
             public abstract void Handle(BaseDomainEvent domainEvent);
         }
 
-        private class DomainEventHandler<T> : DomainEventHandler
+        private class DomainEventHandler<T>(IHandle<T> handler) : DomainEventHandler
             where T : BaseDomainEvent
         {
-            private readonly IHandle<T> handler;
-
-            public DomainEventHandler(IHandle<T> handler)
-            {
-                this.handler = handler;
-            }
-
             public override void Handle(BaseDomainEvent domainEvent)
             {
                 handler.Handle((T)domainEvent);

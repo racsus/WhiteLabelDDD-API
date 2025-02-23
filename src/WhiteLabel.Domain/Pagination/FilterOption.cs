@@ -17,9 +17,6 @@
         /// </summary>
         public string Value { get; set; }
 
-        /// <summary>
-        /// Operator that will be applied in the filter
-        /// </summary>
         public FilterOperator Operator { get; set; }
     }
 }

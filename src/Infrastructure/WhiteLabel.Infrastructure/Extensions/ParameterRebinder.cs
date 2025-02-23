@@ -10,7 +10,7 @@ namespace WhiteLabel.Infrastructure.Data.Extensions
     {
         private readonly Dictionary<ParameterExpression, ParameterExpression> map;
 
-        public ParameterRebinder(Dictionary<ParameterExpression, ParameterExpression> map)
+        private ParameterRebinder(Dictionary<ParameterExpression, ParameterExpression> map)
         {
             this.map = map ?? new Dictionary<ParameterExpression, ParameterExpression>();
         }

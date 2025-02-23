@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using System.Threading.Tasks;
 using WhiteLabel.Infrastructure.Data;
 using WhiteLabel.Infrastructure.Data.Pagination;
 using WhiteLabel.Infrastructure.Data.Repositories;
@@ -54,8 +54,7 @@ namespace WhiteLabel.UnitTest.Repository
 
         protected void SaveChanges()
         {
-            if (DbContext != null)
-                DbContext.SaveChanges();
+            DbContext?.SaveChanges();
         }
 
         protected async Task SaveChangesAsync()
@@ -66,8 +65,7 @@ namespace WhiteLabel.UnitTest.Repository
 
         protected void ClearMemory()
         {
-            if (DbContext != null)
-                DbContext.Database.EnsureDeleted();
+            DbContext?.Database.EnsureDeleted();
         }
 
         protected async Task ClearMemoryAsync()

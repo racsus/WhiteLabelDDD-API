@@ -1,5 +1,4 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using WhiteLabel.Domain.Generic;
@@ -8,12 +7,13 @@ using WhiteLabel.Domain.Users;
 using WhiteLabel.UnitTest.Builders;
 using WhiteLabel.UnitTest.Factory;
 using WhiteLabel.UnitTest.Specifications;
+using Xunit;
 
 namespace WhiteLabel.UnitTest.Repository
 {
     public class UserRepositoryTest : BaseAppDbContextTest<Guid>
     {
-        [Test]
+        [Fact]
         public void Add_InsertElement_ExistsElement()
         {
             var user = new UserBuilder()
@@ -26,12 +26,14 @@ namespace WhiteLabel.UnitTest.Repository
 
             var newItem = Repository.FindAll<User>().FirstOrDefault();
 
-            Assert.Equals(item, newItem);
-            Assert.True(newItem?.Id != null);
+            Assert.NotNull(newItem);
+            Assert.Equal(item, newItem);
+
             ClearMemory();
         }
 
-        [TestCase("Unmodified", "Modified")]
+        [Theory]
+        [InlineData("Unmodified", "Modified")]
         public void Update_ModifyElement_ElementModifiedCorrectly(
             string originalName,
             string modifiedName
@@ -51,7 +53,7 @@ namespace WhiteLabel.UnitTest.Repository
             ClearMemory();
         }
 
-        [Test]
+        [Fact]
         public void Remove_DeleteElement_NoElements()
         {
             var user = new UserBuilder().WithTestValues().Build();
@@ -67,7 +69,7 @@ namespace WhiteLabel.UnitTest.Repository
             ClearMemory();
         }
 
-        [Test]
+        [Fact]
         public void FindById_FindElement_ElementFound()
         {
             var user = new UserBuilder().WithTestValues().Build();
@@ -80,7 +82,7 @@ namespace WhiteLabel.UnitTest.Repository
             ClearMemory();
         }
 
-        [Test]
+        [Fact]
         public async Task FindByIdAsync_FindElement_ElementFound()
         {
             var user = new UserBuilder().WithTestValues().Build();
@@ -93,7 +95,8 @@ namespace WhiteLabel.UnitTest.Repository
             await ClearMemoryAsync();
         }
 
-        [TestCase("Test")]
+        [Theory]
+        [InlineData("Test")]
         public void Find_FindElementsBySpec_ListContainsOneElement(string name)
         {
             var user = new UserBuilder().WithTestValues().Name(name).Build();
@@ -109,7 +112,8 @@ namespace WhiteLabel.UnitTest.Repository
             ClearMemory();
         }
 
-        [TestCase("TestAsync")]
+        [Theory]
+        [InlineData("TestAsync")]
         public async Task Find_FindElementsBySpecAsync_ListContainsOneElement(string name)
         {
             var user = new UserBuilder().WithTestValues().Name(name).Build();
@@ -125,7 +129,8 @@ namespace WhiteLabel.UnitTest.Repository
             await ClearMemoryAsync();
         }
 
-        [TestCase("Test_One")]
+        [Theory]
+        [InlineData("Test_One")]
         public void FindOne_FindOneElementBySpec_ElementFound(string name)
         {
             var user = new UserBuilder().WithTestValues().Name(name).Build();
@@ -141,7 +146,8 @@ namespace WhiteLabel.UnitTest.Repository
             ClearMemory();
         }
 
-        [TestCase("TestAsync_One")]
+        [Theory]
+        [InlineData("TestAsync_One")]
         public async Task FindOne_FindOneElementBySpecAsync_ElementFound(string name)
         {
             var user = new UserBuilder().WithTestValues().Name(name).Build();
@@ -157,7 +163,7 @@ namespace WhiteLabel.UnitTest.Repository
             await ClearMemoryAsync();
         }
 
-        [Test]
+        [Fact]
         public void FindAll_GetAllElements_ListContainsElements()
         {
             var user = new UserBuilder().WithTestValues().Build();
@@ -171,7 +177,7 @@ namespace WhiteLabel.UnitTest.Repository
             ClearMemory();
         }
 
-        [Test]
+        [Fact]
         public async Task FindAllAsync_GetAllElements_ListContainsElements()
         {
             var user = new UserBuilder().WithTestValues().Build();
@@ -185,7 +191,7 @@ namespace WhiteLabel.UnitTest.Repository
             await ClearMemoryAsync();
         }
 
-        [Test]
+        [Fact]
         public void Count_CountElements_NumberElementsAbove0()
         {
             var user = new UserBuilder().WithTestValues().Build();
@@ -199,7 +205,7 @@ namespace WhiteLabel.UnitTest.Repository
             ClearMemory();
         }
 
-        [Test]
+        [Fact]
         public async Task CountAsync_CountElements_NumberElementsAbove0()
         {
             var user = new UserBuilder().WithTestValues().Build();
@@ -213,7 +219,8 @@ namespace WhiteLabel.UnitTest.Repository
             await ClearMemoryAsync();
         }
 
-        [TestCase(2, 5)]
+        [Theory]
+        [InlineData(2, 5)]
         public void FindPaged_TakeNElements_CheckNumElements(int pageSize, int numberOfElements)
         {
             PopulateUsers(numberOfElements);
@@ -225,7 +232,8 @@ namespace WhiteLabel.UnitTest.Repository
             ClearMemory();
         }
 
-        [TestCase(2, 5)]
+        [Theory]
+        [InlineData(2, 5)]
         public async Task FindPagedAsync_TakeNElements_CheckNumElements(
             int pageSize,
             int numberOfElements
@@ -240,11 +248,12 @@ namespace WhiteLabel.UnitTest.Repository
             await ClearMemoryAsync();
         }
 
-        [TestCase(2, 5, "Name", "1", FilterOperator.Contains, 1)]
-        [TestCase(2, 8, "Email", "1", FilterOperator.Contains, 1)]
-        [TestCase(2, 10, "Name", "1", FilterOperator.EndsWith, 1)]
-        [TestCase(2, 12, "Name", "1", FilterOperator.IsEqualTo, 0)]
-        [TestCase(2, 12, "Name", "1", FilterOperator.DoesNotContain, 2)]
+        [Theory]
+        [InlineData(2, 5, "Name", "1", FilterOperator.Contains, 1)]
+        [InlineData(2, 8, "Email", "1", FilterOperator.Contains, 1)]
+        [InlineData(2, 10, "Name", "1", FilterOperator.EndsWith, 1)]
+        [InlineData(2, 12, "Name", "1", FilterOperator.IsEqualTo, 0)]
+        [InlineData(2, 12, "Name", "1", FilterOperator.DoesNotContain, 2)]
         public void FindPaged_Filter_CheckNumElements(
             int pageSize,
             int numberOfElements,
@@ -268,11 +277,12 @@ namespace WhiteLabel.UnitTest.Repository
             ClearMemory();
         }
 
-        [TestCase(2, 5, "Name", "1", FilterOperator.Contains, 1)]
-        [TestCase(2, 8, "Email", "1", FilterOperator.Contains, 1)]
-        [TestCase(2, 10, "Name", "1", FilterOperator.EndsWith, 1)]
-        [TestCase(2, 12, "Name", "1", FilterOperator.IsEqualTo, 0)]
-        [TestCase(2, 12, "Name", "1", FilterOperator.DoesNotContain, 2)]
+        [Theory]
+        [InlineData(2, 5, "Name", "1", FilterOperator.Contains, 1)]
+        [InlineData(2, 8, "Email", "1", FilterOperator.Contains, 1)]
+        [InlineData(2, 10, "Name", "1", FilterOperator.EndsWith, 1)]
+        [InlineData(2, 12, "Name", "1", FilterOperator.IsEqualTo, 0)]
+        [InlineData(2, 12, "Name", "1", FilterOperator.DoesNotContain, 2)]
         public async Task FindPagedAsync_Filter_CheckNumElements(
             int pageSize,
             int numberOfElements,
@@ -296,8 +306,9 @@ namespace WhiteLabel.UnitTest.Repository
             await ClearMemoryAsync();
         }
 
-        [TestCase(2, 12, "Name", SortDirection.Ascending, "TestName0000")]
-        [TestCase(4, 5, "Name", SortDirection.Descending, "TestName0004")]
+        [Theory]
+        [InlineData(2, 12, "Name", SortDirection.Ascending, "TestName0000")]
+        [InlineData(4, 5, "Name", SortDirection.Descending, "TestName0004")]
         public void FindPaged_Sort_CheckFirstElement(
             int pageSize,
             int numberOfElements,
@@ -320,8 +331,9 @@ namespace WhiteLabel.UnitTest.Repository
             ClearMemory();
         }
 
-        [TestCase(2, 12, "Name", SortDirection.Ascending, "TestName0000")]
-        [TestCase(4, 5, "Name", SortDirection.Descending, "TestName0004")]
+        [Theory]
+        [InlineData(2, 12, "Name", SortDirection.Ascending, "TestName0000")]
+        [InlineData(4, 5, "Name", SortDirection.Descending, "TestName0004")]
         public async Task FindPagedAsync_Sort_CheckFirstElement(
             int pageSize,
             int numberOfElements,
@@ -344,8 +356,9 @@ namespace WhiteLabel.UnitTest.Repository
             await ClearMemoryAsync();
         }
 
-        [TestCase(2, 12, 2, "TestName0002")]
-        [TestCase(2, 12, 4, "TestName0004")]
+        [Theory]
+        [InlineData(2, 12, 2, "TestName0002")]
+        [InlineData(2, 12, 4, "TestName0004")]
         public void FindPaged_Skip_CheckFirstElement(
             int pageSize,
             int numberOfElements,
@@ -367,8 +380,9 @@ namespace WhiteLabel.UnitTest.Repository
             ClearMemory();
         }
 
-        [TestCase(2, 12, 2, "TestName0002")]
-        [TestCase(2, 12, 4, "TestName0004")]
+        [Theory]
+        [InlineData(2, 12, 2, "TestName0002")]
+        [InlineData(2, 12, 4, "TestName0004")]
         public async Task FindPagedAsync_Skip_CheckFirstElement(
             int pageSize,
             int numberOfElements,

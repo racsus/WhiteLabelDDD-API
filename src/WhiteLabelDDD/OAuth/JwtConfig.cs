@@ -23,7 +23,7 @@ namespace WhiteLabel.WebAPI.OAuth
             AuthConfiguration authConfiguration
         )
         {
-            if (authConfiguration?.IsEnabled == true)
+            if (authConfiguration?.Enabled == true)
             {
                 if (authConfiguration.AuthType.ToUpper() == AuthConstants.Database)
                     services
@@ -55,7 +55,7 @@ namespace WhiteLabel.WebAPI.OAuth
                                     Encoding.UTF8.GetBytes(authConfiguration.AccessTokenSecret)
                                 ),
                                 ValidIssuer = authConfiguration.Issuer,
-                                ValidAudience = authConfiguration.Audience
+                                ValidAudience = authConfiguration.Audience,
                             };
                         });
                 else
@@ -68,7 +68,7 @@ namespace WhiteLabel.WebAPI.OAuth
                             // If the access token does not have a `sub` claim, `User.Identity.Name` will be `null`. Map it to a different claim by setting the NameClaimType below.
                             options.TokenValidationParameters = new TokenValidationParameters
                             {
-                                NameClaimType = ClaimTypes.NameIdentifier
+                                NameClaimType = ClaimTypes.NameIdentifier,
                             };
 
 #if DEBUG
@@ -78,7 +78,7 @@ namespace WhiteLabel.WebAPI.OAuth
 
                             options.Events = new JwtBearerEvents
                             {
-                                OnAuthenticationFailed = AuthenticationFailed
+                                OnAuthenticationFailed = AuthenticationFailed,
                             };
 #endif
                         });
@@ -95,15 +95,14 @@ namespace WhiteLabel.WebAPI.OAuth
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            JwtSecurityToken securityToken =
-                new(
-                    issuer,
-                    audience,
-                    claims,
-                    DateTime.UtcNow,
-                    DateTime.UtcNow.AddMinutes(expires),
-                    credentials
-                );
+            JwtSecurityToken securityToken = new(
+                issuer,
+                audience,
+                claims,
+                DateTime.UtcNow,
+                DateTime.UtcNow.AddMinutes(expires),
+                credentials
+            );
             return new JwtSecurityTokenHandler().WriteToken(securityToken);
         }
 

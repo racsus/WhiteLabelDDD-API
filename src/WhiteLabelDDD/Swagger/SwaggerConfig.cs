@@ -37,7 +37,7 @@ namespace WhiteLabel.WebAPI.Swagger
                         Description = apiVersionData.Description,
                         TermsOfService = !string.IsNullOrEmpty(apiVersionData.TermsOfService)
                             ? new Uri(apiVersionData.TermsOfService)
-                            : null
+                            : null,
                     };
 
                     if (apiMetaData.ApiContactData != null)
@@ -47,13 +47,13 @@ namespace WhiteLabel.WebAPI.Swagger
                             Email = apiMetaData.ApiContactData.Email,
                             Url = !string.IsNullOrEmpty(apiMetaData.ApiContactData.Url)
                                 ? new Uri(apiMetaData.ApiContactData.Url)
-                                : null
+                                : null,
                         };
 
                     c.SwaggerDoc(apiVersionData.Version, openApiInfo);
                 }
 
-                if (authConfiguration?.IsEnabled == true)
+                if (authConfiguration?.Enabled == true)
                 {
                     if (authConfiguration.AuthType.ToUpper() == AuthConstants.Azure)
                     {
@@ -78,10 +78,10 @@ namespace WhiteLabel.WebAPI.Swagger
                                             {
                                                 $"{authConfiguration.Scope}",
                                                 authConfiguration.Scope
-                                            }
-                                        }
-                                    }
-                                }
+                                            },
+                                        },
+                                    },
+                                },
                             }
                         );
                     }
@@ -103,13 +103,13 @@ namespace WhiteLabel.WebAPI.Swagger
                                         {
                                             { "openid", "openid" },
                                             { "email", "email" },
-                                            { "profile", "profile" }
+                                            { "profile", "profile" },
                                         },
                                         AuthorizationUrl = new Uri(
                                             $"{authConfiguration.Authority}/authorize?audience={authConfiguration.Audience}"
-                                        )
-                                    }
-                                }
+                                        ),
+                                    },
+                                },
                             }
                         );
                     }
@@ -125,7 +125,7 @@ namespace WhiteLabel.WebAPI.Swagger
                                 Name = "Authorization",
                                 In = ParameterLocation.Header,
                                 Type = SecuritySchemeType.ApiKey,
-                                Scheme = JwtBearerDefaults.AuthenticationScheme
+                                Scheme = JwtBearerDefaults.AuthenticationScheme,
                             }
                         );
 
@@ -138,11 +138,11 @@ namespace WhiteLabel.WebAPI.Swagger
                                         Reference = new OpenApiReference
                                         {
                                             Type = ReferenceType.SecurityScheme,
-                                            Id = JwtBearerDefaults.AuthenticationScheme
-                                        }
+                                            Id = JwtBearerDefaults.AuthenticationScheme,
+                                        },
                                     },
                                     Array.Empty<string>()
-                                }
+                                },
                             }
                         );
                     }
@@ -157,7 +157,7 @@ namespace WhiteLabel.WebAPI.Swagger
                                 Type = SecuritySchemeType.Http,
                                 Scheme = "basic",
                                 In = ParameterLocation.Header,
-                                Description = "Basic Authorization header using the Bearer scheme."
+                                Description = "Basic Authorization header using the Bearer scheme.",
                             }
                         );
                         c.AddSecurityRequirement(
@@ -169,11 +169,11 @@ namespace WhiteLabel.WebAPI.Swagger
                                         Reference = new OpenApiReference
                                         {
                                             Type = ReferenceType.SecurityScheme,
-                                            Id = "basic"
-                                        }
+                                            Id = "basic",
+                                        },
                                     },
                                     new string[] { }
-                                }
+                                },
                             }
                         );
                     }
@@ -210,7 +210,7 @@ namespace WhiteLabel.WebAPI.Swagger
                     {
                         swagger.Servers = new List<OpenApiServer>
                         {
-                            new() { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}" }
+                            new() { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}" },
                         };
                     }
                 );
@@ -228,7 +228,7 @@ namespace WhiteLabel.WebAPI.Swagger
                 c.RoutePrefix = string.Empty;
                 c.DisplayRequestDuration();
 
-                if (authConfiguration?.IsEnabled == true)
+                if (authConfiguration?.Enabled == true)
                 {
                     c.OAuthClientId(swaggerConfiguration.ClientId);
                     c.OAuthRealm(authConfiguration.Application);

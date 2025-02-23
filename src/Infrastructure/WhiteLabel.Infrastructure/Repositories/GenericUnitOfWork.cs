@@ -3,15 +3,8 @@ using WhiteLabel.Application.Interfaces.Generic;
 
 namespace WhiteLabel.Infrastructure.Data.Repositories
 {
-    public class GenericUnitOfWork : IUnitOfWork
+    public class GenericUnitOfWork(AppDbContext dbContext) : IUnitOfWork
     {
-        private readonly AppDbContext dbContext;
-
-        public GenericUnitOfWork(AppDbContext dbContext)
-        {
-            this.dbContext = dbContext;
-        }
-
         public void BeginTransaction()
         {
             dbContext.Database.BeginTransaction();

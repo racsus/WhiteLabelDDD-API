@@ -32,7 +32,7 @@ namespace WhiteLabel.Domain.Pagination
         >()
         {
             { AllCharOperator, EnumerableExtensions.AllMethod },
-            { AnyCharOperator, EnumerableExtensions.AnyMethod }
+            { AnyCharOperator, EnumerableExtensions.AnyMethod },
         };
 
         //private readonly ILogger<SpecificationBuilder> logger;
@@ -117,7 +117,7 @@ namespace WhiteLabel.Domain.Pagination
             {
                 Member = childPropertyPath,
                 Operator = filter.Operator,
-                Value = filter.Value
+                Value = filter.Value,
             };
 
             var collectionInfo = ExpressionExtensions.MakePropertyExpression<T>(collectionPath);
@@ -232,7 +232,7 @@ namespace WhiteLabel.Domain.Pagination
             var method = StringExtensions.StartsWithMethod;
             IEnumerable<Expression> parameters = new[]
             {
-                right //, Expression.Constant(StringComparison.InvariantCultureIgnoreCase)
+                right, //, Expression.Constant(StringComparison.InvariantCultureIgnoreCase)
             };
             var exp = Expression.Call(left, method, parameters);
 
@@ -244,7 +244,7 @@ namespace WhiteLabel.Domain.Pagination
             var method = StringExtensions.EndsWithMethod;
             IEnumerable<Expression> parameters = new[]
             {
-                right //, Expression.Constant(StringComparison.InvariantCultureIgnoreCase)
+                right, //, Expression.Constant(StringComparison.InvariantCultureIgnoreCase)
             };
             var exp = Expression.Call(left, method, parameters);
 

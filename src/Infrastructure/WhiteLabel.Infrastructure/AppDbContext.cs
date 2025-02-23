@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using WhiteLabel.Domain.Generic;
 using WhiteLabel.Domain.Users;
 using WhiteLabel.Infrastructure.Data.DbMapping.Users;
@@ -13,9 +13,6 @@ namespace WhiteLabel.Infrastructure.Data
     public sealed class AppDbContext : DbContext, IAppDbContext
     {
         private readonly IDomainEventDispatcher dispatcher;
-
-        //public static readonly ILoggerFactory MyLoggerFactory
-        //    = LoggerFactory.Create(x => { x.AddConsole(); });
 
         public AppDbContext(DbContextOptions options, IDomainEventDispatcher dispatcher)
             : base(options)
@@ -33,11 +30,6 @@ namespace WhiteLabel.Infrastructure.Data
         {
             //Users
             modelBuilder.MapUser();
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            //optionsBuilder.UseLoggerFactory(MyLoggerFactory);
         }
 
         public override int SaveChanges()

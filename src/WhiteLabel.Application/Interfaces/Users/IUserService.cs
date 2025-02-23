@@ -17,7 +17,7 @@ namespace WhiteLabel.Application.Interfaces.Users
         Task Remove(Guid userId);
         Task<Response<UserDto>> Get(Guid userId);
         Task<Response<IEnumerable<UserDto>>> GetAll();
-        Task<bool> IsEmailAvailable(string email);
+        Task<bool> EmailAvailable(string email);
         Task<Response<PagedQueryResultDto<UserDto>>> GetPaginated(IPageOption pageDescriptor);
         Task<Response<IEnumerable<GroupDto>>> GetGrouped(string fieldToGroup);
     }

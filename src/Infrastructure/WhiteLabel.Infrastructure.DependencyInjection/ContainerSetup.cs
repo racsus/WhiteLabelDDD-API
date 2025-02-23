@@ -1,8 +1,8 @@
-﻿using Autofac;
+﻿using System.Reflection;
+using Autofac;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Reflection;
 using WhiteLabel.Application.AutoMapper;
 using WhiteLabel.Application.Configuration;
 using WhiteLabel.Application.Interfaces.Generic;
@@ -49,14 +49,8 @@ namespace WhiteLabel.Infrastructure.DependencyInjection
                 .RegisterType<EfCoreQueryableEvaluator>()
                 .As<IQueryableEvaluator>()
                 .SingleInstance();
-            builder
-                .Register(_ => configuration)
-                .As<IConfiguration>()
-                .SingleInstance();
-            builder
-                .Register(_ => authConfiguration)
-                .As<AuthConfiguration>()
-                .SingleInstance();
+            builder.Register(_ => configuration).As<IConfiguration>().SingleInstance();
+            builder.Register(_ => authConfiguration).As<AuthConfiguration>().SingleInstance();
 
             // DbContext
             builder
@@ -68,14 +62,11 @@ namespace WhiteLabel.Infrastructure.DependencyInjection
                 .InstancePerLifetimeScope();
 
             // AutoMapper configuration 2.2
-            builder.Register(
-                _ =>
-                    new MapperConfiguration(mc =>
-                    {
-                        mc.AddProfile(new ObjectProfile());
-                        mc.AddProfile(new ModelProfile());
-                    })
-            );
+            builder.Register(_ => new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new ObjectProfile());
+                mc.AddProfile(new ModelProfile());
+            }));
             builder
                 .Register(ctx => ctx.Resolve<MapperConfiguration>().CreateMapper())
                 .As<IMapper>()
